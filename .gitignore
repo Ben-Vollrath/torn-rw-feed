@@ -42,3 +42,8 @@
 
 # Visual Studio
 .vs/
+
+# Build Tools
+build/
+out/
+CMakeUserPresets.json

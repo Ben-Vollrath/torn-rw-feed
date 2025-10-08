@@ -1,0 +1,6 @@
+[submodule "libs/oatpp"]
+	path = libs/oatpp
+	url = https://github.com/oatpp/oatpp.git
+[submodule "libs/oatpp-swagger"]
+	path = libs/oatpp-swagger
+	url = https://github.com/oatpp/oatpp-swagger.git

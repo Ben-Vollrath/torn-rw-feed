@@ -1,0 +1,8 @@
+{
+  "dependencies": [
+    "openssl",
+    "oatpp",
+    "oatpp-postgresql",
+    "oatpp-swagger"
+  ]
+}
