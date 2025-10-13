@@ -1,5 +1,4 @@
-#ifndef UserDto_hpp
-#define UserDto_hpp
+#pragma once
 
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/Types.hpp"
@@ -7,15 +6,12 @@
 #include OATPP_CODEGEN_BEGIN(DTO)
 
 class UserDto : public oatpp::DTO {
+	DTO_INIT(UserDto, DTO)
 
-    DTO_INIT(UserDto, DTO)
-
-    DTO_FIELD(Int32, id);
-    DTO_FIELD(String, userName, "username");
-    DTO_FIELD(String, email, "email");
-
+		DTO_FIELD(Int64, id);
+	DTO_FIELD(String, tornKey, "torn_key");
+	DTO_FIELD(Int64, factionId, "faction_id");
+	DTO_FIELD(Int64, createdAt, "created_at");
 };
 
 #include OATPP_CODEGEN_END(DTO)
-
-#endif /* UserDto_hpp */
