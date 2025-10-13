@@ -1,11 +1,10 @@
 #pragma once
 
-#include "db/UserDb.hpp"
-#include "dto/UserDto.hpp"
+#include "db/ApiKeyDb.hpp"
 #include "CrudService.hpp"
 
-class UserService : public CrudService<UserDb, UserDto> {
-public:
+class ApiKeyService : public CrudService<ApiKeyDb, ApiKeyDto>
+{
 	using CrudService::create;
 	using CrudService::update;
 	using CrudService::getById;

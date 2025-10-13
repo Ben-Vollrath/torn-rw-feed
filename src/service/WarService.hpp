@@ -1,11 +1,10 @@
 #pragma once
 
-#include "db/UserDb.hpp"
-#include "dto/UserDto.hpp"
+#include "db/WarDb.hpp"
 #include "CrudService.hpp"
 
-class UserService : public CrudService<UserDb, UserDto> {
-public:
+class WarService : public CrudService<WarDb, WarDTO>
+{
 	using CrudService::create;
 	using CrudService::update;
 	using CrudService::getById;
