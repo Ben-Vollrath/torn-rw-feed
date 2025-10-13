@@ -1,8 +1,10 @@
 {
   "dependencies": [
-    "openssl",
     "oatpp",
     "oatpp-postgresql",
-    "oatpp-swagger"
+    "oatpp-sqlite",
+    "oatpp-swagger",
+    "openssl",
+    "oatpp-curl"
   ]
 }
