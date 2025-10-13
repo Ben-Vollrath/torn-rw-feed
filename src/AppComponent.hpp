@@ -1,18 +1,13 @@
-#ifndef AppComponent_hpp
-#define AppComponent_hpp
+#pragma once
 
 #include "SwaggerComponent.hpp"
 #include "DatabaseComponent.hpp"
+#include "TornApiComponent.hpp"
 
 #include "oatpp/web/server/HttpConnectionHandler.hpp"
-
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
-
 #include "oatpp/parser/json/mapping/ObjectMapper.hpp"
-
 #include "oatpp/core/macro/component.hpp"
-
-
 
 
 /**
@@ -22,16 +17,6 @@
 class AppComponent {
 public:
 
-	/**
-	*  Swagger component
-	*/
-	SwaggerComponent swaggerComponent;
-
-	/*
-	* Database component
-	*/
-	DatabaseComponent databaseComponent;
-  
 	/**
 	*  Create ConnectionProvider component which listens on the port
 	*/
@@ -57,9 +42,24 @@ public:
 	/**
 	*  Create ObjectMapper component to serialize/deserialize DTOs in Contoller's API
 	*/
-	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, apiObjectMapper)([] {
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper)([] {
 	return oatpp::parser::json::mapping::ObjectMapper::createShared();
 	}());
+
+
+	/**
+*  Swagger component
+*/
+	SwaggerComponent swaggerComponent;
+
+	/**
+	 * Database Component
+	 */
+	DatabaseComponent databaseComponent;
+
+	/**
+	 * TornApi Component
+	 */
+	TornApiComponent tornApiComponent;
 };
 
-#endif /* AppComponent_hpp */

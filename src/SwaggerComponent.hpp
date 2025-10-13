@@ -1,7 +1,6 @@
+#pragma once
 
-#ifndef SwaggerComponent_hpp
-#define SwaggerComponent_hpp
-
+#include "oatpp/core/macro/component.hpp"
 #include "oatpp-swagger/Model.hpp"
 #include "oatpp-swagger/Resources.hpp"
 
@@ -20,11 +19,9 @@ public:
         oatpp::swagger::DocumentInfo::Builder builder;
 
         builder
-            .setTitle("User entity service")
-            .setDescription("CRUD API Example project with swagger docs")
+            .setTitle("Torn RW Feed")
+            .setDescription("")
             .setVersion("1.0")
-            .setContactName("Ivan Ovsyanochka")
-            .setContactUrl("https://oatpp.io/")
 
             .setLicenseName("Apache License, Version 2.0")
             .setLicenseUrl("http://www.apache.org/licenses/LICENSE-2.0")
@@ -45,5 +42,3 @@ public:
         }());
 
 };
-
-#endif /* SwaggerComponent_hpp */
