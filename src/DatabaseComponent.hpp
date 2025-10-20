@@ -36,11 +36,10 @@ public:
         return std::make_shared<oatpp::postgresql::Executor>(connectionPool);
             }());
 
-
-    OATPP_CREATE_COMPONENT(std::shared_ptr<ApiKeyDb>, apiKeyDb)
+    OATPP_CREATE_COMPONENT(std::shared_ptr<FactionDb>, factionDb)
         ([] {
         OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
-        return std::make_shared<ApiKeyDb>(dbExecutor);
+        return std::make_shared<FactionDb>(dbExecutor);
             }());
 
     OATPP_CREATE_COMPONENT(std::shared_ptr<UserDb>, userDb)
@@ -49,11 +48,12 @@ public:
         return std::make_shared<UserDb>(dbExecutor);
             }());
 
-    OATPP_CREATE_COMPONENT(std::shared_ptr<FactionDb>, factionDb)
+    OATPP_CREATE_COMPONENT(std::shared_ptr<ApiKeyDb>, apiKeyDb)
         ([] {
         OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
-        return std::make_shared<FactionDb>(dbExecutor);
+        return std::make_shared<ApiKeyDb>(dbExecutor);
             }());
+
 
     OATPP_CREATE_COMPONENT(std::shared_ptr<PurchaseDb>, purchaseDb)
         ([] {

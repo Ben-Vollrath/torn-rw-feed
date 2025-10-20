@@ -26,7 +26,8 @@ public:
             .setLicenseName("Apache License, Version 2.0")
             .setLicenseUrl("http://www.apache.org/licenses/LICENSE-2.0")
 
-            .addServer("http://localhost:8000", "server on localhost");
+            .addServer("http://localhost:8000", "server on localhost")
+            .addSecurityScheme("basic_auth", oatpp::swagger::DocumentInfo::SecuritySchemeBuilder::DefaultBearerAuthorizationSecurityScheme("Authorization"));
 
         return builder.build();
 

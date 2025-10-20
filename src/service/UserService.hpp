@@ -7,7 +7,9 @@
 class UserService : public CrudService<UserDb, UserDto> {
 public:
 	using CrudService::create;
+	using CrudService::upsertById;
 	using CrudService::update;
 	using CrudService::getById;
+	using CrudService::getByIdNullable;
 	using CrudService::removeById;
 };

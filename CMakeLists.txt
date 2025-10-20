@@ -11,6 +11,7 @@ find_package(oatpp-swagger CONFIG REQUIRED)
 find_package(oatpp-postgresql CONFIG REQUIRED)
 find_package(oatpp-sqlite CONFIG REQUIRED)
 find_package(oatpp-curl CONFIG REQUIRED)
+find_package(cryptopp CONFIG REQUIRED)
 
 # Definitions
 add_definitions(-DSQL_FILE_PATH="${CMAKE_SOURCE_DIR}/src/db/sql/")
@@ -18,7 +19,7 @@ add_definitions(-DSQL_FILE_PATH="${CMAKE_SOURCE_DIR}/src/db/sql/")
 
 add_executable(torn_rw_feed
   src/App.cpp
-)
+ "src/service/ApiKeyService.cpp")
 
 set(OATPP_SWAGGER_RES_PATH "${CMAKE_SOURCE_DIR}/libs/oatpp-swagger/res")
 
@@ -34,12 +35,13 @@ target_link_libraries(torn_rw_feed PRIVATE
   oatpp::oatpp-postgresql
   oatpp::oatpp-sqlite
   oatpp::oatpp-curl
+  cryptopp::cryptopp
 )
 
 
 add_executable(torn_rw_feed_test
 	test/tests.cpp
-)
+ "src/service/ApiKeyService.cpp")
 
 target_compile_definitions(torn_rw_feed_test PRIVATE USE_SQLITE=True)
 

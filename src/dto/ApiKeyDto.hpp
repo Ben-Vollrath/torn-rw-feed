@@ -11,7 +11,7 @@ class ApiKeyDto : public oatpp::DTO {
 		DTO_FIELD(Int64, id);
 	DTO_FIELD(Int64, userId, "user_id");
 	DTO_FIELD(String, prefix);
-	DTO_FIELD(String, secretHash, "secret_hash"); // store hex/base64 if you like
+	DTO_FIELD(String, secretHash, "secret_hash");
 	DTO_FIELD(String, alg);
 	DTO_FIELD(Int64, createdAt, "created_at");
 	DTO_FIELD(Int64, expiresAt, "expires_at");
