@@ -4,7 +4,7 @@ CREATE TABLE purchases (
   purchaser_id   BIGINT REFERENCES users(id) ON DELETE SET NULL,
   amount         BIGINT NOT NULL,
   full_log       TEXT,
-  start_date     BIGINT NOT NULL DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT
+  start_date     BIGINT NOT NULL DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,
   end_date       BIGINT NOT NULL
 );
 
