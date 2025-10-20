@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#include "ApiErrorHandler.hpp"
+
 void run() {
 
 	/* Register Components in scope of run() method */
@@ -16,6 +18,7 @@ void run() {
 	OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 
 	auto controller = AuthController::createShared();
+	controller->setErrorHandler(std::make_shared<ApiErrorHandler>());
 	/* Create MyController and add all of its endpoints to router */
 	router->addController(controller);
 
@@ -35,7 +38,7 @@ void run() {
 	oatpp::network::Server server(connectionProvider, connectionHandler);
 
 	/* Print info about server port */
-	OATPP_LOGI("MyApp", "Server running on port %s", connectionProvider->getProperty("port").getData());
+	OATPP_LOGI("MyApp", "Server running on port %s", connectionProvider->getProperty("port").getData())
 
 	/* Run server */
 	server.run();
