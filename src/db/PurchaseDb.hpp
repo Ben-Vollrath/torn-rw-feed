@@ -9,42 +9,36 @@ class PurchaseDb : public oatpp::orm::DbClient {
 public:
     PurchaseDb(const std::shared_ptr<oatpp::orm::Executor>& executor)
         : oatpp::orm::DbClient(executor) {
-        oatpp::orm::SchemaMigration m(executor);
-        m.addFile(1, "purchases/init.sql");
+        oatpp::orm::SchemaMigration m(executor, "purchases");
+        m.addFile(1, SQL_FILE_PATH"purchases/init.sql");
         m.migrate();
     }
 
-    QUERY(createPurchase,
-        "INSERT INTO purchases (faction_id, purchaser_id, amount, full_log, start_date, end_date) "
-        "VALUES (:p.factionId, :p.purchaserId, :p.amount, :p.fullLog, "
-        "COALESCE(:p.startDate, (EXTRACT(EPOCH FROM now()))::BIGINT), :p.endDate) "
+    QUERY(create,
+        "INSERT INTO purchases (faction_id, purchaser_id, amount, full_log, end_date) "
+        "VALUES (:p.faction_id, :p.purchaser_id, :p.amount, :p.full_log, :p.end_date) "
         "RETURNING *;",
-        PREPARE(true),
         PARAM(oatpp::Object<PurchaseDto>, p))
 
-    QUERY(updatePurchase,
-        "UPDATE purchases SET faction_id=:p.factionId, purchaser_id=:p.purchaserId, amount=:p.amount, "
-        "full_log=:p.fullLog, start_date=:p.startDate, end_date=:p.endDate "
+    QUERY(update,
+        "UPDATE purchases SET faction_id=:p.faction_id, purchaser_id=:p.purchaser_id, amount=:p.amount, "
+        "full_log=:p.fullLog, start_date=:p.startDate, end_date=:p.end_date "
         "WHERE id=:p.id RETURNING *;",
-        PREPARE(true),
         PARAM(oatpp::Object<PurchaseDto>, p))
 
-    QUERY(getPurchaseById,
+    QUERY(getById,
         "SELECT * FROM purchases WHERE id=:id;",
-        PREPARE(true),
         PARAM(oatpp::Int64, id))
 
     QUERY(listPurchasesForFaction,
-        "SELECT * FROM purchases WHERE faction_id=:factionId "
+        "SELECT * FROM purchases WHERE faction_id=:faction_id "
         "ORDER BY id DESC LIMIT :limit OFFSET :offset;",
-        PREPARE(true),
-        PARAM(oatpp::Int64, factionId),
+        PARAM(oatpp::Int64, faction_id),
         PARAM(oatpp::UInt32, limit),
         PARAM(oatpp::UInt32, offset))
 
-    QUERY(deletePurchaseById,
+    QUERY(deleteById,
         "DELETE FROM purchases WHERE id=:id;",
-        PREPARE(true),
         PARAM(oatpp::Int64, id))
 };
 

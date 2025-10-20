@@ -9,33 +9,37 @@ class UserDb : public oatpp::orm::DbClient {
 public:
     UserDb(const std::shared_ptr<oatpp::orm::Executor>& executor)
         : oatpp::orm::DbClient(executor) {
-        oatpp::orm::SchemaMigration m(executor);
-        m.addFile(1, "users/init.sql");
+        oatpp::orm::SchemaMigration m(executor, "users");
+        m.addFile(1, SQL_FILE_PATH"users/init.sql");
         m.migrate();
     }
 
-    QUERY(createUser,
-        "INSERT INTO users (torn_key, faction_id, created_at) "
-        "VALUES (:user.tornKey, :user.factionId, "
-        "COALESCE(:user.createdAt, (EXTRACT(EPOCH FROM now()))::BIGINT)) "
+    QUERY(create,
+        "INSERT INTO users (torn_key, faction_id) "
+        "VALUES (:user.torn_key, :user.faction_id) "
         "RETURNING *;",
-        PREPARE(true),
         PARAM(oatpp::Object<UserDto>, user))
 
-    QUERY(updateUser,
-        "UPDATE users SET torn_key=:user.tornKey, faction_id=:user.factionId "
+    QUERY(upsertById,
+        "INSERT INTO users (id, torn_key, faction_id) "
+        "VALUES (:user.id, :user.torn_key, :user.faction_id) "
+		"ON CONFLICT (id) DO UPDATE "
+		" SET torn_key = COALESCE(EXCLUDED.torn_key, users.torn_key), "
+		"     faction_id = COALESCE(EXCLUDED.faction_id, users.faction_id)"
+        "RETURNING *;",
+        PARAM(oatpp::Object<UserDto>, user))
+
+    QUERY(update,
+        "UPDATE users SET torn_key=:user.torn_key, faction_id=:user.faction_id "
         "WHERE id=:user.id RETURNING *;",
-        PREPARE(true),
         PARAM(oatpp::Object<UserDto>, user))
 
-    QUERY(getUserById,
+    QUERY(getById,
         "SELECT * FROM users WHERE id=:id;",
-        PREPARE(true),
         PARAM(oatpp::Int64, id))
 
-    QUERY(deleteUserById,
+    QUERY(deleteById,
         "DELETE FROM users WHERE id=:id;",
-        PREPARE(true),
         PARAM(oatpp::Int64, id))
 };
 

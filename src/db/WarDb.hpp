@@ -9,47 +9,41 @@ class WarDb : public oatpp::orm::DbClient {
 public:
     WarDb(const std::shared_ptr<oatpp::orm::Executor>& executor)
         : oatpp::orm::DbClient(executor) {
-        oatpp::orm::SchemaMigration m(executor);
-        m.addFile(1, "wars/init.sql");
+        oatpp::orm::SchemaMigration m(executor, "wars");
+        m.addFile(1, SQL_FILE_PATH"wars/init.sql");
         m.migrate();
     }
 
-    QUERY(createWar,
+    QUERY(create,
         "INSERT INTO wars (faction_id, enemy_faction_id, start_at, end_at, winner_id, "
         "faction_score, faction_chain, enemy_faction_score, enemy_faction_chain) "
-        "VALUES (:w.factionId, :w.enemyFactionId, "
-        "COALESCE(:w.startAt, (EXTRACT(EPOCH FROM now()))::BIGINT), :w.endAt, :w.winnerId, "
-        "COALESCE(:w.factionScore,0), COALESCE(:w.factionChain,0), "
-        "COALESCE(:w.enemyFactionScore,0), COALESCE(:w.enemyFactionChain,0)) "
+        "VALUES (:w.faction_id, :w.enemy_faction_id, :w.start_at, :w.end_at, :w.winner_id, "
+        "COALESCE(:w.faction_score,0), COALESCE(:w.faction_chain,0), "
+        "COALESCE(:w.enemy_faction_score,0), COALESCE(:w.enemy_faction_chain,0)) "
         "RETURNING *;",
-        PREPARE(true),
         PARAM(oatpp::Object<WarDto>, w))
 
-    QUERY(updateWar,
-        "UPDATE wars SET faction_id=:w.factionId, enemy_faction_id=:w.enemyFactionId, start_at=:w.startAt, "
-        "end_at=:w.endAt, winner_id=:w.winnerId, faction_score=:w.factionScore, faction_chain=:w.factionChain, "
-        "enemy_faction_score=:w.enemyFactionScore, enemy_faction_chain=:w.enemyFactionChain "
+    QUERY(update,
+        "UPDATE wars SET faction_id=:w.faction_id, enemy_faction_id=:w.enemy_faction_id, start_at=:w.start_at, "
+        "end_at=:w.end_at, winner_id=:w.winner_id, faction_score=:w.faction_score, faction_chain=:w.faction_chain, "
+        "enemy_faction_score=:w.enemy_faction_score, enemy_faction_chain=:w.enemy_faction_chain "
         "WHERE id=:w.id RETURNING *;",
-        PREPARE(true),
         PARAM(oatpp::Object<WarDto>, w))
 
-    QUERY(getWarById,
+    QUERY(getById,
         "SELECT * FROM wars WHERE id=:id;",
-        PREPARE(true),
         PARAM(oatpp::Int64, id))
 
     QUERY(listWarsForFaction,
         "SELECT * FROM wars "
-        "WHERE faction_id=:factionId OR enemy_faction_id=:factionId "
+        "WHERE faction_id=:faction_id OR enemy_faction_id=:faction_id "
         "ORDER BY start_at DESC LIMIT :limit OFFSET :offset;",
-        PREPARE(true),
-        PARAM(oatpp::Int64, factionId),
+        PARAM(oatpp::Int64, faction_id),
         PARAM(oatpp::UInt32, limit),
         PARAM(oatpp::UInt32, offset))
 
-    QUERY(deleteWarById,
+    QUERY(deleteById,
         "DELETE FROM wars WHERE id=:id;",
-        PREPARE(true),
         PARAM(oatpp::Int64, id))
 };
 

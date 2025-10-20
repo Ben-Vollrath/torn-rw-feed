@@ -9,48 +9,54 @@ class ApiKeyDb : public oatpp::orm::DbClient {
 public:
     ApiKeyDb(const std::shared_ptr<oatpp::orm::Executor>& executor)
         : oatpp::orm::DbClient(executor) {
-        oatpp::orm::SchemaMigration m(executor);
-        m.addFile(1, "api_keys/init.sql");
+        oatpp::orm::SchemaMigration m(executor, "api_keys");
+        m.addFile(1, SQL_FILE_PATH"api_keys/init.sql");
         m.migrate();
     }
-
-    QUERY(createKey,
+		
+    QUERY(create,
         "INSERT INTO api_keys "
         "(user_id, prefix, secret_hash, alg, created_at, expires_at, revoked, last_used_at) "
-        "VALUES (:key.userId, :key.prefix, :key.secretHash::bytea, "
+        "VALUES (:key.user_id, :key.prefix, CAST(:key.secret_hash AS bytea),"
         "COALESCE(:key.alg, 'SHA256'), "
-        "COALESCE(:key.createdAt, (EXTRACT(EPOCH FROM now()))::BIGINT), "
-        ":key.expiresAt, COALESCE(:key.revoked, FALSE), :key.lastUsedAt) "
-        "RETURNING *;",
-        PREPARE(true),
+        ":key.created_at, :key.expires_at, COALESCE(:key.revoked, FALSE), :key.last_used_at) "
+        "RETURNING id, user_id, prefix, alg, created_at, expires_at, revoked, last_used_at;",
         PARAM(oatpp::Object<ApiKeyDto>, key))
 
-    QUERY(updateKey,
+    QUERY(update,
         "UPDATE api_keys SET "
-        "expires_at=:key.expiresAt, revoked=:key.revoked, last_used_at=:key.lastUsedAt "
-        "WHERE id=:key.id RETURNING *;",
-        PREPARE(true),
+        "expires_at=:key.expires_at, revoked=:key.revoked, last_used_at=:key.last_used_at "
+        "WHERE id=:key.id "
+        "RETURNING id, user_id, prefix, encode(secret_hash, 'hex') AS secret_hash, alg, created_at, expires_at, revoked, last_used_at;",
         PARAM(oatpp::Object<ApiKeyDto>, key))
 
-    QUERY(getKeyById,
-        "SELECT * FROM api_keys WHERE id=:id;",
-        PREPARE(true),
+    QUERY(getById,
+        "SELECT id, user_id, prefix, encode(secret_hash, 'hex') AS secret_hash, alg, created_at, expires_at, revoked, last_used_at "
+        "FROM api_keys WHERE id=:id;",
         PARAM(oatpp::Int64, id))
 
     QUERY(getKeyByPrefix,
-        "SELECT * FROM api_keys WHERE prefix=:prefix;",
-        PREPARE(true),
+        "SELECT id, user_id, prefix, encode(secret_hash, 'hex') AS secret_hash, alg, created_at, expires_at, revoked, last_used_at "
+        "FROM api_keys WHERE prefix=:prefix;",
         PARAM(oatpp::String, prefix))
 
     QUERY(listKeysForUser,
-        "SELECT * FROM api_keys WHERE user_id=:userId ORDER BY id DESC;",
-        PREPARE(true),
+        "SELECT id, user_id, prefix, encode(secret_hash, 'hex') AS secret_hash, alg, created_at, expires_at, revoked, last_used_at "
+        "FROM api_keys WHERE user_id=:userId ORDER BY id DESC;",
         PARAM(oatpp::Int64, userId))
 
-    QUERY(deleteKeyById,
+    QUERY(deleteById,
         "DELETE FROM api_keys WHERE id=:id;",
-        PREPARE(true),
         PARAM(oatpp::Int64, id))
+
+    QUERY(touchLastUsedAt,
+        "UPDATE api_keys "
+        "SET last_used_at = CAST((EXTRACT(EPOCH FROM now())) AS BIGINT) "
+        "WHERE id = :id "
+        "RETURNING id, user_id, prefix, encode(secret_hash, 'hex') AS secret_hash, alg, created_at, expires_at, revoked, last_used_at;",
+        PARAM(oatpp::Int64, id))
+
+	
 };
 
 #include OATPP_CODEGEN_END(DbClient)
