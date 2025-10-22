@@ -5,6 +5,7 @@
 #include "CrudService.hpp"
 #include <optional>
 #include <ctime>
+#include <chrono>
 
 #include "util/Crypto.hpp"
 
@@ -28,7 +29,7 @@ public:
 
 
     IssueResult issueKey(const oatpp::Int64& userId,
-        const std::optional<int64_t>& ttlSeconds = std::nullopt,
+        const std::optional<int64_t>& ttlSeconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::hours(24)).count(),
         const oatpp::String& alg = "SHA256") const
     {
 
