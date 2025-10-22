@@ -38,6 +38,7 @@ public:
 
     ENDPOINT("GET", "auth/{tornKey}", loginUser,
         PATH(String, tornKey)) {
+
         auto userBasics = m_tornApiService.getUserBasic(tornKey);
         auto factionBasics = m_tornApiService.getFactionBasic(tornKey);
 
