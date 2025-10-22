@@ -1,0 +1,76 @@
+#include "AuthControllerTest.hpp"
+#include "app/MyApiTestClient.hpp"
+
+#include "app/TestComponent.hpp"
+#include "controller/AuthController.hpp"
+
+#include "oatpp/web/client/HttpRequestExecutor.hpp"
+
+#include "oatpp-test/web/ClientServerTestRunner.hpp"
+
+#include "MockTorn/TornController.hpp"
+
+void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
+{
+    /* Call server API */
+/* Call root endpoint of MyController */
+    auto response = client->auth("ok");
+
+    /* Assert that server responds with 200 */
+    OATPP_ASSERT(response->getStatusCode() == 200)
+
+    /* Read response body as MessageDto */
+    auto message = response->readBodyToDto<oatpp::Object<ApiKeyIssueResponseDto>>(objectMapper.get());
+
+    /* Assert that received message is as expected */
+    OATPP_ASSERT(message)
+        OATPP_ASSERT(message->apiKey)
+
+        auto now = static_cast<std::int64_t>(std::time(nullptr));
+    constexpr auto seconds_in_day = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::hours(24)).count();
+    OATPP_ASSERT(message->expiresAt - now >= seconds_in_day)
+}
+
+void AuthControllerTest::testAuthError(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
+{
+    auto response = client->auth("keyError");
+
+    OATPP_ASSERT(response->getStatusCode() == 401)
+}
+
+void AuthControllerTest::onRun() {
+
+    /* Register test components */
+    TestComponent component;
+
+    /* Create client-server test runner */
+    oatpp::test::web::ClientServerTestRunner runner;
+
+    /* Add Controller endpoints to the router of the test server */
+    runner.addController(TornController::createShared());
+    runner.addController(AuthController::createShared());
+
+
+    /* Run test */
+    runner.run([this, &runner] {
+
+        /* Get client connection provider for Api Client */
+        OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
+
+        OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
+
+        /* Create http request executor for Api Client */
+        auto requestExecutor = oatpp::web::client::HttpRequestExecutor::createShared(clientConnectionProvider);
+
+        /* Create Test API client */
+        auto client = ApiTestClient::createShared(requestExecutor, objectMapper);
+
+        testAuthOk(client, objectMapper);
+        testAuthError(client, objectMapper);
+
+        }, std::chrono::minutes(10) /* test timeout */);
+
+    /* wait all server threads finished */
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+}
