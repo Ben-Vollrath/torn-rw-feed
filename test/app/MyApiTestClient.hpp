@@ -12,11 +12,13 @@
  * Test API client.
  * Use this client to call application APIs.
  */
-class MyApiTestClient : public oatpp::web::client::ApiClient {
+class ApiTestClient : public oatpp::web::client::ApiClient {
 
-  API_CLIENT_INIT(MyApiTestClient)
+  API_CLIENT_INIT(ApiTestClient)
 
-  API_CALL("GET", "/", getRoot)
+  API_CALL("GET", "/faction/basic", factionBasic, QUERY(String, key))
+
+	API_CALL("GET", "/auth/{tornKey}", auth, PATH(String, tornKey))
 
   // TODO - add more client API calls here
 

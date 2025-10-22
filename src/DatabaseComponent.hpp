@@ -1,6 +1,5 @@
 #pragma once
 
-#include "DatabaseBackend.hpp"
 #include "db/ApiKeyDb.hpp"
 #include "db/FactionDb.hpp"
 #include "db/PurchaseDb.hpp"
@@ -15,8 +14,8 @@ class DatabaseComponent {
 public:
 
     // Provider (backend-specific) toggles between sqlite and postgre depending on environment
-    OATPP_CREATE_COMPONENT(std::shared_ptr<dbb::ConnProvider>, connectionProvider)([] {
-        return std::make_shared<dbb::ConnProvider>(dbb::connString().c_str());
+    OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionProvider>, connectionProvider)([] {
+        return std::make_shared<oatpp::postgresql::ConnectionProvider>("postgresql://torn:tornpass@192.168.0.117:5432/torn_rw_feed");
 	}());
 
 

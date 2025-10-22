@@ -19,7 +19,7 @@ add_definitions(-DSQL_FILE_PATH="${CMAKE_SOURCE_DIR}/src/db/sql/")
 
 add_executable(torn_rw_feed
   src/App.cpp
- "src/service/ApiKeyService.cpp")
+ "src/service/ApiKeyService.cpp" "src/service/TornApiService.cpp")
 
 set(OATPP_SWAGGER_RES_PATH "${CMAKE_SOURCE_DIR}/libs/oatpp-swagger/res")
 
@@ -39,13 +39,23 @@ target_link_libraries(torn_rw_feed PRIVATE
 )
 
 
+enable_testing()
 add_executable(torn_rw_feed_test
 	test/tests.cpp
- "src/service/ApiKeyService.cpp")
+ "src/service/ApiKeyService.cpp" "test/AuthControllerTest.cpp" "src/service/TornApiService.cpp")
 
-target_compile_definitions(torn_rw_feed_test PRIVATE USE_SQLITE=True)
+add_definitions(-DFIXTURE_BASE="${CMAKE_SOURCE_DIR}/test/MockTorn/fixtures/")
 
 target_include_directories(torn_rw_feed_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+
+target_link_libraries(torn_rw_feed_test PRIVATE
+  oatpp::oatpp
+  oatpp::oatpp-swagger
+  oatpp::oatpp-postgresql
+  oatpp::oatpp-sqlite
+  oatpp::oatpp-curl
+  cryptopp::cryptopp
+)
 
 enable_testing()
 add_test(NAME TornTests COMMAND torn_rw_feed_tests)

@@ -1,0 +1,16 @@
+{
+  "profile": {
+    "id": 1073741824,
+    "name": "string",
+    "level": 1073741824,
+    "gender": "Male",
+    "status": {
+      "description": "string",
+      "details": "string",
+      "state": "Abroad",
+      "color": "string",
+      "until": 1073741824,
+      "plane_image_type": "private_jet"
+    }
+  }
+}

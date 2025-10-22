@@ -1,5 +1,4 @@
-#ifndef TestComponent_htpp
-#define TestComponent_htpp
+#pragma once
 
 #include "oatpp/web/server/HttpConnectionHandler.hpp"
 
@@ -8,14 +7,18 @@
 #include "oatpp/network/virtual_/Interface.hpp"
 
 #include "oatpp/parser/json/mapping/ObjectMapper.hpp"
-
 #include "oatpp/core/macro/component.hpp"
+
+#include "DatabaseComponent.hpp"
+#include "TornApiClient.hpp"
 
 /**
  * Test Components config
  */
 class TestComponent {
 public:
+
+    DatabaseComponent databaseComponent;
 
   /**
    * Create oatpp virtual network interface for test networking
@@ -62,7 +65,18 @@ public:
     return oatpp::parser::json::mapping::ObjectMapper::createShared();
   }());
 
+
+  OATPP_CREATE_COMPONENT(std::shared_ptr<TornApiClient>, tornApiClient)([] {
+
+      /* Get client connection provider for Api Client */
+      OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
+
+      /* Get object mapper component */
+      OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
+
+      /* Create http request executor for Api Client */
+      auto requestExecutor = oatpp::web::client::HttpRequestExecutor::createShared(clientConnectionProvider);
+
+      return TornApiClient::createShared(requestExecutor, objectMapper);
+      }());
 };
-
-
-#endif // TestComponent_htpp

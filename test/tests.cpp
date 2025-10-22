@@ -1,10 +1,9 @@
-
-#include "MyControllerTest.hpp"
-
 #include <iostream>
 
+#include "AuthControllerTest.hpp"
+
 void runTests() {
-  OATPP_RUN_TEST(MyControllerTest);
+  OATPP_RUN_TEST(AuthControllerTest);
 }
 
 int main() {
