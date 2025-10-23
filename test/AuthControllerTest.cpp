@@ -29,6 +29,10 @@ void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client,
         auto now = static_cast<std::int64_t>(std::time(nullptr));
     constexpr auto seconds_in_day = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::hours(24)).count();
     OATPP_ASSERT(message->expiresAt - now >= seconds_in_day)
+
+	auto m_userService = UserService();
+    auto user =m_userService.getById(1073741824);
+    OATPP_ASSERT(user && user->factionId == 123456 && user->tornKey == "ok")
 }
 
 void AuthControllerTest::testAuthError(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
