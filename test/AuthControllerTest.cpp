@@ -72,6 +72,9 @@ void AuthControllerTest::onRun() {
         testAuthOk(client, objectMapper);
         testAuthError(client, objectMapper);
 
+        OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionPool>, connectionPool);
+        connectionPool->stop();
+
         }, std::chrono::minutes(10) /* test timeout */);
 
     /* wait all server threads finished */
