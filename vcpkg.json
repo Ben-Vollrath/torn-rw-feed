@@ -1,11 +1,12 @@
 {
   "dependencies": [
+    "cryptopp",
     "oatpp",
     "oatpp-curl",
     "oatpp-postgresql",
     "oatpp-sqlite",
     "oatpp-swagger",
     "openssl",
-    "cryptopp"
+    "oatpp-websocket"
   ]
 }
