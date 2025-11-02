@@ -1,8 +1,12 @@
 #pragma once
 
+#include <optional>
+
 #include "TornApiClient.hpp"
 #include "dto/torn_client/TornErrorResponseDto.hpp"
+#include "dto/torn_client/TornFactionMembersResponseDto.hpp"
 #include "dto/torn_client/TornFactionResponseDto.hpp"
+#include "dto/torn_client/TornFactionWarResponseDto.hpp"
 #include "dto/torn_client/TornUserBasicResponseDto.hpp"
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp/web/client/ApiClient.hpp"
@@ -28,8 +32,12 @@ class TornApiService
 	}
 
 	void handleErrorCodes(const oatpp::Object<TornErrorResponseDto>& parsedError);
+
 public:
 	oatpp::Object<TornFactionResponseDto> getFactionBasic(const std::string& key);
 	oatpp::Object<TornUserBasicResponseDto> getUserBasic(const std::string& key);
+	oatpp::Object<TornFactionMembersResponse> getFactionMembers(const std::string& key, std::int64_t factionId);
+	std::vector<FactionMemberInfo> getFactionMembersCompact(const std::string& key, std::int64_t factionId);
+	oatpp::Object<TornFactionWarResponseDto> getFactionWar(const std::string& key);
+	std::optional<std::int64_t> getEnemyWarFaction(const std::string& key, std::int64_t factionId);
 };
-

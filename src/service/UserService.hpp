@@ -4,7 +4,8 @@
 #include "dto/UserDto.hpp"
 #include "CrudService.hpp"
 
-class UserService : public CrudService<UserDb, UserDto> {
+class UserService : public CrudService<UserDb, UserDto>
+{
 public:
 	using CrudService::create;
 	using CrudService::upsertById;
@@ -12,4 +13,6 @@ public:
 	using CrudService::getById;
 	using CrudService::getByIdNullable;
 	using CrudService::removeById;
+	std::vector<std::string> getTornKeys(std::int64_t factionId);
+	void removeTornKey(const std::string& tornKey);
 };

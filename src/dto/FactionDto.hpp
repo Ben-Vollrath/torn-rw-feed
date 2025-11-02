@@ -6,15 +6,15 @@
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class FactionDto : public oatpp::DTO {
+class FactionDto : public oatpp::DTO
+{
 	DTO_INIT(FactionDto, DTO)
 
-		DTO_FIELD(Int64, id);
+	DTO_FIELD(Int64, id);
 	DTO_FIELD(String, name);
 	DTO_FIELD(Int64, leaderTornId, "leader_torn_id");
 	DTO_FIELD(Int64, coLeaderTornId, "co_leader_torn_id");
 
-public:
 	static oatpp::Object<FactionDto> fromFactionResponse(const oatpp::Object<TornFactionBasicDto>& factionBasics)
 	{
 		auto faction = createShared();

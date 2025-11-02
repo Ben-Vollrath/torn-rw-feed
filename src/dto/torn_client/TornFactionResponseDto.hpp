@@ -4,25 +4,23 @@
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class TornFactionRankDto : public oatpp::DTO {
+class TornFactionRankDto : public oatpp::DTO
+{
 	DTO_INIT(TornFactionRankDto, DTO)
 
-		DTO_FIELD(Int32, level);
+	DTO_FIELD(Int32, level);
 	DTO_FIELD(String, name);
 	DTO_FIELD(Int32, division);
 	DTO_FIELD(Int32, position);
 	DTO_FIELD(Int32, wins);
 };
 
-#include OATPP_CODEGEN_END(DTO)
 
-
-#include OATPP_CODEGEN_BEGIN(DTO)
-
-class TornFactionBasicDto : public oatpp::DTO {
+class TornFactionBasicDto : public oatpp::DTO
+{
 	DTO_INIT(TornFactionBasicDto, DTO)
 
-		DTO_FIELD(Int32, id);
+	DTO_FIELD(Int32, id);
 	DTO_FIELD(String, name);
 	DTO_FIELD(String, tag);
 	DTO_FIELD(String, tag_image);
@@ -37,15 +35,12 @@ class TornFactionBasicDto : public oatpp::DTO {
 	DTO_FIELD(Int32, best_chain);
 };
 
-#include OATPP_CODEGEN_END(DTO)
 
-
-#include OATPP_CODEGEN_BEGIN(DTO)
-
-class TornFactionResponseDto : public oatpp::DTO {
+class TornFactionResponseDto : public oatpp::DTO
+{
 	DTO_INIT(TornFactionResponseDto, DTO)
 
-		DTO_FIELD(Object<TornFactionBasicDto>, basic);
+	DTO_FIELD(Object<TornFactionBasicDto>, basic);
 };
 
 #include OATPP_CODEGEN_END(DTO)

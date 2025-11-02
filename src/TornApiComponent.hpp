@@ -6,11 +6,11 @@
 #include "oatpp-curl/RequestExecutor.hpp"
 
 
-
-class TornApiComponent {
+class TornApiComponent
+{
 public:
-
-	OATPP_CREATE_COMPONENT(std::shared_ptr<TornApiClient>, tornApiClient)([] {
+	OATPP_CREATE_COMPONENT(std::shared_ptr<TornApiClient>, tornApiClient)([]
+	{
 		using namespace oatpp::network;
 		using namespace oatpp::web;
 		using namespace oatpp::parser;
@@ -21,6 +21,5 @@ public:
 		OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
 
 		return TornApiClient::createShared(requestExecutor, objectMapper);
-		}());
-
+	}());
 };

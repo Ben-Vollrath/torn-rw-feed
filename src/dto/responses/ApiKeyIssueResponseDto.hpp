@@ -6,10 +6,11 @@
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class ApiKeyIssueResponseDto : public oatpp::DTO {
+class ApiKeyIssueResponseDto : public oatpp::DTO
+{
 	DTO_INIT(ApiKeyIssueResponseDto, DTO)
 
-		DTO_FIELD(oatpp::Int64, id);
+	DTO_FIELD(oatpp::Int64, id);
 	DTO_FIELD(oatpp::String, prefix);
 
 	// Show the full API key ONCE (never store this)
@@ -17,9 +18,9 @@ class ApiKeyIssueResponseDto : public oatpp::DTO {
 
 	DTO_FIELD(oatpp::Int64, expiresAt, "expires_at");
 
-public:
 	static oatpp::Object<ApiKeyIssueResponseDto>
-		fromIssueResult(const ApiKeyService::IssueResult& res) {
+	fromIssueResult(const ApiKeyService::IssueResult& res)
+	{
 		auto dto = createShared();
 		dto->id = res.id;
 		dto->prefix = res.prefix;

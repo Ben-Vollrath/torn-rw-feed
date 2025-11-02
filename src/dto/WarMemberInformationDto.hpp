@@ -5,10 +5,11 @@
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class WarMemberInformationDto : public oatpp::DTO {
+class WarMemberInformationDto : public oatpp::DTO
+{
 	DTO_INIT(WarMemberInformationDto, DTO)
 
-		DTO_FIELD(Int64, id);
+	DTO_FIELD(Int64, id);
 	DTO_FIELD(Int64, warId, "war_id");
 	DTO_FIELD(String, name);
 	DTO_FIELD(Int32, level);

@@ -5,10 +5,11 @@
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class PurchaseDto : public oatpp::DTO {
+class PurchaseDto : public oatpp::DTO
+{
 	DTO_INIT(PurchaseDto, DTO)
 
-		DTO_FIELD(Int64, id);
+	DTO_FIELD(Int64, id);
 	DTO_FIELD(Int64, factionId, "faction_id");
 	DTO_FIELD(Int64, purchaserId, "purchaser_id");
 	DTO_FIELD(Int64, amount);
