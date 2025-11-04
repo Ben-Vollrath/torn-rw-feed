@@ -3,7 +3,6 @@
 #include "db/ApiKeyDb.hpp"
 #include "db/FactionDb.hpp"
 #include "db/UserDb.hpp"
-#include "db/WarDb.hpp"
 #include "db/WarMemberInformationDb.hpp"
 
 #include "oatpp/core/macro/component.hpp"
@@ -57,14 +56,6 @@ public:
 	{
 		OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
 		return std::make_shared<ApiKeyDb>(dbExecutor);
-	}());
-
-
-	OATPP_CREATE_COMPONENT(std::shared_ptr<WarDb>, warDb)
-	([]
-	{
-		OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
-		return std::make_shared<WarDb>(dbExecutor);
 	}());
 
 	OATPP_CREATE_COMPONENT(std::shared_ptr<WarMemberInformationDb>, warMemberInformationDb)
