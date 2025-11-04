@@ -12,6 +12,8 @@
 
 void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
 {
+    OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
+    mockResponseLoader->setResponsePaths({ userBasicOkFixturePath_ , factionBasicOKFixturePath_});
     /* Call server API */
 /* Call root endpoint of MyController */
     auto response = client->auth("ok");
@@ -37,6 +39,8 @@ void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client,
 
 void AuthControllerTest::testAuthError(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
 {
+    OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
+    mockResponseLoader->setResponsePaths({ errorInactiveKey_ });
     auto response = client->auth("keyError");
 
     OATPP_ASSERT(response->getStatusCode() == 401)
