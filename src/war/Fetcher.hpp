@@ -4,7 +4,6 @@
 #include "oatpp/core/async/Coroutine.hpp"
 #include "service/TornApiService.hpp"
 #include "service/TornApiServiceKeyManaged.hpp"
-#include "service/WarService.hpp"
 
 class Fetcher : public oatpp::async::Coroutine<Fetcher>
 {
