@@ -1,8 +1,8 @@
 {
   "profile": {
-    "id": 1073741824,
+    "id": 123,
     "name": "string",
-    "level": 1073741824,
+    "level": 100,
     "gender": "Male",
     "status": {
       "description": "string",

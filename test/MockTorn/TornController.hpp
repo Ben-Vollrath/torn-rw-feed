@@ -6,38 +6,48 @@
 #include "oatpp/core/macro/component.hpp"
 
 #include OATPP_CODEGEN_BEGIN(ApiController)
-class TornController : public oatpp::web::server::api::ApiController
-{
+
+class TornController : public oatpp::web::server::api::ApiController {
 public:
     TornController(const std::shared_ptr<ObjectMapper>& objectMapper)
-        : oatpp::web::server::api::ApiController(objectMapper)
-    {}
+        : oatpp::web::server::api::ApiController(objectMapper) {}
 
-public:
     static std::shared_ptr<TornController> createShared(
-        OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper)
-    ) {
+        OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper)) {
         return std::make_shared<TornController>(objectMapper);
     }
 
-    ENDPOINT("GET", "/faction/basic", getFactionBasic, QUERY(String, key)) {
-        auto body = loadFile(factionBasicOKFixturePath_);
-        return createResponse(Status::CODE_200, body);
-    }
+    ENDPOINT_ASYNC("GET", "/faction/basic", GetFactionBasic) {
+        ENDPOINT_ASYNC_INIT(GetFactionBasic)
 
-    ENDPOINT("GET", "/user/basic", getUserBasic, QUERY(String, key)) {
-        static const std::unordered_map<std::string, std::string> fixtures = {
-            {"ok", userBasicOkFixturePath_},
-            {"keyError", errorInactiveKey_}
-        };
-
-        auto it = fixtures.find(key);
-        OATPP_ASSERT_HTTP(it != fixtures.end(), Status::CODE_400, "Unknown test key");
-
-        const auto body = loadFile(it->second);
-        return createResponse(Status::CODE_200, body);
-    }
+            Action act() override {
+            auto body = loadFile(factionBasicOKFixturePath_);
+            return _return(controller->createResponse(Status::CODE_200, body));
+        }
+    };
 
 
+    ENDPOINT_ASYNC("GET", "/user/basic", GetUserBasic) {
+        ENDPOINT_ASYNC_INIT(GetUserBasic)
+
+            Action act() override {
+            auto keyOpt = request->getQueryParameter("key");
+            OATPP_ASSERT_HTTP(keyOpt, Status::CODE_400, "Missing 'key' query parameter");
+
+            const std::string key = keyOpt->data();
+
+            static const std::unordered_map<std::string, std::string> fixtures = {
+              {"ok",       userBasicOkFixturePath_},
+              {"keyError", errorInactiveKey_}
+            };
+
+            const auto it = fixtures.find(key);
+            OATPP_ASSERT_HTTP(it != fixtures.end(), Status::CODE_400, "Unknown test key");
+
+            const auto body = loadFile(it->second);
+            return _return(controller->createResponse(Status::CODE_200, body));
+        }
+    };
 };
-#include OATPP_CODEGEN_BEGIN(ApiController)
+
+#include OATPP_CODEGEN_END(ApiController)

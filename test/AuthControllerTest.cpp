@@ -31,7 +31,7 @@ void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client,
     OATPP_ASSERT(message->expiresAt - now >= seconds_in_day)
 
 	auto m_userService = UserService();
-    auto user =m_userService.getById(1073741824);
+    auto user =m_userService.getById(123);
     OATPP_ASSERT(user && user->factionId == 123456 && user->tornKey == "ok")
 }
 
@@ -72,10 +72,19 @@ void AuthControllerTest::onRun() {
         testAuthOk(client, objectMapper);
         testAuthError(client, objectMapper);
 
-        OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionPool>, connectionPool);
-        connectionPool->stop();
 
         }, std::chrono::minutes(10) /* test timeout */);
+
+    OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionPool>, connectionPool);
+    connectionPool->stop();
+
+    OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, serverConnectionHandler);
+    serverConnectionHandler->stop();
+
+    OATPP_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor);
+    asyncExecutor->waitTasksFinished();
+    asyncExecutor->stop();
+    asyncExecutor->join();
 
     /* wait all server threads finished */
     std::this_thread::sleep_for(std::chrono::seconds(1));

@@ -18,9 +18,8 @@ class ApiTestClient : public oatpp::web::client::ApiClient {
 
   API_CALL("GET", "/faction/basic", factionBasic, QUERY(String, key))
 
-	API_CALL("GET", "/auth/{tornKey}", auth, PATH(String, tornKey))
+	API_CALL("GET", "/auth", auth, QUERY(String, torn_key))
 
-  // TODO - add more client API calls here
 
 };
 

@@ -11,72 +11,87 @@
 
 #include "DatabaseComponent.hpp"
 #include "TornApiClient.hpp"
+#include "oatpp/web/server/AsyncHttpConnectionHandler.hpp"
 
 /**
  * Test Components config
  */
-class TestComponent {
+class TestComponent
+{
 public:
+	DatabaseComponent databaseComponent;
 
-    DatabaseComponent databaseComponent;
+	/**
+	 * Create oatpp virtual network interface for test networking
+	 */
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::virtual_::Interface>, virtualInterface)([]
+	{
+		return oatpp::network::virtual_::Interface::obtainShared("virtualhost");
+	}());
 
-  /**
-   * Create oatpp virtual network interface for test networking
-   */
-  OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::virtual_::Interface>, virtualInterface)([] {
-    return oatpp::network::virtual_::Interface::obtainShared("virtualhost");
-  }());
+	/**
+	 * Create server ConnectionProvider of oatpp virtual connections for test
+	 */
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, serverConnectionProvider)([]
+	{
+		OATPP_COMPONENT(std::shared_ptr<oatpp::network::virtual_::Interface>, _interface);
+		return oatpp::network::virtual_::server::ConnectionProvider::createShared(_interface);
+	}());
 
-  /**
-   * Create server ConnectionProvider of oatpp virtual connections for test
-   */
-  OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, serverConnectionProvider)([] {
-    OATPP_COMPONENT(std::shared_ptr<oatpp::network::virtual_::Interface>, _interface);
-    return oatpp::network::virtual_::server::ConnectionProvider::createShared(_interface);
-  }());
+	/**
+	 * Create client ConnectionProvider of oatpp virtual connections for test
+	 */
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider)([]
+	{
+		OATPP_COMPONENT(std::shared_ptr<oatpp::network::virtual_::Interface>, _interface);
+		return oatpp::network::virtual_::client::ConnectionProvider::createShared(_interface);
+	}());
 
-  /**
-   * Create client ConnectionProvider of oatpp virtual connections for test
-   */
-  OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider)([] {
-    OATPP_COMPONENT(std::shared_ptr<oatpp::network::virtual_::Interface>, _interface);
-    return oatpp::network::virtual_::client::ConnectionProvider::createShared(_interface);
-  }());
+	/**
+	 *  Create Router component
+	 */
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, httpRouter)([]
+	{
+		return oatpp::web::server::HttpRouter::createShared();
+	}());
 
-  /**
-   *  Create Router component
-   */
-  OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, httpRouter)([] {
-    return oatpp::web::server::HttpRouter::createShared();
-  }());
+	/**
+	* Create Async Executor to execute Coroutines
+	*/
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor)([] {
+		return std::make_shared<oatpp::async::Executor>(4, 1, 1);
+	}());
 
-  /**
-   *  Create ConnectionHandler component which uses Router component to route requests
-   */
-  OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, serverConnectionHandler)([] {
-    OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router); // get Router component
-    return oatpp::web::server::HttpConnectionHandler::createShared(router);
-  }());
+	/**
+	 *  Create ConnectionHandler component which uses Router component to route requests
+	 */
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, serverConnectionHandler)([] {
+		OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
+		OATPP_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor);
 
-  /**
-   *  Create ObjectMapper component to serialize/deserialize DTOs in Contoller's API
-   */
-  OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, apiObjectMapper)([] {
-    return oatpp::parser::json::mapping::ObjectMapper::createShared();
-  }());
+		return oatpp::web::server::AsyncHttpConnectionHandler::createShared(router, asyncExecutor);
+		}());
+
+	/**
+	 *  Create ObjectMapper component to serialize/deserialize DTOs in Contoller's API
+	 */
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, apiObjectMapper)([]
+	{
+		return oatpp::parser::json::mapping::ObjectMapper::createShared();
+	}());
 
 
-  OATPP_CREATE_COMPONENT(std::shared_ptr<TornApiClient>, tornApiClient)([] {
+	OATPP_CREATE_COMPONENT(std::shared_ptr<TornApiClient>, tornApiClient)([]
+	{
+		/* Get client connection provider for Api Client */
+		OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
 
-      /* Get client connection provider for Api Client */
-      OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
+		/* Get object mapper component */
+		OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
 
-      /* Get object mapper component */
-      OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
+		/* Create http request executor for Api Client */
+		auto requestExecutor = oatpp::web::client::HttpRequestExecutor::createShared(clientConnectionProvider);
 
-      /* Create http request executor for Api Client */
-      auto requestExecutor = oatpp::web::client::HttpRequestExecutor::createShared(clientConnectionProvider);
-
-      return TornApiClient::createShared(requestExecutor, objectMapper);
-      }());
+		return TornApiClient::createShared(requestExecutor, objectMapper);
+	}());
 };
