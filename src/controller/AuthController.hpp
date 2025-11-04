@@ -47,28 +47,33 @@ public:
 
 		oatpp::async::Action act() override
 		{
-			// TODO use async calls here
-			auto tornKey = request->getQueryParameter("torn_key");
-			auto userBasics = controller->m_tornApiService.getUserBasic(tornKey);
-			auto factionBasics = controller->m_tornApiService.getFactionBasic(tornKey);
+			try {
+				// TODO use async calls here
+				auto tornKey = request->getQueryParameter("torn_key");
+				auto userBasics = controller->m_tornApiService.getUserBasic(tornKey);
+				auto factionBasics = controller->m_tornApiService.getFactionBasic(tornKey);
 
-			// Update faction information
-			oatpp::Object<FactionDto> faction = FactionDto::fromFactionResponse(factionBasics->basic);
-			auto createdFaction = controller->m_factionService.upsertById(faction);
-			OATPP_ASSERT_HTTP(createdFaction, Status::CODE_500, "Couldn't upsert faction");
+				// Update faction information
+				oatpp::Object<FactionDto> faction = FactionDto::fromFactionResponse(factionBasics->basic);
+				auto createdFaction = controller->m_factionService.upsertById(faction);
+				OATPP_ASSERT_HTTP(createdFaction, Status::CODE_500, "Couldn't upsert faction");
 
-			// Update User information
-			oatpp::Object<UserDto> newUser = UserDto::createShared();
-			newUser->tornKey = tornKey;
-			newUser->id = userBasics->profile->id;
-			newUser->factionId = factionBasics->basic->id;
-			auto createdUser = controller->m_userService.upsertById(newUser);
-			OATPP_ASSERT_HTTP(createdUser, Status::CODE_500, "Couldn't upsert user");
+				// Update User information
+				oatpp::Object<UserDto> newUser = UserDto::createShared();
+				newUser->tornKey = tornKey;
+				newUser->id = userBasics->profile->id;
+				newUser->factionId = factionBasics->basic->id;
+				auto createdUser = controller->m_userService.upsertById(newUser);
+				OATPP_ASSERT_HTTP(createdUser, Status::CODE_500, "Couldn't upsert user");
 
-			// Issue api key
-			auto key = controller->m_apiKeyService.issueKey(createdUser->id);
-			auto keyResponse = ApiKeyIssueResponseDto::fromIssueResult(key);
-			return _return(controller->createDtoResponse(Status::CODE_200, keyResponse));
+				// Issue api key
+				auto key = controller->m_apiKeyService.issueKey(createdUser->id);
+				auto keyResponse = ApiKeyIssueResponseDto::fromIssueResult(key);
+				return _return(controller->createDtoResponse(Status::CODE_200, keyResponse));
+			} catch (oatpp::web::protocol::http::HttpError& e) {
+				return _return(controller->createResponse(e.getInfo().status, e.getMessage())
+				);
+			}
 		}
 	};
 };
