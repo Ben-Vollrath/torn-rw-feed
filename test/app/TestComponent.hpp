@@ -11,6 +11,7 @@
 
 #include "DatabaseComponent.hpp"
 #include "TornApiClient.hpp"
+#include "MockTorn/MockResponseLoader.hpp"
 #include "oatpp/web/server/AsyncHttpConnectionHandler.hpp"
 
 /**
@@ -93,5 +94,11 @@ public:
 		auto requestExecutor = oatpp::web::client::HttpRequestExecutor::createShared(clientConnectionProvider);
 
 		return TornApiClient::createShared(requestExecutor, objectMapper);
+	}());
+
+
+	OATPP_CREATE_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader)([]
+	{
+		return std::make_shared<MockResponseLoader>();
 	}());
 };
