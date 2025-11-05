@@ -11,7 +11,8 @@
 
 #include "DatabaseComponent.hpp"
 #include "TornApiClient.hpp"
-#include "MockTorn/MockResponseLoader.hpp"
+#include "../TestingFixtures.hpp"
+#include "../MockTorn/MockResponseLoader.hpp"
 #include "oatpp/web/server/AsyncHttpConnectionHandler.hpp"
 
 /**
@@ -100,5 +101,11 @@ public:
 	OATPP_CREATE_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader)([]
 	{
 		return std::make_shared<MockResponseLoader>();
+	}());
+
+
+	OATPP_CREATE_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures)([]
+	{
+			return std::make_shared<TestingFixtures>();
 	}());
 };
