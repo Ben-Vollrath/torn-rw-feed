@@ -47,7 +47,7 @@ add_executable(torn_rw_feed_test
 	test/tests.cpp
  "src/service/ApiKeyService.cpp" "test/AuthControllerTest.cpp" "src/service/TornApiService.cpp" "src/war/Room.cpp" "src/war/Lobby.cpp" "src/war/Peer.cpp" "src/service/TornApiServiceKeyManaged.cpp" "src/service/UserService.cpp" )
 
-add_definitions(-DFIXTURE_BASE="${CMAKE_SOURCE_DIR}/test/MockTorn/fixtures/")
+add_definitions(-DMOCK_RESPONSE_BASE="${CMAKE_SOURCE_DIR}/test/MockTorn/mock_responses/")
 
 target_include_directories(torn_rw_feed_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
 

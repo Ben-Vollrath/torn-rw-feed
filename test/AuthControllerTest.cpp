@@ -82,13 +82,13 @@ void AuthControllerTest::onRun() {
     OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionPool>, connectionPool);
     connectionPool->stop();
 
-    OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, serverConnectionHandler);
-    serverConnectionHandler->stop();
-
     OATPP_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor);
     asyncExecutor->waitTasksFinished();
     asyncExecutor->stop();
     asyncExecutor->join();
+
+    OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
+    testingFixtures->reset();
 
     /* wait all server threads finished */
     std::this_thread::sleep_for(std::chrono::seconds(1));

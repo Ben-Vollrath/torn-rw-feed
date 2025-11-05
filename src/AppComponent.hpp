@@ -37,6 +37,15 @@ public:
 		return oatpp::web::server::HttpRouter::createShared();
 	}());
 
+
+	/**
+	 * Create Async Executor to execute Coroutines
+	 */
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor)([] {
+		return std::make_shared<oatpp::async::Executor>(4, 1, 1);
+	}());
+
+
 	/**
 	*  Create ConnectionHandler component which uses Router component to route requests
 	*/
@@ -56,14 +65,6 @@ public:
 		return oatpp::parser::json::mapping::ObjectMapper::createShared();
 	}());
 
-
-	/**
-	 * Create Async Executor to execute Coroutines
-	 */
-	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor)([]
-	{
-		return std::make_shared<oatpp::async::Executor>(4, 1, 1);
-	}());
 
 
 	/**

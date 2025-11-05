@@ -39,6 +39,6 @@ private:
     }
 };
 
-inline const char* factionBasicOKFixturePath_ = FIXTURE_BASE "/torn_faction_basic_ok.json";
-inline const char* userBasicOkFixturePath_ = FIXTURE_BASE "/torn_user_basic_ok.json";
-inline const char* errorInactiveKey_ = FIXTURE_BASE "/torn_error_incorrect_api_key.json";
+inline const char* factionBasicOKFixturePath_ = MOCK_RESPONSE_BASE "/torn_faction_basic_ok.json";
+inline const char* userBasicOkFixturePath_ = MOCK_RESPONSE_BASE "/torn_user_basic_ok.json";
+inline const char* errorInactiveKey_ = MOCK_RESPONSE_BASE "/torn_error_incorrect_api_key.json";
