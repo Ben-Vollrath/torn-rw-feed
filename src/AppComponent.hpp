@@ -68,15 +68,16 @@ public:
 
 
 	/**
- *  Create websocket connection handler
- */
+	 *  Create websocket connection handler
+	 */
 	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::websocket::AsyncConnectionHandler>, websocketConnectionHandler)(
 		"websocket", []
 		{
-			auto connectionHandler = oatpp::websocket::AsyncConnectionHandler::createShared();
+			OATPP_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor);
+			auto connectionHandler = oatpp::websocket::AsyncConnectionHandler::createShared(asyncExecutor);
 			connectionHandler->setSocketInstanceListener(std::make_shared<Lobby>());
 			return connectionHandler;
-		}());
+	}());
 
 	/**
 	*  Swagger component

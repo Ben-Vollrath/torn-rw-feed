@@ -14,6 +14,7 @@
 #include "../TestingFixtures.hpp"
 #include "../MockTorn/MockResponseLoader.hpp"
 #include "oatpp/web/server/AsyncHttpConnectionHandler.hpp"
+#include "war/Lobby.hpp"
 
 /**
  * Test Components config
@@ -60,19 +61,21 @@ public:
 	/**
 	* Create Async Executor to execute Coroutines
 	*/
-	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor)([] {
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor)([]
+	{
 		return std::make_shared<oatpp::async::Executor>(4, 1, 1);
 	}());
 
 	/**
 	 *  Create ConnectionHandler component which uses Router component to route requests
 	 */
-	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, serverConnectionHandler)([] {
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, serverConnectionHandler)([]
+	{
 		OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 		OATPP_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor);
 
 		return oatpp::web::server::AsyncHttpConnectionHandler::createShared(router, asyncExecutor);
-		}());
+	}());
 
 	/**
 	 *  Create ObjectMapper component to serialize/deserialize DTOs in Contoller's API
@@ -98,6 +101,19 @@ public:
 	}());
 
 
+	/**
+	 *  Create websocket connection handler
+	 */
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::websocket::AsyncConnectionHandler>, websocketConnectionHandler)(
+		"websocket", []
+		{
+			OATPP_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor);
+			auto connectionHandler = oatpp::websocket::AsyncConnectionHandler::createShared(asyncExecutor);
+			connectionHandler->setSocketInstanceListener(std::make_shared<Lobby>());
+			return connectionHandler;
+		}());
+
+
 	OATPP_CREATE_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader)([]
 	{
 		return std::make_shared<MockResponseLoader>();
@@ -106,6 +122,6 @@ public:
 
 	OATPP_CREATE_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures)([]
 	{
-			return std::make_shared<TestingFixtures>();
+		return std::make_shared<TestingFixtures>();
 	}());
 };

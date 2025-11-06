@@ -1,4 +1,3 @@
-
 #ifndef MyApiTestClient_hpp
 #define MyApiTestClient_hpp
 
@@ -12,15 +11,12 @@
  * Test API client.
  * Use this client to call application APIs.
  */
-class ApiTestClient : public oatpp::web::client::ApiClient {
-
-  API_CLIENT_INIT(ApiTestClient)
-
-  API_CALL("GET", "/faction/basic", factionBasic, QUERY(String, key))
+class ApiTestClient : public oatpp::web::client::ApiClient
+{
+	API_CLIENT_INIT(ApiTestClient)
 
 	API_CALL("GET", "/auth", auth, QUERY(String, torn_key))
-
-
+	API_CALL("GET", "/wars/socket", war)
 };
 
 /* End Api Client code generation */

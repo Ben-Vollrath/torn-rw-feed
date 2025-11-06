@@ -5,13 +5,17 @@
 #include "app/MyApiTestClient.hpp"
 #include "oatpp-test/UnitTest.hpp"
 
-class AuthControllerTest : public oatpp::test::UnitTest {
-private:
-	void testAuthOk(std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
-	void testAuthError(std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
+class AuthControllerTest : public oatpp::test::UnitTest
+{
+	void testAuthOk(std::shared_ptr<ApiTestClient> client,
+	                std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
+	void testAuthError(std::shared_ptr<ApiTestClient> client,
+	                   std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
+
 public:
+	AuthControllerTest() : UnitTest("TEST[AuthControllerTest]")
+	{
+	}
 
-	AuthControllerTest() : UnitTest("TEST[AuthControllerTest]") {}
 	void onRun() override;
-
 };

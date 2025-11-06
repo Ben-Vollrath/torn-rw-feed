@@ -6,39 +6,42 @@
 
 class MockResponseLoader
 {
-private:
-    std::vector<std::string> responsePaths;
-    std::int8_t index = 0;
+	std::vector<std::string> responsePaths;
+	std::int8_t index = 0;
 
 public:
-    void setResponsePaths(const std::vector<std::string>& paths)
-    {
-        responsePaths = paths;
-        index = 0;
-    }
+	void setResponsePaths(const std::vector<std::string>& paths)
+	{
+		responsePaths = paths;
+		index = 0;
+	}
 
-    std::string getNextResponse()
-    {
-        if (index >= responsePaths.size())
-        {
-            throw std::runtime_error("Not enough responses configured.");
-        }
-        auto response = loadFile(responsePaths[index]);
-        index++;
+	std::string getNextResponse()
+	{
+		if (index >= responsePaths.size())
+		{
+			throw std::runtime_error("Not enough responses configured.");
+		}
+		auto response = loadFile(responsePaths[index]);
+		index++;
 
-        return response;
-    }
+		return response;
+	}
 
 private:
-
-    static std::string loadFile(const std::string& path) {
-        std::ifstream f(path);
-        if (!f) throw std::runtime_error("Cannot open fixture: " + path);
-        std::ostringstream ss; ss << f.rdbuf();
-        return ss.str();
-    }
+	static std::string loadFile(const std::string& path)
+	{
+		std::ifstream f(path);
+		if (!f) throw std::runtime_error("Cannot open fixture: " + path);
+		std::ostringstream ss;
+		ss << f.rdbuf();
+		return ss.str();
+	}
 };
 
-inline const char* factionBasicOKFixturePath_ = MOCK_RESPONSE_BASE "/torn_faction_basic_ok.json";
-inline const char* userBasicOkFixturePath_ = MOCK_RESPONSE_BASE "/torn_user_basic_ok.json";
-inline const char* errorInactiveKey_ = MOCK_RESPONSE_BASE "/torn_error_incorrect_api_key.json";
+inline auto factionBasicOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_basic_ok.json";
+inline auto factionMembersOfflineOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_members_offline_ok.json";
+inline auto factionMembersOneOnlineOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_members_one_online_ok.json";
+inline auto factionWarOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_war_ok.json";
+inline auto userBasicOkPath_ = MOCK_RESPONSE_BASE "/torn_user_basic_ok.json";
+inline auto errorInactiveKey_ = MOCK_RESPONSE_BASE "/torn_error_incorrect_api_key.json";

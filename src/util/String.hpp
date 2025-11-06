@@ -1,11 +1,10 @@
 #pragma once
 
-#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
 
-std::vector<std::string> split(const std::string& target, char c)
+inline std::vector<std::string> split(const std::string& target, char c)
 {
 	std::string temp;
 	std::stringstream stringstream{target};

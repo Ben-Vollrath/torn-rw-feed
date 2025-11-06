@@ -1,0 +1,52 @@
+{
+  "members": [
+    {
+      "id": 1,
+      "name": "Test1",
+      "level": 87,
+      "days_in_faction": 687,
+      "last_action": {
+        "status": "Online",
+        "timestamp": 0,
+        "relative": "28 minutes ago"
+      },
+      "status": {
+        "description": "Okay",
+        "details": null,
+        "state": "Okay",
+        "color": "green",
+        "until": null
+      },
+      "revive_setting": "Unknown",
+      "position": "Member",
+      "is_revivable": false,
+      "is_on_wall": false,
+      "is_in_oc": false,
+      "has_early_discharge": false
+    },
+    {
+      "id": 2,
+      "name": "Test2",
+      "level": 73,
+      "days_in_faction": 408,
+      "last_action": {
+        "status": "Offline",
+        "timestamp": 0,
+        "relative": "22 minutes ago"
+      },
+      "status": {
+        "description": "Okay",
+        "details": null,
+        "state": "Okay",
+        "color": "green",
+        "until": null
+      },
+      "revive_setting": "Unknown",
+      "position": "Member",
+      "is_revivable": false,
+      "is_on_wall": false,
+      "is_in_oc": false,
+      "has_early_discharge": false
+    }
+  ]
+}

@@ -7,34 +7,63 @@
 
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
-class TornController : public oatpp::web::server::api::ApiController {
+class TornController : public oatpp::web::server::api::ApiController
+{
 public:
-    TornController(const std::shared_ptr<ObjectMapper>& objectMapper)
-        : oatpp::web::server::api::ApiController(objectMapper) {}
+	TornController(const std::shared_ptr<ObjectMapper>& objectMapper)
+		: ApiController(objectMapper)
+	{
+	}
 
-    static std::shared_ptr<TornController> createShared(
-        OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper)) {
-        return std::make_shared<TornController>(objectMapper);
-    }
+	static std::shared_ptr<TornController> createShared(
+		OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper))
+	{
+		return std::make_shared<TornController>(objectMapper);
+	}
 
-    ENDPOINT_ASYNC("GET", "/faction/basic", GetFactionBasic) {
-        ENDPOINT_ASYNC_INIT(GetFactionBasic)
+	ENDPOINT_ASYNC("GET", "/user/basic", GetUserBasic)
+	{
+		ENDPOINT_ASYNC_INIT(GetUserBasic)
 
-            Action act() override {
-            OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-            return _return(controller->createResponse(Status::CODE_200, mockResponseLoader->getNextResponse()));
-        }
-    };
+		Action act() override
+		{
+			OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
+			return _return(controller->createResponse(Status::CODE_200, mockResponseLoader->getNextResponse()));
+		}
+	};
 
+	ENDPOINT_ASYNC("GET", "/faction/basic", GetFactionBasic)
+	{
+		ENDPOINT_ASYNC_INIT(GetFactionBasic)
 
-    ENDPOINT_ASYNC("GET", "/user/basic", GetUserBasic) {
-        ENDPOINT_ASYNC_INIT(GetUserBasic)
+		Action act() override
+		{
+			OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
+			return _return(controller->createResponse(Status::CODE_200, mockResponseLoader->getNextResponse()));
+		}
+	};
 
-            Action act() override {
-            OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-            return _return(controller->createResponse(Status::CODE_200, mockResponseLoader->getNextResponse()));
-        }
-    };
+	ENDPOINT_ASYNC("GET", "/faction/wars", GetFactionWars)
+	{
+		ENDPOINT_ASYNC_INIT(GetFactionWars)
+
+		Action act() override
+		{
+			OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
+			return _return(controller->createResponse(Status::CODE_200, mockResponseLoader->getNextResponse()));
+		}
+	};
+
+	ENDPOINT_ASYNC("GET", "/faction/{factionId}/members", GetFactionMembers)
+	{
+		ENDPOINT_ASYNC_INIT(GetFactionMembers)
+
+		Action act() override
+		{
+			OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
+			return _return(controller->createResponse(Status::CODE_200, mockResponseLoader->getNextResponse()));
+		}
+	};
 };
 
 #include OATPP_CODEGEN_END(ApiController)
