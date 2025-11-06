@@ -33,6 +33,21 @@ public:
 
 	const std::shared_ptr<AuthHandler>& authHandler() const { return m_authHandler; }
 
+	ENDPOINT_INFO(WS) {
+		info->summary = "Connects to the War WebSocket";
+		info->description = "This endpoint upgrades the connection to a WebSocket. "
+			"The client must provide a valid `Authorization` header (Bearer token) "
+			"to authenticate before the upgrade.";
+
+		info->addResponse<String>(Status::CODE_101, "text/plain", "WebSocket upgrade");
+
+		auto& authHeader = info->headers.add<oatpp::String>(oatpp::web::protocol::http::Header::AUTHORIZATION);
+		authHeader.description = "Bearer token for authentication";
+		authHeader.required = true;
+
+		info->addTag("WebSocket");
+	}
+
 	ENDPOINT_ASYNC("GET", "/wars/socket", WS)
 	{
 		ENDPOINT_ASYNC_INIT(WS)
