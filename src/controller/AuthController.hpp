@@ -41,9 +41,19 @@ public:
 		return std::make_shared<AuthController>(objectMapper);
 	}
 
-	ENDPOINT_ASYNC("GET", "/auth", loginUser)
+	ENDPOINT_INFO(authorizeUser)
 	{
-		ENDPOINT_ASYNC_INIT(loginUser);
+		info->summary = "Authorizes the user and returns API Key";
+
+		info->queryParams.add<oatpp::String>("torn_key");
+
+		info->addResponse<Object<ApiKeyIssueResponseDto>>(Status::CODE_200, "application/json");
+
+		info->addTag("Auth");
+	}
+	ENDPOINT_ASYNC("GET", "/auth", authorizeUser)
+	{
+		ENDPOINT_ASYNC_INIT(authorizeUser);
 
 		oatpp::async::Action act() override
 		{
