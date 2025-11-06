@@ -43,7 +43,6 @@ public:
 
 			auto baseObj = controller->authHandler()->authorize(authHeader);
 			auto authObj = std::dynamic_pointer_cast<AuthObject>(baseObj);
-			OATPP_ASSERT_HTTP(authObj->factionId, Status::CODE_401, "Not Authenticated");
 
 			/* Websocket handshake */
 			auto response = oatpp::websocket::Handshaker::serversideHandshake(request->getHeaders(),
