@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: torn
+          POSTGRES_PASSWORD: tornpass
+          POSTGRES_DB: torn_rw_feed
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U torn -d torn_rw_feed"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      # For waiting with psql
+      PGPASSWORD: tornpass
+      PGHOST: 127.0.0.1
+      PGUSER: torn
+      PGDATABASE: torn_rw_feed
+      PGPORT: 5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build g++ cmake pkg-config postgresql-client
+
+      - name: Setup vcpkg (with cache)
+        uses: microsoft/setup-vcpkg@v1
+        with:
+          runVcpkgInstall: true
+
+      - name: Wait for PostgreSQL
+        run: |
+          for i in {1..60}; do
+            if psql -c "select 1;" >/dev/null 2>&1; then
+              echo "Postgres is ready"
+              break
+            fi
+            echo "Waiting for Postgres..."
+            sleep 2
+          done
+          psql -c "select version();"
+
+
+      - name: Configure (CMake preset)
+        run: cmake --preset ci-ninja
+
+      - name: Build
+        run: cmake --build build --config Release -j 2
+
+      - name: Run tests
+        run: ctest --test-dir build --output-on-failure

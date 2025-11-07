@@ -62,4 +62,4 @@ target_link_libraries(torn_rw_feed_test PRIVATE
 )
 
 enable_testing()
-add_test(NAME TornTests COMMAND torn_rw_feed_tests)
+add_test(NAME TornTests COMMAND torn_rw_feed_test)

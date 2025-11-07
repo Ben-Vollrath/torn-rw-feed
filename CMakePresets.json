@@ -25,6 +25,28 @@
           "configurationProvider": "CMakePresets"
         }
       }
+    },
+    {
+      "name": "ci-ninja",
+      "displayName": "CI (Ninja, GCC)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "VCPKG_TARGET_TRIPLET": "x64-linux",
+        "VCPKG_FEATURE_FLAGS": "manifests",
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_STANDARD": "17"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "hostOS": [ "Linux" ],
+          "intelliSenseMode": "linux-gcc-x64",
+          "compilerPath": "/usr/bin/g++",
+          "cppStandard": "gnu++17",
+          "configurationProvider": "CMakePresets"
+        }
+      }
     }
   ]
 }
