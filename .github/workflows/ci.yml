@@ -34,7 +34,7 @@ jobs:
       - name: Install system deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build mono-complete postgresql-client
+          sudo apt-get install -y ninja-build mono-complete
 
       # Install CMake & Ninja
       - name: Install CMake and Ninja
