@@ -48,6 +48,6 @@ jobs:
       - name: Configure/Build/Test with run-cmake
         uses: lukka/run-cmake@v10
         with:
-          configurePreset: 'ci-ninja'
-          buildPreset: 'ci-ninja'
-          testPreset: 'ci-ninja'
+            configurePreset: 'ninja-multi'
+            buildPreset: 'build-release'
+            testPreset: 'test-release'
