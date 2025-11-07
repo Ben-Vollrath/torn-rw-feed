@@ -48,9 +48,12 @@ jobs:
 
       - name: Configure vcpkg binary cache (NuGet on GitHub Packages)
         run: |
-          echo "VCPKG_BINARY_SOURCES=clear;nuget,https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json,readwrite" >> $GITHUB_ENV
-          echo "NUGET_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
-          echo "VCPKG_FEATURE_FLAGS=manifests" >> $GITHUB_ENV
+            echo "VCPKG_NUGET_REPOSITORY=https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json" >> $GITHUB_ENV
+            echo "VCPKG_BINARY_SOURCES=clear;nuget,GitHub,readwrite" >> $GITHUB_ENV
+
+            echo "NUGET_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+            echo "VCPKG_NUGET_USER=${{ github.actor }}" >> $GITHUB_ENV
+            echo "VCPKG_NUGET_PASSWORD=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
 
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
