@@ -1,7 +1,6 @@
 ﻿name: CI
 
 on:
-  push:
   pull_request:
 
 jobs:
@@ -24,12 +23,7 @@ jobs:
           --health-retries=20
 
     env:
-      # For psql wait step:
-      PGHOST: 127.0.0.1
-      PGPORT: 5432
-      PGUSER: torn
-      PGPASSWORD: tornpass
-      PGDATABASE: torn_rw_feed
+      DATABASE_URL: postgresql://torn:tornpass@127.0.0.1:5432/torn_rw_feed
 
     steps:
       - uses: actions/checkout@v4
