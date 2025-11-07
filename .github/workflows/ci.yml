@@ -35,15 +35,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install build tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build g++ cmake pkg-config postgresql-client
+      - uses: lukka/get-cmake@latest
 
-      - name: Setup vcpkg (with cache)
-        uses: microsoft/setup-vcpkg@v1
+      - name: Restore from cache and setup vcpkg executable and data files.
+        uses: lukka/run-vcpkg@v11
         with:
-          runVcpkgInstall: true
+          vcpkgJsonGlob: 'vcpkg.json'
 
       - name: Wait for PostgreSQL
         run: |
