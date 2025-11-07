@@ -53,19 +53,34 @@ jobs:
         shell: pwsh
         run: ${{ github.workspace }}/vcpkg/bootstrap-vcpkg.sh
 
-      - name: Add NuGet sources
-        shell: pwsh
+      - name: Add NuGet sources via vcpkg-acquired nuget.exe (Linux)
+        shell: bash
         run: |
-            .$(${{ env.VCPKG_EXE }} fetch nuget) `
-                sources add `
-                -Source "${{ env.FEED_URL }}" `
-                -StorePasswordInClearText `
-                -Name GitHubPackages `
-                -UserName "${{ env.USERNAME }}" `
+            set -euo pipefail
+
+            # Get nuget.exe that vcpkg downloaded
+            NUGET_EXE="$(${VCPKG_EXE} fetch nuget)"
+            echo "Using nuget.exe at: ${NUGET_EXE}"
+            ls -l "${NUGET_EXE}"
+
+            # (Optional) show nuget version to confirm mono runs it
+            mono "${NUGET_EXE}" help | head -n 5 || true
+
+            # Clean and add source with GITHUB_TOKEN
+            mono "${NUGET_EXE}" sources remove -Name GitHubPackages || true
+            mono "${NUGET_EXE}" sources add \
+                -Source "${FEED_URL}" \
+                -StorePasswordInClearText \
+                -Name GitHubPackages \
+                -UserName "${USERNAME}" \
                 -Password "${{ secrets.GITHUB_TOKEN }}"
-            .$(${{ env.VCPKG_EXE }} fetch nuget) `
-                setapikey "${{ secrets.GITHUB_TOKEN }}" `
-                -Source "${{ env.FEED_URL }}"
+
+            # Set API key for push/restore
+            mono "${NUGET_EXE}" setapikey "${{ secrets.GITHUB_TOKEN }}" -Source "${FEED_URL}"
+
+            # Verify
+            mono "${NUGET_EXE}" sources list -Format Detailed
+
 
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
