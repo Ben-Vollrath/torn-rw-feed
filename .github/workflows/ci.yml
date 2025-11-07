@@ -58,22 +58,30 @@ jobs:
         run: |
             set -euo pipefail
 
-            # Get nuget.exe that vcpkg downloaded
-            NUGET_EXE="$(${VCPKG_EXE} fetch nuget)"
+            # Get only the path to nuget.exe from the fetch output (last line)
+            RAW="$(${VCPKG_EXE} fetch nuget | tr -d '\r')"
+            echo "fetch nuget raw output:"
+            echo "${RAW}"
+
+            NUGET_EXE="$(printf '%s\n' "${RAW}" | grep -E '/nuget\.exe$' | tail -n1)"
+            if [ -z "${NUGET_EXE:-}" ] || [ ! -f "${NUGET_EXE}" ]; then
+              echo "Failed to resolve nuget.exe path from 'vcpkg fetch nuget' output."
+              exit 1
+            fi
             echo "Using nuget.exe at: ${NUGET_EXE}"
             ls -l "${NUGET_EXE}"
 
-            # (Optional) show nuget version to confirm mono runs it
+            # Run nuget.exe under mono
             mono "${NUGET_EXE}" help | head -n 5 || true
 
             # Clean and add source with GITHUB_TOKEN
             mono "${NUGET_EXE}" sources remove -Name GitHubPackages || true
             mono "${NUGET_EXE}" sources add \
-                -Source "${FEED_URL}" \
-                -StorePasswordInClearText \
-                -Name GitHubPackages \
-                -UserName "${USERNAME}" \
-                -Password "${{ secrets.GITHUB_TOKEN }}"
+              -Source "${FEED_URL}" \
+              -StorePasswordInClearText \
+              -Name GitHubPackages \
+              -UserName "${USERNAME}" \
+              -Password "${{ secrets.GITHUB_TOKEN }}"
 
             # Set API key for push/restore
             mono "${NUGET_EXE}" setapikey "${{ secrets.GITHUB_TOKEN }}" -Source "${FEED_URL}"
