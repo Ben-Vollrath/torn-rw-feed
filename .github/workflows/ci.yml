@@ -45,18 +45,6 @@ jobs:
         with:
           vcpkgJsonGlob: 'vcpkg.json'
 
-
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          for i in {1..60}; do
-            if psql -c "select 1;" >/dev/null 2>&1; then
-              echo "Postgres is ready."
-              break
-            fi
-            echo "Waiting for Postgres..."
-            sleep 2
-          done
-          psql -c "select version();"
       - name: Configure/Build/Test with run-cmake
         uses: lukka/run-cmake@v10
         with:
