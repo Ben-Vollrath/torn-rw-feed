@@ -31,6 +31,11 @@ jobs:
         with:
           submodules: true
 
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build mono-complete postgresql-client
+
       # Install CMake & Ninja
       - name: Install CMake and Ninja
         uses: lukka/get-cmake@latest
