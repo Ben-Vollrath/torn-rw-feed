@@ -45,5 +45,6 @@
 
 # Build Tools
 build/
+builds/
 out/
 CMakeUserPresets.json

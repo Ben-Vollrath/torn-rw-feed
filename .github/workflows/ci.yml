@@ -1,4 +1,4 @@
-name: CI
+﻿name: CI
 
 on:
   push:
@@ -24,42 +24,42 @@ jobs:
           --health-retries=20
 
     env:
-      # For waiting with psql
-      PGPASSWORD: tornpass
+      # For psql wait step:
       PGHOST: 127.0.0.1
-      PGUSER: torn
-      PGDATABASE: torn_rw_feed
       PGPORT: 5432
+      PGUSER: torn
+      PGPASSWORD: tornpass
+      PGDATABASE: torn_rw_feed
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
 
-      - uses: lukka/get-cmake@latest
+      # Install CMake & Ninja
+      - name: Install CMake and Ninja
+        uses: lukka/get-cmake@latest
 
-      - name: Restore from cache and setup vcpkg executable and data files.
+      - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
           vcpkgJsonGlob: 'vcpkg.json'
 
-      - name: Wait for PostgreSQL
+
+      - name: Wait for PostgreSQL to be ready
         run: |
           for i in {1..60}; do
             if psql -c "select 1;" >/dev/null 2>&1; then
-              echo "Postgres is ready"
+              echo "Postgres is ready."
               break
             fi
             echo "Waiting for Postgres..."
             sleep 2
           done
           psql -c "select version();"
-
-
-      - name: Configure (CMake preset)
-        run: cmake --preset ci-ninja
-
-      - name: Build
-        run: cmake --build build --config Release -j 2
-
-      - name: Run tests
-        run: ctest --test-dir build --output-on-failure
+      - name: Configure/Build/Test with run-cmake
+        uses: lukka/run-cmake@v10
+        with:
+          configurePreset: 'ci-ninja'
+          buildPreset: 'ci-ninja'
+          testPreset: 'ci-ninja'
