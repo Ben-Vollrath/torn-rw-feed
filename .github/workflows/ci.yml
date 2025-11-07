@@ -1,16 +1,17 @@
 ﻿name: CI
 
+
 on:
   push:
   pull_request:
 
-permissions:
-  contents: read
-  packages: write
-
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
 
     services:
       postgres:
@@ -29,7 +30,10 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://torn:tornpass@127.0.0.1:5432/torn_rw_feed
+      USERNAME: Ben-Vollrath
       VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
+      FEED_URL: https://nuget.pkg.github.com/Ben-Vollrath/index.json
+      VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/Ben-Vollrath/index.json,readwrite"
 
     steps:
       - uses: actions/checkout@v4
@@ -39,55 +43,38 @@ jobs:
       - name: Install system deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build mono-complete ca-certificates
-          cert-sync /etc/ssl/certs/ca-certificates.crt || true
+          sudo apt-get install -y ninja-build mono-complete
 
-
+      # Install CMake & Ninja
       - name: Install CMake and Ninja
         uses: lukka/get-cmake@latest
 
       - name: Bootstrap vcpkg
-        shell: bash
-        run: |
-          chmod +x $GITHUB_WORKSPACE/vcpkg/bootstrap-vcpkg.sh
-          $GITHUB_WORKSPACE/vcpkg/bootstrap-vcpkg.sh
+        shell: pwsh
+        run: ${{ github.workspace }}/vcpkg/bootstrap-vcpkg.bat
 
-      - name: Set vcpkg/NuGet env
-        shell: bash
+      - name: Add NuGet sources
+        shell: pwsh
         run: |
-          OWNER_LOWER="$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')"
-          echo "USERNAME=$OWNER_LOWER" >> $GITHUB_ENV
-          echo "FEED_URL=https://nuget.pkg.github.com/${OWNER_LOWER}/index.json" >> $GITHUB_ENV
-          echo 'VCPKG_BINARY_SOURCES=clear;nuget,https://nuget.pkg.github.com/'"$OWNER_LOWER"'/index.json,readwrite' >> $GITHUB_ENV
-
-      - name: Add NuGet sources via vcpkg-acquired nuget.exe
-        shell: bash
-        run: |
-          NUGET_EXE="$(${{ env.VCPKG_EXE }} fetch nuget)"
-          echo "Using nuget.exe at: ${NUGET_EXE}"
-          mono "${NUGET_EXE}" sources remove -Name GitHubPackages || true
-          mono "${NUGET_EXE}" sources add \
-            -Source "${{ env.FEED_URL }}" \
-            -StorePasswordInClearText \
-            -Name GitHubPackages \
-            -UserName "${{ env.USERNAME }}" \
-            -Password "${{ secrets.GITHUB_TOKEN }}"
-          mono "${NUGET_EXE}" setapikey "${{ secrets.GITHUB_TOKEN }}" -Source "${{ env.FEED_URL }}"
-          mono "${NUGET_EXE}" sources list -Format Detailed
-
-      - name: Print env (vcpkg/nuget)
-        run: |
-          env | sort | egrep 'VCPKG_|FEED_URL|USERNAME|GITHUB_|OWNER|NUGET' || true
+            .$(${{ env.VCPKG_EXE }} fetch nuget) `
+                sources add `
+                -Source "${{ env.FEED_URL }}" `
+                -StorePasswordInClearText `
+                -Name GitHubPackages `
+                -UserName "${{ env.USERNAME }}" `
+                -Password "${{ secrets.GITHUB_TOKEN }}"
+            .$(${{ env.VCPKG_EXE }} fetch nuget) `
+                setapikey "${{ secrets.GITHUB_TOKEN }}" `
+                -Source "${{ env.FEED_URL }}"
 
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
           vcpkgJsonGlob: 'vcpkg.json'
-          vcpkgArguments: '--debug'
 
       - name: Configure/Build/Test with run-cmake
         uses: lukka/run-cmake@v10
         with:
-          configurePreset: 'ninja-multi'
-          buildPreset: 'build-release'
-          testPreset: 'test-release'
+            configurePreset: 'ninja-multi'
+            buildPreset: 'build-release'
+            testPreset: 'test-release'
