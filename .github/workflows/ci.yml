@@ -1,8 +1,5 @@
 ﻿name: CI
 
-permissions:
-  contents: read
-  packages: write
 
 on:
   push:
@@ -11,6 +8,10 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
 
     services:
       postgres:
