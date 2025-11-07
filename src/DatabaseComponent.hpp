@@ -1,9 +1,10 @@
 #pragma once
 
+#include <string>
+
 #include "db/ApiKeyDb.hpp"
 #include "db/FactionDb.hpp"
 #include "db/UserDb.hpp"
-#include "db/WarMemberInformationDb.hpp"
 
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp-postgresql/orm.hpp"
@@ -11,12 +12,22 @@
 class DatabaseComponent
 {
 public:
+
+	static std::string getenv_or(const char* key, const char* defv) {
+		if (const char* v = std::getenv(key); v && *v) return std::string(v);
+		return std::string(defv);
+	}
+
 	// Provider (backend-specific) toggles between sqlite and postgre depending on environment
-	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionProvider>, connectionProvider)([]
-	{
-		return std::make_shared<oatpp::postgresql::ConnectionProvider>(
-			"postgresql://torn:tornpass@192.168.0.117:5432/torn_rw_feed");
-	}());
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionProvider>, connectionProvider)([] {
+		const char* envUrl = std::getenv("DATABASE_URL");
+
+		const std::string dbUrl = envUrl && *envUrl
+			? envUrl
+			: "postgresql://torn:tornpass@192.168.0.117:5432/torn_rw_feed"; // local fallback
+
+		return std::make_shared<oatpp::postgresql::ConnectionProvider>(dbUrl.c_str());
+		}());
 
 
 	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionPool>, connectionPool)
@@ -58,10 +69,4 @@ public:
 		return std::make_shared<ApiKeyDb>(dbExecutor);
 	}());
 
-	OATPP_CREATE_COMPONENT(std::shared_ptr<WarMemberInformationDb>, warMemberInformationDb)
-	([]
-	{
-		OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
-		return std::make_shared<WarMemberInformationDb>(dbExecutor);
-	}());
 };

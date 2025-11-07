@@ -4,3 +4,6 @@
 [submodule "libs/oatpp-swagger"]
 	path = libs/oatpp-swagger
 	url = https://github.com/oatpp/oatpp-swagger.git
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/microsoft/vcpkg.git

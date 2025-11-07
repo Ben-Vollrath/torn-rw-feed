@@ -1,30 +1,49 @@
 {
-  "version": 5,
+  "version": 8,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+
   "configurePresets": [
     {
-      "name": "wsl-ninja",
-      "displayName": "WSL (Ninja, GCC)",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build",
-      "environment": {
-        "WSLENV": "VCPKG_ROOT/p"
-      },
+      "name": "ninja-multi",
+      "displayName": "Ninja Multi-Config + vcpkg",
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/builds/${presetName}",
+      "toolchainFile": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
       "cacheVariables": {
-        "CMAKE_TOOLCHAIN_FILE": "/home/ben/vcpkg/scripts/buildsystems/vcpkg.cmake",
-        "VCPKG_TARGET_TRIPLET": "x64-linux",
-        "VCPKG_FEATURE_FLAGS": "manifests",
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_CXX_STANDARD": "17"
-      },
-      "vendor": {
-        "microsoft.com/VisualStudioSettings/CMake/1.0": {
-          "hostOS": [ "Linux" ],
-          "intelliSenseMode": "linux-gcc-x64",
-          "compilerPath": "/usr/bin/g++",
-          "cppStandard": "gnu++17",
-          "configurationProvider": "CMakePresets"
-        }
+        "VCPKG_TARGET_TRIPLET": "x64-linux"
       }
+    }
+  ],
+
+  "buildPresets": [
+    {
+      "name": "build-debug",
+      "configurePreset": "ninja-multi",
+      "configuration": "Debug"
+    },
+    {
+      "name": "build-release",
+      "configurePreset": "ninja-multi",
+      "configuration": "Release"
+    }
+  ],
+
+  "testPresets": [
+    {
+      "name": "test-debug",
+      "configurePreset": "ninja-multi",
+      "configuration": "Debug",
+      "output": { "outputOnFailure": true }
+    },
+    {
+      "name": "test-release",
+      "configurePreset": "ninja-multi",
+      "configuration": "Release",
+      "output": { "outputOnFailure": true }
     }
   ]
 }
