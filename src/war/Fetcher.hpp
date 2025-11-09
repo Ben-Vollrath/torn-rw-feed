@@ -50,17 +50,14 @@ public:
 
 
 		count++;
-
-		using namespace std::chrono;
-		auto now = duration_cast<microseconds>(seconds(std::time(nullptr)));
-		return oatpp::async::Action::createWaitRepeatAction(now.count() + m_interval.count());
+		return scheduleNextTick();
 	}
 
 	Action onFactionIdUpdate(const std::optional<std::int64_t>& enemyFactionId)
 	{
 		m_enemyFactionId = enemyFactionId;
 		count = 0;
-		return yieldTo(&Fetcher::act);
+		return scheduleNextTick();
 	}
 
 	Action onMemberUpdate(const std::vector<FactionMemberInfo>& memberInfo)
@@ -73,6 +70,13 @@ public:
 		}
 
 		room->updateMembers(memberInfo);
-		return yieldTo(&Fetcher::act);
+		return scheduleNextTick();
+	}
+
+	Action scheduleNextTick() {
+		using namespace std::chrono;
+		auto now = duration_cast<microseconds>(seconds(std::time(nullptr)));
+		++count;
+		return oatpp::async::Action::createWaitRepeatAction(now.count() + m_interval.count());
 	}
 };
