@@ -71,7 +71,8 @@ void Room::updateMembers(const std::vector<FactionMemberInfo> memberInfos)
 		}
 	}
 
-	if (!updates.empty()) {
+	if (!updates.empty())
+	{
 		oatpp::String updateJson = objectMapper->writeToString(FactionMemberInfoResponseDto::fromInfoList(updates));
 		sendMessage(updateJson->c_str());
 	}
