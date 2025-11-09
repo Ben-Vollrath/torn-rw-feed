@@ -33,7 +33,8 @@ public:
 
 	const std::shared_ptr<AuthHandler>& authHandler() const { return m_authHandler; }
 
-	ENDPOINT_INFO(WS) {
+	ENDPOINT_INFO(WS)
+	{
 		info->summary = "Connects to the War WebSocket";
 		info->description = "This endpoint upgrades the connection to a WebSocket. "
 			"The client must provide a valid `Authorization` header (Bearer token) "

@@ -14,7 +14,7 @@ void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client,
                                     std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
 {
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-	mockResponseLoader->setResponsePaths({userBasicOkPath_, factionBasicOKPath_});
+	mockResponseLoader->setResponsePaths({ factionBasicOKPath_, userBasicOkPath_});
 	/* Call server API */
 	/* Call root endpoint of MyController */
 	auto response = client->auth("ok");

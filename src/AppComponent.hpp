@@ -41,7 +41,8 @@ public:
 	/**
 	 * Create Async Executor to execute Coroutines
 	 */
-	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor)([] {
+	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor)([]
+	{
 		return std::make_shared<oatpp::async::Executor>(4, 1, 1);
 	}());
 
@@ -51,7 +52,7 @@ public:
 	*/
 	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, serverConnectionHandler)([]
 	{
-		OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router); 
+		OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 		OATPP_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor);
 		return oatpp::web::server::AsyncHttpConnectionHandler::createShared(router, asyncExecutor);
 	}());
@@ -66,7 +67,6 @@ public:
 	}());
 
 
-
 	/**
 	 *  Create websocket connection handler
 	 */
@@ -77,7 +77,7 @@ public:
 			auto connectionHandler = oatpp::websocket::AsyncConnectionHandler::createShared(asyncExecutor);
 			connectionHandler->setSocketInstanceListener(std::make_shared<Lobby>());
 			return connectionHandler;
-	}());
+		}());
 
 	/**
 	*  Swagger component

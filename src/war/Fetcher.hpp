@@ -37,25 +37,42 @@ public:
 
 		if (count >= 100)
 		{
-			m_enemyFactionId = m_tornApiService.getEnemyWarFaction(m_factionId);
-			count = 0;
+			return m_tornApiService.getEnemyWarFaction(m_factionId).callbackTo(&Fetcher::onFactionIdUpdate);
 		}
 
 		if (m_enemyFactionId)
 		{
 			OATPP_LOGD(TAG, "Fetching Faction Members.")
-			auto memberInfo = m_tornApiService.getFactionMembersCompact(m_enemyFactionId.value());
-			room->updateMembers(memberInfo);
+			return m_tornApiService.getFactionMembersCompact(m_enemyFactionId.value()).callbackTo(
+				&Fetcher::onMemberUpdate);
 		}
-		else
-		{
-			OATPP_LOGD(TAG, "Currently no war running.")
-		}
+		OATPP_LOGD(TAG, "Currently no war running.")
+
 
 		count++;
 
 		using namespace std::chrono;
 		auto now = duration_cast<microseconds>(seconds(std::time(nullptr)));
 		return oatpp::async::Action::createWaitRepeatAction(now.count() + m_interval.count());
+	}
+
+	Action onFactionIdUpdate(const std::optional<std::int64_t>& enemyFactionId)
+	{
+		m_enemyFactionId = enemyFactionId;
+		count = 0;
+		return yieldTo(&Fetcher::act);
+	}
+
+	Action onMemberUpdate(const std::vector<FactionMemberInfo>& memberInfo)
+	{
+		auto room = m_room.lock();
+		if (!room || room->isClosed())
+		{
+			OATPP_LOGD(TAG, "Room is closed, finishing fetcher.")
+			return finish();
+		}
+
+		room->updateMembers(memberInfo);
+		return yieldTo(&Fetcher::act);
 	}
 };
