@@ -5,7 +5,7 @@
 #include "UserService.hpp"
 
 
-class TornApiServiceKeyManaged : TornApiService
+class TornApiServiceKeyManaged : public TornApiService
 {
 public:
 	TornApiServiceKeyManaged(std::int64_t factionId)
@@ -16,32 +16,35 @@ public:
 	std::chrono::microseconds getCooldown();
 
 
-	oatpp::Object<TornFactionResponseDto> getFactionBasic()
+	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionResponseDto>&> getFactionBasic()
 	{
 		return callWithKeyManagement(&TornApiService::getFactionBasic);
 	}
 
-	oatpp::Object<TornUserBasicResponseDto> getUserBasic()
+	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornUserBasicResponseDto>&> getUserBasic()
 	{
 		return callWithKeyManagement(&TornApiService::getUserBasic);
 	}
 
-	oatpp::Object<TornFactionMembersResponse> getFactionMembers(const std::int64_t factionId)
+	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionMembersResponse>&> getFactionMembers(
+		const std::int64_t factionId)
 	{
 		return callWithKeyManagement(&TornApiService::getFactionMembers, factionId);
 	}
 
-	std::vector<FactionMemberInfo> getFactionMembersCompact(const std::int64_t factionId)
+	oatpp::async::CoroutineStarterForResult<const std::vector<FactionMemberInfo>&> getFactionMembersCompact(
+		const std::int64_t factionId)
 	{
 		return callWithKeyManagement(&TornApiService::getFactionMembersCompact, factionId);
 	}
 
-	oatpp::Object<TornFactionWarResponseDto> getFactionWar()
+	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarResponseDto>&> getFactionWar()
 	{
 		return callWithKeyManagement(&TornApiService::getFactionWar);
 	}
 
-	std::optional<std::int64_t> getEnemyWarFaction(const std::int64_t factionId)
+	oatpp::async::CoroutineStarterForResult<const std::optional<std::int64_t>&> getEnemyWarFaction(
+		const std::int64_t factionId)
 	{
 		return callWithKeyManagement(&TornApiService::getEnemyWarFaction, factionId);
 	}
