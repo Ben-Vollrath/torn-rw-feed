@@ -9,10 +9,10 @@ class TornApiClient : public oatpp::web::client::ApiClient
 #include OATPP_CODEGEN_BEGIN(ApiClient)
 	API_CLIENT_INIT(TornApiClient)
 
-	API_CALL("GET", "/faction/basic", getFactionBasic, QUERY(String, key))
-	API_CALL("GET", "/faction/{factionId}/members", getFactionMembers, QUERY(String, key), QUERY(Int64, cache),
-	         PATH(Int64, factionId))
-	API_CALL("GET", "/faction/wars", getFactionWars, QUERY(String, key))
+	API_CALL_ASYNC("GET", "/faction/basic", getFactionBasic, QUERY(String, key))
+	API_CALL_ASYNC("GET", "/faction/{factionId}/members", getFactionMembers, QUERY(String, key), QUERY(Int64, cache),
+	               PATH(Int64, factionId))
+	API_CALL_ASYNC("GET", "/faction/wars", getFactionWars, QUERY(String, key))
 
-	API_CALL("GET", "/user/basic", getUserBasic, QUERY(String, key))
+	API_CALL_ASYNC("GET", "/user/basic", getUserBasic, QUERY(String, key))
 };
