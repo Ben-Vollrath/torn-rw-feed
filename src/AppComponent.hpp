@@ -2,7 +2,7 @@
 
 #include "SwaggerComponent.hpp"
 #include "DatabaseComponent.hpp"
-#include "TornApiComponent.hpp"
+#include "clients/ClientComponent.hpp"
 
 #include "oatpp-websocket/ConnectionHandler.hpp"
 #include "oatpp/web/server/AsyncHttpConnectionHandler.hpp"
@@ -92,5 +92,5 @@ public:
 	/**
 	 * TornApi Component
 	 */
-	TornApiComponent tornApiComponent;
+	ClientComponent clientComponent;
 };
