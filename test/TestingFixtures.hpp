@@ -5,11 +5,18 @@
 
 #include <unordered_set>
 
+#include "service/MemberStatsService.hpp"
+#include "service/WarFactionStatsFetchesService.hpp"
+#include "service/WarService.hpp"
+
 class TestingFixtures
 {
 	UserService m_userService;
 	FactionService m_factionService;
 	ApiKeyService m_apiKeyService;
+	WarService m_warService;
+	MemberStatsService m_memberStatsService;
+	WarFactionStatsService m_warFactionStatsService;
 
 	std::int64_t idx = 0;
 
@@ -17,28 +24,18 @@ class TestingFixtures
 	std::unordered_set<std::int64_t> m_factionIds;
 
 public:
-	~TestingFixtures()
-	{
-		reset();
-	}
 
 	void reset()
 	{
-		idx = 0;
-		for (const auto userId : m_userIds)
-		{
-			try { m_userService.removeById(userId); }
-			catch (...)
-			{
-			}
-		}
-		for (const auto factionId : m_factionIds)
-		{
-			try { m_factionService.removeById(factionId); }
-			catch (...)
-			{
-			}
-		}
+		m_userIds.clear();
+		m_factionIds.clear(); 
+
+		m_userService.removeAll();
+		m_factionService.removeAll();
+		m_apiKeyService.removeAll();
+		m_warService.removeAll();
+		m_memberStatsService.removeAll();
+		m_warFactionStatsService.removeAll();
 	}
 
 	oatpp::Object<FactionDto> createTestFaction(std::int64_t factionId)
@@ -85,5 +82,24 @@ public:
 		oatpp::web::protocol::http::Headers headers;
 		headers.put(oatpp::web::protocol::http::Header::AUTHORIZATION, oatpp::String(issueResult.fullKey));
 		return headers;
+	}
+
+	oatpp::Object<WarDto> createWar(std::int64_t warId)
+	{
+		auto dto = WarDto::createShared();
+		dto->id = warId;
+		dto->startAt = 1;
+		return m_warService.create(dto);
+	}
+
+	oatpp::Object<WarFactionStatsFetchesDto> createFactionStatsFetches(std::int64_t warId, std::int64_t factionId)
+	{
+		auto war = m_warService.getByIdNullable(warId);
+		if (!war)
+		{
+			createWar(warId);
+		}
+
+		return m_warFactionStatsService.createWithIds(factionId, warId);
 	}
 };

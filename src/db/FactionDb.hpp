@@ -48,6 +48,9 @@ public:
 	QUERY(deleteById,
 	      "DELETE FROM factions WHERE id=:id;",
 	      PARAM(oatpp::Int64, id))
+
+	QUERY(deleteAll,
+		"DELETE FROM factions;")
 };
 
 #include OATPP_CODEGEN_END(DbClient)

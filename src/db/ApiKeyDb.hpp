@@ -57,6 +57,9 @@ public:
 	      "WHERE id = :id "
 	      "RETURNING id, user_id, prefix, encode(secret_hash, 'hex') AS secret_hash, alg, created_at, expires_at, revoked, last_used_at;",
 	      PARAM(oatpp::Int64, id))
+
+	QUERY(deleteAll,
+		"DELETE FROM api_keys;")
 };
 
 #include OATPP_CODEGEN_END(DbClient)

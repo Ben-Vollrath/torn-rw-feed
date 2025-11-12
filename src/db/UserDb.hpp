@@ -56,6 +56,9 @@ public:
 	      "SET torn_key = NULL "
 	      "WHERE torn_key = :torn_key;",
 	      PARAM(oatpp::String, torn_key))
+
+	QUERY(deleteAll,
+		"DELETE FROM users;")
 };
 
 #include OATPP_CODEGEN_END(DbClient)
