@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AppConfig.hpp"
 #include "SwaggerComponent.hpp"
 #include "DatabaseComponent.hpp"
 #include "clients/ClientComponent.hpp"
@@ -19,6 +20,19 @@
 class AppComponent
 {
 public:
+
+	static std::string getenv_or(const char* key, const char* def = "") {
+		if (const char* v = std::getenv(key); v && *v) return std::string(v);
+		return std::string(def);
+	}
+
+	OATPP_CREATE_COMPONENT(std::shared_ptr<AppConfig>, appConfig)([] {
+		auto cfg = std::make_shared<AppConfig>();
+		cfg->ffscouterApiKey = getenv_or("FFSCOUTER_API_KEY", "");
+		cfg->databaseUrl = getenv_or("DATABASE_URL", "postgresql://torn:tornpass@192.168.0.117:5432/torn_rw_feed");
+		return cfg;
+		}());
+	
 	/**
 	*  Create ConnectionProvider component which listens on the port
 	*/
