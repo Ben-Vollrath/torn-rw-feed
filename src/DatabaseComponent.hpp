@@ -16,11 +16,6 @@
 class DatabaseComponent
 {
 public:
-	static std::string getenv_or(const char* key, const char* defv)
-	{
-		if (const char* v = std::getenv(key); v && *v) return std::string(v);
-		return std::string(defv);
-	}
 
 	// Provider (backend-specific) toggles between sqlite and postgre depending on environment
 	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionProvider>, connectionProvider)([]
@@ -67,5 +62,23 @@ public:
 	{
 		OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
 		return std::make_shared<ApiKeyDb>(dbExecutor);
+	}());
+
+	OATPP_CREATE_COMPONENT(std::shared_ptr<WarDb>, warDb)
+		([] {
+		OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
+		return std::make_shared<WarDb>(dbExecutor);
+	}());
+
+	OATPP_CREATE_COMPONENT(std::shared_ptr<WarFactionStatsFetchesDb>, warFactionStatFetchesDb)
+		([] {
+		OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
+		return std::make_shared<WarFactionStatsFetchesDb>(dbExecutor);
+	}());
+
+	OATPP_CREATE_COMPONENT(std::shared_ptr<MemberStatsDb>, memberStatsDb)
+		([] {
+		OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
+		return std::make_shared<MemberStatsDb>(dbExecutor);
 	}());
 };
