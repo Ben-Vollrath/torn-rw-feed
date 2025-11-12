@@ -12,6 +12,7 @@
 #include "oatpp-test/web/ClientServerTestRunner.hpp"
 
 #include "MockTorn/TornController.hpp"
+#include "service/WarService.hpp"
 
 namespace
 {
@@ -30,12 +31,14 @@ namespace
 
 void WarSocketTest::testSocketOk()
 {
+	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
+	testingFixtures->reset();
+
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
 	mockResponseLoader->setResponsePaths({
-		factionWarOKPath_, factionMembersOfflineOKPath_, factionMembersOneOnlineOKPath_, factionMembersOfflineOKPath_
+		factionWarOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_, factionMembersOneOnlineOKPath_, factionMembersOfflineOKPath_
 	});
 
-	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
 	auto user = testingFixtures->createTestUser(1);
 	auto authHeader = testingFixtures->getUserAuthHeader(user->id);
 
@@ -57,11 +60,21 @@ void WarSocketTest::testSocketOk()
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 2);
 	OATPP_ASSERT(msg->members[0]->status == TornActionStatus::OFFLINE);
+	auto warService = WarService();
+	OATPP_ASSERT(warService.getById(1073741824));
+
 
 	got = listener->waitForNext(msg, std::chrono::seconds(5));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 1);
 	OATPP_ASSERT(msg->members[0]->status == TornActionStatus::ONLINE);
+	auto memberStatsService = MemberStatsService();
+	auto memberStats = memberStatsService.getAllForWar(1073741824, 2);
+	OATPP_ASSERT(memberStats->size() == 2);
+	auto stats1 = memberStats[0]->member_id == 1 ? memberStats[0] : memberStats[1];
+	auto stats2 = memberStats[0]->member_id == 2 ? memberStats[1] : memberStats[0];
+	OATPP_ASSERT(stats1->total == 2989885521)
+
 
 	got = listener->waitForNext(msg, std::chrono::seconds(5));
 	OATPP_ASSERT(got);
@@ -70,6 +83,45 @@ void WarSocketTest::testSocketOk()
 
 	socket->sendClose(1000, "test done");
 
+	if (pump.joinable()) pump.join();
+}
+
+void WarSocketTest::testMemberStatInsertOnlyOnce()
+{
+	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
+	testingFixtures->reset();
+
+	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
+	mockResponseLoader->setResponsePaths({
+		factionWarOKPath_, factionMembersOfflineOKPath_, factionMembersOneOnlineOKPath_
+		});
+
+	auto user = testingFixtures->createTestUser(1);
+	auto authHeader = testingFixtures->getUserAuthHeader(user->id);
+	testingFixtures->createFactionStatsFetches(1073741824, 2);
+
+
+	OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
+	auto connector = oatpp::websocket::Connector::createShared(clientConnectionProvider);
+	auto connection = connector->connect("/wars/socket", authHeader);
+
+	OATPP_LOGI(TAG, "Connected");
+
+	auto socket = oatpp::websocket::WebSocket::createShared(connection, true);
+
+	auto listener = std::make_shared<WSListener>();
+	socket->setListener(listener);
+
+	std::thread pump([&] { socket->listen(); });
+
+	oatpp::Object<FactionMemberInfoResponseDto> msg;
+	bool got = listener->waitForNext(msg, std::chrono::seconds(5));
+	OATPP_ASSERT(got);
+	got = listener->waitForNext(msg, std::chrono::seconds(5));
+	OATPP_ASSERT(got) //Would throw here if it tried calling the ffscouter api
+
+
+	socket->sendClose(1000, "test done");
 	if (pump.joinable()) pump.join();
 }
 
@@ -94,6 +146,7 @@ void WarSocketTest::onRun()
 
 
 		testSocketOk();
+		testMemberStatInsertOnlyOnce();
 	}, std::chrono::minutes(10) /* test timeout */);
 
 	OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionPool>, connectionPool);
@@ -103,9 +156,6 @@ void WarSocketTest::onRun()
 	asyncExecutor->waitTasksFinished();
 	asyncExecutor->stop();
 	asyncExecutor->join();
-
-	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
-	testingFixtures->reset();
 
 	/* wait all server threads finished */
 	std::this_thread::sleep_for(std::chrono::seconds(1));

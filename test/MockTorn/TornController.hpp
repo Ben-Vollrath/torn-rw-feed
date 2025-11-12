@@ -64,6 +64,16 @@ public:
 			return _return(controller->createResponse(Status::CODE_200, mockResponseLoader->getNextResponse()));
 		}
 	};
+
+	ENDPOINT_ASYNC("GET", "/api/v1/get-stats", FFScouts) {
+		ENDPOINT_ASYNC_INIT(FFScouts)
+
+			Action act() override {
+			OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
+			return _return(controller->createResponse(Status::CODE_200, mockResponseLoader->getNextResponse()));
+		}
+	};
+
 };
 
 #include OATPP_CODEGEN_END(ApiController)

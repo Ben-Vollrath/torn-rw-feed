@@ -13,6 +13,7 @@
 #include "TornApiClient.hpp"
 #include "../TestingFixtures.hpp"
 #include "../MockTorn/MockResponseLoader.hpp"
+#include "clients/FFScouterApiClient.hpp"
 #include "oatpp/web/server/AsyncHttpConnectionHandler.hpp"
 #include "war/Lobby.hpp"
 
@@ -22,6 +23,19 @@
 class TestComponent
 {
 public:
+
+	static std::string getenv_or(const char* key, const char* def = "") {
+		if (const char* v = std::getenv(key); v && *v) return std::string(v);
+		return std::string(def);
+	}
+
+	OATPP_CREATE_COMPONENT(std::shared_ptr<AppConfig>, appConfig)([] {
+		auto cfg = std::make_shared<AppConfig>();
+		cfg->ffscouterApiKey = getenv_or("FFSCOUTER_API_KEY", "");
+		cfg->databaseUrl = getenv_or("DATABASE_URL", "postgresql://torn:tornpass@192.168.0.117:5432/torn_rw_feed");
+		return cfg;
+		}());
+
 	DatabaseComponent databaseComponent;
 
 	/**
@@ -99,6 +113,20 @@ public:
 
 		return TornApiClient::createShared(requestExecutor, objectMapper);
 	}());
+
+
+	OATPP_CREATE_COMPONENT(std::shared_ptr<FFScouterApiClient>, ffScouterApiClient)([] {
+		/* Get client connection provider for Api Client */
+		OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
+
+		/* Get object mapper component */
+		OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
+
+		/* Create http request executor for Api Client */
+		auto requestExecutor = oatpp::web::client::HttpRequestExecutor::createShared(clientConnectionProvider);
+
+		return FFScouterApiClient::createShared(requestExecutor, objectMapper);
+		}());
 
 
 	/**

@@ -13,6 +13,9 @@
 void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client,
                                     std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
 {
+	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
+	testingFixtures->reset();
+
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
 	mockResponseLoader->setResponsePaths({ factionBasicOKPath_, userBasicOkPath_});
 	/* Call server API */
@@ -41,6 +44,9 @@ void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client,
 void AuthControllerTest::testAuthError(const std::shared_ptr<ApiTestClient> client,
                                        std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
 {
+	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
+	testingFixtures->reset();
+
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
 	mockResponseLoader->setResponsePaths({errorInactiveKey_});
 	auto response = client->auth("keyError");
@@ -87,8 +93,6 @@ void AuthControllerTest::onRun()
 	asyncExecutor->stop();
 	asyncExecutor->join();
 
-	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
-	testingFixtures->reset();
 
 	/* wait all server threads finished */
 	std::this_thread::sleep_for(std::chrono::seconds(1));

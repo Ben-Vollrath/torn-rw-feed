@@ -45,3 +45,5 @@ inline auto factionMembersOneOnlineOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_m
 inline auto factionWarOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_war_ok.json";
 inline auto userBasicOkPath_ = MOCK_RESPONSE_BASE "/torn_user_basic_ok.json";
 inline auto errorInactiveKey_ = MOCK_RESPONSE_BASE "/torn_error_incorrect_api_key.json";
+
+inline auto ffscouterScoutOkPath_ = MOCK_RESPONSE_BASE "/ffscouter_scout_ok.json";
