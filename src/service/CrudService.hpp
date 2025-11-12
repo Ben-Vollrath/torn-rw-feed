@@ -74,17 +74,7 @@ public:
 	oatpp::Object<DtoT> getByIdNullable(const std::int64_t& id) const
 	{
 		auto qr = db_->getById(id);
-		OATPP_ASSERT_HTTP(qr->isSuccess(), Status::CODE_500, qr->getErrorMessage());
-		if (!qr->hasMoreToFetch())
-		{
-			return nullptr;
-		}
-		auto rows = qr->template fetch<oatpp::Vector<oatpp::Object<DtoT>>>();
-		if (!rows || rows->empty())
-		{
-			return nullptr;
-		}
-		return rows[0];
+		return fetchOneOrNone(qr);
 	}
 
 	// DELETE (throws on error)

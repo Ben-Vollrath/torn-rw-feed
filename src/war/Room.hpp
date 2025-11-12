@@ -5,7 +5,7 @@
 #include <unordered_map>
 
 
-#include "dto/torn_client/TornFactionMembersResponseDto.hpp"
+#include "dto/clients/TornFactionMembersResponseDto.hpp"
 #include "oatpp/core/data/mapping/ObjectMapper.hpp"
 #include "service/TornApiServiceKeyManaged.hpp"
 

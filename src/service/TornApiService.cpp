@@ -5,9 +5,9 @@
 
 #include "TornApiClient.hpp"
 #include "dto/FactionMemberInfoDto.hpp"
-#include "dto/torn_client/TornFactionResponseDto.hpp"
-#include "dto/torn_client/TornUserBasicResponseDto.hpp"
-#include "dto/torn_client/TornErrorResponseDto.hpp"
+#include "dto/clients/TornFactionResponseDto.hpp"
+#include "dto/clients/TornUserBasicResponseDto.hpp"
+#include "dto/clients/TornErrorResponseDto.hpp"
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp/web/client/ApiClient.hpp"
 

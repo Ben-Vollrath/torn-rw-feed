@@ -3,11 +3,11 @@
 #include <optional>
 
 #include "TornApiClient.hpp"
-#include "dto/torn_client/TornErrorResponseDto.hpp"
-#include "dto/torn_client/TornFactionMembersResponseDto.hpp"
-#include "dto/torn_client/TornFactionResponseDto.hpp"
-#include "dto/torn_client/TornFactionWarResponseDto.hpp"
-#include "dto/torn_client/TornUserBasicResponseDto.hpp"
+#include "dto/clients/TornErrorResponseDto.hpp"
+#include "dto/clients/TornFactionMembersResponseDto.hpp"
+#include "dto/clients/TornFactionResponseDto.hpp"
+#include "dto/clients/TornFactionWarResponseDto.hpp"
+#include "dto/clients/TornUserBasicResponseDto.hpp"
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp/web/client/ApiClient.hpp"
 
@@ -29,9 +29,9 @@ class TornApiService
 		std::string m_key;
 
 	public:
-		ApiActionBase(TornApiService* apiService, std::shared_ptr<TornApiClient> client,
-		              std::shared_ptr<oatpp::data::mapping::ObjectMapper> om, std::string key)
-			: m_apiService(apiService), m_client(std::move(client)), m_om(std::move(om)), m_key(std::move(key))
+		ApiActionBase(TornApiService* apiService, const std::shared_ptr<TornApiClient>& client,
+		              const std::shared_ptr<oatpp::data::mapping::ObjectMapper>& om, std::string key)
+			: m_apiService(apiService), m_client(client), m_om(om), m_key(std::move(key))
 		{
 		}
 
@@ -47,11 +47,11 @@ class TornApiService
 
 	public:
 		FactionApiActionBase(TornApiService* apiService,
-		                     std::shared_ptr<TornApiClient> client,
-		                     std::shared_ptr<oatpp::data::mapping::ObjectMapper> om,
+		                     const std::shared_ptr<TornApiClient>& client,
+		                     const std::shared_ptr<oatpp::data::mapping::ObjectMapper>& om,
 		                     std::string key,
 		                     std::int64_t factionId)
-			: ApiActionBase<T, TDto>(apiService, std::move(client), std::move(om), std::move(key))
+			: ApiActionBase<T, TDto>(apiService, client, om, std::move(key))
 			  , m_factionId(factionId)
 		{
 		}
