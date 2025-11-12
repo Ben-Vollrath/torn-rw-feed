@@ -17,9 +17,9 @@ public:
 	}
 
 	QUERY(create,
-	      "INSERT INTO wars (faction_one_id, faction_two_id, start_at, end_at, winner_id, "
+	      "INSERT INTO wars (id, faction_one_id, faction_two_id, start_at, end_at, winner_id, "
 	      "                  faction_one_score, faction_one_chain, faction_two_score, faction_two_chain) "
-	      "VALUES (:w.faction_one_id, :w.faction_two_id, :w.start_at, :w.end_at, :w.winner_id, "
+	      "VALUES (:w.id, :w.faction_one_id, :w.faction_two_id, :w.start_at, :w.end_at, :w.winner_id, "
 	      "        COALESCE(:w.faction_one_score,0), COALESCE(:w.faction_one_chain,0), "
 	      "        COALESCE(:w.faction_two_score,0), COALESCE(:w.faction_two_chain,0)) "
 	      "RETURNING *;",
@@ -76,6 +76,9 @@ public:
 	      "RETURNING *;",
 	      PARAM(oatpp::Object<WarDto>, w)
 	)
+
+	QUERY(deleteAll,
+		"DELETE FROM wars;")
 };
 
 #include OATPP_CODEGEN_END(DbClient)

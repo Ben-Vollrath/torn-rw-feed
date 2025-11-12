@@ -1,7 +1,7 @@
 CREATE TABLE wars (
-  id                    BIGSERIAL PRIMARY KEY,
-  faction_one_id            BIGINT NOT NULL REFERENCES factions(id) ON DELETE CASCADE,
-  faction_two_id      BIGINT NOT NULL REFERENCES factions(id) ON DELETE CASCADE,
+  id                  BIGSERIAL PRIMARY KEY,
+  faction_one_id      BIGINT,
+  faction_two_id      BIGINT,
   start_at              BIGINT NOT NULL DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,
   end_at                BIGINT,
   winner_id             BIGINT REFERENCES factions(id) ON DELETE SET NULL,
