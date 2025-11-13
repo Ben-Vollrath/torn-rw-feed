@@ -47,6 +47,10 @@ public:
 	 */
 	void updateMembers(const oatpp::Object<TornFactionMembersResponse>& memberInfos);
 
+	/** Reset member state.
+	 */
+	void resetMemberState();
+
 private:
 	/**
 	* Send message to all peers in the room.

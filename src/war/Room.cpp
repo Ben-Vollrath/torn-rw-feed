@@ -80,3 +80,8 @@ void Room::updateMembers(const oatpp::Object<TornFactionMembersResponse>& member
 		sendMessage(updateJson->c_str());
 	}
 }
+
+void Room::resetMemberState()
+{
+	membersState.clear();
+}

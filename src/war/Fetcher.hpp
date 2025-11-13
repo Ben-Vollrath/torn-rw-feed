@@ -5,7 +5,6 @@
 #include "service/FactionService.hpp"
 #include "service/FFScouterApiService.hpp"
 #include "service/MemberStatsService.hpp"
-#include "service/TornApiService.hpp"
 #include "service/TornApiServiceKeyManaged.hpp"
 #include "service/WarFactionStatsFetchesService.hpp"
 #include "service/WarService.hpp"
@@ -77,7 +76,13 @@ public:
 			m_warId = newWar->id;
 			m_warNeedsStats = true;
 			m_enemyFactionId = enemyFactionId;
-			
+
+			//New war means new members -> reset old member state
+			auto room = m_room.lock();
+			if (room)
+			{
+				room->resetMemberState();
+			}
 		}
 		m_count = 0;
 		return scheduleNextTick();
