@@ -6,7 +6,6 @@
 #include <unordered_set>
 
 #include "service/MemberStatsService.hpp"
-#include "service/WarFactionStatsFetchesService.hpp"
 #include "service/WarService.hpp"
 
 class TestingFixtures
@@ -16,7 +15,6 @@ class TestingFixtures
 	ApiKeyService m_apiKeyService;
 	WarService m_warService;
 	MemberStatsService m_memberStatsService;
-	WarFactionStatsService m_warFactionStatsService;
 
 	std::int64_t idx = 0;
 
@@ -35,7 +33,6 @@ public:
 		m_apiKeyService.removeAll();
 		m_warService.removeAll();
 		m_memberStatsService.removeAll();
-		m_warFactionStatsService.removeAll();
 	}
 
 	oatpp::Object<FactionDto> createTestFaction(std::int64_t factionId)
@@ -90,16 +87,5 @@ public:
 		dto->id = warId;
 		dto->startAt = 1;
 		return m_warService.create(dto);
-	}
-
-	oatpp::Object<WarFactionStatsFetchesDto> createFactionStatsFetches(std::int64_t warId, std::int64_t factionId)
-	{
-		auto war = m_warService.getByIdNullable(warId);
-		if (!war)
-		{
-			createWar(warId);
-		}
-
-		return m_warFactionStatsService.createWithIds(factionId, warId);
 	}
 };

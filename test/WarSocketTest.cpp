@@ -88,46 +88,6 @@ void WarSocketTest::testSocketOk()
 	if (pump.joinable()) pump.join();
 }
 
-void WarSocketTest::testMemberStatInsertOnlyOnce()
-{
-	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
-	testingFixtures->reset();
-
-	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-	mockResponseLoader->setResponsePaths({
-		factionWarOKPath_, factionMembersOfflineOKPath_, factionMembersOneOnlineOKPath_
-		});
-
-	auto user = testingFixtures->createTestUser(1);
-	auto authHeader = testingFixtures->getUserAuthHeader(user->id);
-	testingFixtures->createFactionStatsFetches(1073741824, 2);
-
-
-	OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
-	auto connector = oatpp::websocket::Connector::createShared(clientConnectionProvider);
-	auto connection = connector->connect("/wars/socket", authHeader);
-
-	OATPP_LOGI(TAG, "Connected");
-
-	auto socket = oatpp::websocket::WebSocket::createShared(connection, true);
-
-	auto listener = std::make_shared<WSListener>();
-	socket->setListener(listener);
-
-	std::thread pump([&] { socket->listen(); });
-
-	oatpp::Object<WarStateResponseDto> msg;
-	bool got = listener->waitForNext(msg, std::chrono::seconds(5));
-	OATPP_ASSERT(got);
-	got = listener->waitForNext(msg, std::chrono::seconds(5));
-	OATPP_ASSERT(got) //Would throw here if it tried calling the ffscouter api
-
-
-	socket->sendClose(1000, "test done");
-	if (pump.joinable()) pump.join();
-}
-
-
 void WarSocketTest::onRun()
 {
 	/* Register test components */
@@ -148,7 +108,6 @@ void WarSocketTest::onRun()
 
 
 		testSocketOk();
-		testMemberStatInsertOnlyOnce();
 	}, std::chrono::minutes(10) /* test timeout */);
 
 	OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionPool>, connectionPool);

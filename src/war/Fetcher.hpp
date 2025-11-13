@@ -6,7 +6,6 @@
 #include "service/FFScouterApiService.hpp"
 #include "service/MemberStatsService.hpp"
 #include "service/TornApiServiceKeyManaged.hpp"
-#include "service/WarFactionStatsFetchesService.hpp"
 #include "service/WarService.hpp"
 
 class Fetcher : public oatpp::async::Coroutine<Fetcher>
@@ -17,7 +16,6 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 	std::chrono::microseconds m_interval;
 
 	WarService m_warService;
-	WarFactionStatsService m_warFactionStatsService;
 	MemberStatsService m_memberStatsService;
 	FFScouterApiService m_ffScouterApiService;
 
@@ -113,7 +111,6 @@ public:
 	Action onScouts(const FFScouterResponseDto& scouts)
 	{
 		auto stats = m_memberStatsService.createMany(MemberStatsDto::fromFFScouterResponse(m_warId.value(), m_enemyFactionId.value(), scouts));
-		m_warFactionStatsService.createWithIds(m_enemyFactionId.value(), m_warId.value());
 
 		auto room = m_room.lock();
 		if (room)

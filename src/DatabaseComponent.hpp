@@ -8,7 +8,6 @@
 #include "AppConfig.hpp"
 #include "db/MemberStatsDb.hpp"
 #include "db/WarDb.hpp"
-#include "db/WarFactionStatsFetchesDb.hpp"
 
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp-postgresql/orm.hpp"
@@ -68,12 +67,6 @@ public:
 		([] {
 		OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
 		return std::make_shared<WarDb>(dbExecutor);
-	}());
-
-	OATPP_CREATE_COMPONENT(std::shared_ptr<WarFactionStatsFetchesDb>, warFactionStatFetchesDb)
-		([] {
-		OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
-		return std::make_shared<WarFactionStatsFetchesDb>(dbExecutor);
 	}());
 
 	OATPP_CREATE_COMPONENT(std::shared_ptr<MemberStatsDb>, memberStatsDb)
