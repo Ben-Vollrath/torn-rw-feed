@@ -135,36 +135,6 @@ TornApiService::getFactionMembers(
 	return GetFactionMembersCoroutine::startForResult(this, tornApiClient, objectMapper, key, factionId);
 }
 
-
-oatpp::async::CoroutineStarterForResult<const std::vector<FactionMemberInfo>&> TornApiService::getFactionMembersCompact(
-	const std::string& key, const std::int64_t factionId)
-{
-	class GetFactionMembersCompactCoroutine : public FactionApiActionBase<
-			GetFactionMembersCompactCoroutine, const std::vector<FactionMemberInfo>&>
-	{
-		using Base = FactionApiActionBase;
-
-	public:
-		using Base::Base;
-
-	private:
-		oatpp::async::Action act() override
-		{
-			const auto now = std::time(nullptr);
-			return this->m_client->getFactionMembers(m_key, now, m_factionId).callbackTo(
-				&GetFactionMembersCompactCoroutine::parseResponse);
-		}
-
-		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
-		{
-			oatpp::String body = rsp->readBodyToString();
-			return _return((m_apiService->parseSafely<TornFactionMembersResponse>(body))->toFactionMemberInfoStruct());
-		}
-	};
-
-	return GetFactionMembersCompactCoroutine::startForResult(this, tornApiClient, objectMapper, key, factionId);
-}
-
 oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarResponseDto>&> TornApiService::getFactionWar(
 	const std::string& key)
 {

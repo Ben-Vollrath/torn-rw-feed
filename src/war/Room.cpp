@@ -1,5 +1,7 @@
 #include "Room.hpp"
 
+#include "dto/FactionMemberInfoDto.hpp"
+
 bool Room::isClosed() const
 {
 	return closed_.load(std::memory_order_acquire);
@@ -46,32 +48,33 @@ void Room::sendCurrentState(const std::shared_ptr<Peer>& peer)
 	peer->sendMessage(currentStateJson);
 }
 
-void Room::updateMembers(const std::vector<FactionMemberInfo> memberInfos)
+void Room::updateMembers(const oatpp::Object<TornFactionMembersResponse>& memberInfos)
 {
-	std::vector<FactionMemberInfo> updates;
-	for (FactionMemberInfo member : memberInfos)
+	const auto& members = memberInfos->members;
+	auto updates = oatpp::Vector<oatpp::Object<TornFactionMember>>::createShared();
+	for (const oatpp::Object<TornFactionMember>& member : *members)
 	{
-		auto it = membersState.find(member.id);
+		auto it = membersState.find(member->id);
 
 		if (it == membersState.end())
 		{
-			membersState[member.id] = member;
-			updates.push_back(member);
+			membersState[member->id] = member;
+			updates->push_back(member);
 		}
 		else
 		{
 			const auto& old = it->second;
-			if (old.actionTimestamp != member.actionTimestamp ||
-				old.status != member.status ||
-				old.statusState != member.statusState)
+			if (old->last_action->timestamp != member->last_action->timestamp ||
+				old->status->state != member->status->state ||
+				old->last_action->status != member->last_action->status)
 			{
 				it->second = member;
-				updates.push_back(member);
+				updates->push_back(member);
 			}
 		}
 	}
 
-	if (!updates.empty())
+	if (!updates->empty())
 	{
 		oatpp::String updateJson = objectMapper->writeToString(FactionMemberInfoResponseDto::fromInfoList(updates));
 		sendMessage(updateJson->c_str());

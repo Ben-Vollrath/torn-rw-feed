@@ -2,13 +2,14 @@
 
 
 
-inline std::string joinIds(const std::vector<FactionMemberInfo>& members) {
-	if (members.empty()) return {};
+inline std::string joinIds(const oatpp::Object<TornFactionMembersResponse>& memberInfo) {
+	const auto& members = memberInfo->members;
+	if (members->empty()) return {};
 
 	std::vector<std::string> idStrings;
 	size_t total = 0;
-	for (const auto& m : members) {
-		idStrings.emplace_back(std::to_string(m.id));
+	for (const auto& m : *members) {
+		idStrings.emplace_back(std::to_string(m->id));
 		total += idStrings.back().size() + 1; // +1 for commas
 	}
 
@@ -24,21 +25,21 @@ inline std::string joinIds(const std::vector<FactionMemberInfo>& members) {
 
 
 oatpp::async::CoroutineStarterForResult<const FFScouterResponseDto&> FFScouterApiService::getScout(
-	const std::vector<FactionMemberInfo>& memberInfo)
+	const oatpp::Object<TornFactionMembersResponse>& memberInfo)
 {
 	class GetScoutsCoroutine : public oatpp::async::CoroutineWithResult<GetScoutsCoroutine, const FFScouterResponseDto&> {
 		const FFScouterApiService* m_apiService;
 		const std::shared_ptr<FFScouterApiClient> m_client;
 		const std::shared_ptr<oatpp::data::mapping::ObjectMapper> m_om;
-		std::vector<FactionMemberInfo> m_memberInfo;
+		const oatpp::Object<TornFactionMembersResponse> m_memberInfo;
 
 	public:
 		GetScoutsCoroutine(
 			const FFScouterApiService* apiService,
 			const std::shared_ptr<FFScouterApiClient>& client,
 			const std::shared_ptr<oatpp::data::mapping::ObjectMapper>& om,
-			std::vector<FactionMemberInfo> memberInfo) :
-			m_apiService(apiService), m_client(client), m_om(om), m_memberInfo(std::move(memberInfo))
+			const oatpp::Object<TornFactionMembersResponse>& memberInfo) :
+			m_apiService(apiService), m_client(client), m_om(om), m_memberInfo(memberInfo)
 		{}
 
 	private:
@@ -53,6 +54,6 @@ oatpp::async::CoroutineStarterForResult<const FFScouterResponseDto&> FFScouterAp
 		}
 	};
 
-	return GetScoutsCoroutine::startForResult(this, ffScouterApiClient, objectMapper, std::move(memberInfo));
+	return GetScoutsCoroutine::startForResult(this, ffScouterApiClient, objectMapper, memberInfo);
 }
 

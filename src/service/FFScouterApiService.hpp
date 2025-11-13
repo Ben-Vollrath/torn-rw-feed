@@ -19,5 +19,5 @@ class FFScouterApiService {
 
 	using Status = oatpp::web::protocol::http::Status;
 public:
-	oatpp::async::CoroutineStarterForResult<const FFScouterResponseDto&> getScout(const std::vector<FactionMemberInfo>& memberInfo);
+	oatpp::async::CoroutineStarterForResult<const FFScouterResponseDto&> getScout(const oatpp::Object<TornFactionMembersResponse>& memberInfo);
 };

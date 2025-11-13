@@ -56,7 +56,7 @@ public:
 		if (m_enemyFactionId)
 		{
 			OATPP_LOGD(TAG, "Fetching Faction Members.")
-			return m_tornApiService.getFactionMembersCompact(m_enemyFactionId.value()).callbackTo(
+			return m_tornApiService.getFactionMembers(m_enemyFactionId.value()).callbackTo(
 				&Fetcher::onMemberUpdate);
 		}
 		OATPP_LOGD(TAG, "Currently no war running.")
@@ -83,7 +83,7 @@ public:
 		return scheduleNextTick();
 	}
 
-	Action onMemberUpdate(const std::vector<FactionMemberInfo>& memberInfo)
+	Action onMemberUpdate(const oatpp::Object<TornFactionMembersResponse>& memberInfo)
 	{
 
 		auto room = m_room.lock();

@@ -79,8 +79,6 @@ public:
 		const std::string& key);
 	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionMembersResponse>&> getFactionMembers(
 		const std::string& key, std::int64_t factionId);
-	oatpp::async::CoroutineStarterForResult<const std::vector<FactionMemberInfo>&> getFactionMembersCompact(
-		const std::string& key, std::int64_t factionId);
 	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarResponseDto>&> getFactionWar(
 		const std::string& key);
 	oatpp::async::CoroutineStarterForResult<const std::optional<std::int64_t>&> getEnemyWarFaction(

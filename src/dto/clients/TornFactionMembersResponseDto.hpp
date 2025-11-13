@@ -1,6 +1,5 @@
 #pragma once
 #include "TornUserBasicResponseDto.hpp"
-#include "dto/FactionMemberInfoDto.hpp"
 #include "oatpp/core/Types.hpp"
 #include "oatpp/core/macro/codegen.hpp"
 
@@ -33,27 +32,6 @@ class TornFactionMembersResponse : public oatpp::DTO
 	DTO_INIT(TornFactionMembersResponse, DTO)
 
 	DTO_FIELD(List<Object<TornFactionMember>>, members);
-
-	std::vector<FactionMemberInfo> toFactionMemberInfoStruct()
-	{
-		std::vector<FactionMemberInfo> out;
-		if (!members) return out;
-		out.reserve(members->size());
-
-		for (const oatpp::Object<TornFactionMember>& m : *members)
-		{
-			FactionMemberInfo info{
-				m->id,
-				m->name,
-				m->level,
-				m->last_action->status,
-				m->last_action->timestamp,
-				m->status->state
-			};
-			out.push_back(std::move(info));
-		}
-		return out;
-	}
 };
 
 #include OATPP_CODEGEN_END(DTO)

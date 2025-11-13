@@ -59,7 +59,7 @@ void WarSocketTest::testSocketOk()
 	bool got = listener->waitForNext(msg, std::chrono::seconds(5));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 2);
-	OATPP_ASSERT(msg->members[0]->status == TornActionStatus::OFFLINE);
+	OATPP_ASSERT(msg->members[0]->last_action->status == TornActionStatus::OFFLINE);
 	auto warService = WarService();
 	OATPP_ASSERT(warService.getById(1073741824));
 
@@ -67,7 +67,7 @@ void WarSocketTest::testSocketOk()
 	got = listener->waitForNext(msg, std::chrono::seconds(5));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 1);
-	OATPP_ASSERT(msg->members[0]->status == TornActionStatus::ONLINE);
+	OATPP_ASSERT(msg->members[0]->last_action->status == TornActionStatus::ONLINE);
 	auto memberStatsService = MemberStatsService();
 	auto memberStats = memberStatsService.getAllForWar(1073741824, 2);
 	OATPP_ASSERT(memberStats->size() == 2);
@@ -79,7 +79,7 @@ void WarSocketTest::testSocketOk()
 	got = listener->waitForNext(msg, std::chrono::seconds(5));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 1);
-	OATPP_ASSERT(msg->members[0]->status == TornActionStatus::OFFLINE);
+	OATPP_ASSERT(msg->members[0]->last_action->status == TornActionStatus::OFFLINE);
 
 	socket->sendClose(1000, "test done");
 

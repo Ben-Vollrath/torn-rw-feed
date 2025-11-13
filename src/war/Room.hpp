@@ -12,7 +12,7 @@
 
 class Room
 {
-	std::unordered_map<std::int64_t, FactionMemberInfo> membersState;
+	std::unordered_map<std::int64_t, oatpp::Object<TornFactionMember>> membersState;
 	std::unordered_map<v_int32, std::shared_ptr<Peer>> m_peerById;
 	std::mutex m_peerByIdLock;
 
@@ -45,7 +45,7 @@ public:
 	/** Update member information.
 	 * @param memberInfos
 	 */
-	void updateMembers(std::vector<FactionMemberInfo> memberInfos);
+	void updateMembers(const oatpp::Object<TornFactionMembersResponse>& memberInfos);
 
 private:
 	/**
