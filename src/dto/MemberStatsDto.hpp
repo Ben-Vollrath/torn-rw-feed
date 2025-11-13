@@ -32,12 +32,12 @@ class MemberStatsDto : public oatpp::DTO {
 		return dto;
 	}
 
-	static std::vector<oatpp::Object<MemberStatsDto>> fromFFScouterResponse(std::int64_t warId, std::int64_t factionId, const FFScouterResponseDto& rsp)
+	static oatpp::Vector<oatpp::Object<MemberStatsDto>> fromFFScouterResponse(std::int64_t warId, std::int64_t factionId, const FFScouterResponseDto& rsp)
 	{
-		std::vector<oatpp::Object<MemberStatsDto>> out;
+		auto out = oatpp::Vector<oatpp::Object<MemberStatsDto>>::createShared();
 		for (const auto& ffScout: *rsp)
 		{
-			out.emplace_back(fromFFScouterItem(warId, factionId, ffScout));
+			out->emplace_back(fromFFScouterItem(warId, factionId, ffScout));
 		}
 		return out;
 	}

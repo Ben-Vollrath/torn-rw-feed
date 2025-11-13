@@ -5,24 +5,26 @@
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/Types.hpp"
 #include "clients/TornFactionMembersResponseDto.hpp"
+#include "MemberStatsDto.hpp"
 
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class FactionMemberInfoResponseDto : public oatpp::DTO
+class WarStateResponseDto : public oatpp::DTO
 {
-	DTO_INIT(FactionMemberInfoResponseDto, DTO)
+	DTO_INIT(WarStateResponseDto, DTO)
 
+		DTO_FIELD(UnorderedFields<Object<MemberStatsDto>>, memberStats);
 	DTO_FIELD(Vector<Object<TornFactionMember>>, members);
 
-	static oatpp::Object<FactionMemberInfoResponseDto> fromInfoList(const Vector<Object<TornFactionMember>>& memberInfos)
+	static oatpp::Object<WarStateResponseDto> fromMembersInfo(const Vector<Object<TornFactionMember>>& memberInfos)
 	{
 		auto dto = createShared();
 		dto->members = memberInfos;
 		return dto;
 	}
 
-	static oatpp::Object<FactionMemberInfoResponseDto> fromMembersState(
+	static oatpp::Object<WarStateResponseDto> fromMembersInfo(
 		const std::unordered_map<std::int64_t, oatpp::Object<TornFactionMember>>& membersState)
 	{
 		auto dto = createShared();
@@ -35,6 +37,36 @@ class FactionMemberInfoResponseDto : public oatpp::DTO
 		}
 
 		return dto;
+	}
+
+	static oatpp::Object<WarStateResponseDto> fromMembersStats(
+		const std::unordered_map<std::int64_t, oatpp::Object<MemberStatsDto>>& memberStats)
+	{
+		auto dto = createShared();
+		dto->addMemberStats(memberStats);
+		return dto;
+	}
+
+	static oatpp::Object<WarStateResponseDto> fromMembersStats(
+		const oatpp::Vector<oatpp::Object<MemberStatsDto>>& memberStats) {
+		auto dto = createShared();
+		dto->addMemberStats(memberStats);
+		return dto;
+	}
+
+	void addMemberStats(const std::unordered_map<std::int64_t, oatpp::Object<MemberStatsDto>>& memberStats)
+	{
+		for (const auto& statsPair : memberStats) {
+			this->memberStats[std::to_string(statsPair.first)] = statsPair.second;
+		}
+	}
+
+	void addMemberStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& memberStats) {
+
+		this->memberStats = UnorderedFields<Object<MemberStatsDto>>::createShared();
+		for (const oatpp::Object <MemberStatsDto>& stats : *memberStats) {
+			this->memberStats[std::to_string(stats->member_id)] = stats;
+		}
 	}
 };
 

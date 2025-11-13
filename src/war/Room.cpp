@@ -43,8 +43,11 @@ void Room::sendCurrentState(const std::shared_ptr<Peer>& peer)
 {
 	if (membersState.empty()) { return; }
 
+	auto rsp = WarStateResponseDto::fromMembersInfo(membersState);
+	rsp->addMemberStats(memberStats);
 	oatpp::String currentStateJson = objectMapper->writeToString(
-		FactionMemberInfoResponseDto::fromMembersState(membersState));
+		WarStateResponseDto::fromMembersInfo(membersState));
+
 	peer->sendMessage(currentStateJson);
 }
 
@@ -76,12 +79,31 @@ void Room::updateMembers(const oatpp::Object<TornFactionMembersResponse>& member
 
 	if (!updates->empty())
 	{
-		oatpp::String updateJson = objectMapper->writeToString(FactionMemberInfoResponseDto::fromInfoList(updates));
+		oatpp::String updateJson = objectMapper->writeToString(WarStateResponseDto::fromMembersInfo(updates));
 		sendMessage(updateJson->c_str());
 	}
 }
 
-void Room::resetMemberState()
+
+void Room::updateStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& stats)
+{
+	for (const oatpp::Object<MemberStatsDto>& stat : *stats)
+	{
+		memberStats[stat->member_id] = stat;
+	}
+	auto out = WarStateResponseDto::fromMembersStats(stats);
+	oatpp::String updateJson = objectMapper->writeToString(out);
+	sendMessage(updateJson->c_str());
+}
+
+bool Room::needStats()
+{
+	return memberStats.empty();
+}
+
+
+void Room::resetState()
 {
 	membersState.clear();
+	memberStats.clear();
 }

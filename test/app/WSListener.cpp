@@ -31,7 +31,7 @@ void WSListener::readMessage(const WebSocket& socket, v_uint8 opcode, p_char8 da
 		{
 			{
 				std::lock_guard<std::mutex> lk(m_mtx);
-				auto messageDto = apiObjectMapper->readFromString<oatpp::Object<FactionMemberInfoResponseDto>>(
+				auto messageDto = apiObjectMapper->readFromString<oatpp::Object<WarStateResponseDto>>(
 					wholeMessage);
 				m_inbox.push(messageDto);
 			}
@@ -46,7 +46,7 @@ void WSListener::readMessage(const WebSocket& socket, v_uint8 opcode, p_char8 da
 	}
 }
 
-bool WSListener::waitForNext(oatpp::Object<FactionMemberInfoResponseDto>& out, std::chrono::milliseconds timeout)
+bool WSListener::waitForNext(oatpp::Object<WarStateResponseDto>& out, std::chrono::milliseconds timeout)
 {
 	std::unique_lock<std::mutex> lk(m_mtx);
 	if (!m_cv.wait_for(lk, timeout, [&] { return !m_inbox.empty() || m_closed; }))

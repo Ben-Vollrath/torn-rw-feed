@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 
+#include "dto/MemberStatsDto.hpp"
 #include "dto/clients/TornFactionMembersResponseDto.hpp"
 #include "oatpp/core/data/mapping/ObjectMapper.hpp"
 #include "service/TornApiServiceKeyManaged.hpp"
@@ -12,6 +13,12 @@
 
 class Room
 {
+	/* Kept in order to inform new Peers about memberStats in [sendCurrentState].
+	 * All updates on [updateStats] are sent directly through messages and not checked for changes against [memberStats]
+	 */
+	std::unordered_map <std::int64_t, oatpp::Object<MemberStatsDto>> memberStats;
+
+	/* Kept in order to only update on new member Information */
 	std::unordered_map<std::int64_t, oatpp::Object<TornFactionMember>> membersState;
 	std::unordered_map<v_int32, std::shared_ptr<Peer>> m_peerById;
 	std::mutex m_peerByIdLock;
@@ -47,9 +54,19 @@ public:
 	 */
 	void updateMembers(const oatpp::Object<TornFactionMembersResponse>& memberInfos);
 
+	/** Update member stats information.
+	 * Always updates all included fields.
+	 * @param memberStats
+	 */
+	void updateStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& memberStats);
+
+	/** Return true if room has no stat information.
+	 */
+	bool needStats();
+
 	/** Reset member state.
 	 */
-	void resetMemberState();
+	void resetState();
 
 private:
 	/**

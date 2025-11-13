@@ -6,7 +6,7 @@
 
 class MemberStatsService : public CrudService<MemberStatsDb, MemberStatsDto> {
 public:
-	void createMany(const std::vector<oatpp::Object<MemberStatsDto>>& memberStats);
+	oatpp::Vector < oatpp::Object<MemberStatsDto>> createMany(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& memberStats);
 	oatpp::Vector<oatpp::Object<MemberStatsDto>> getAllForWar(std::int64_t warId, std::int64_t factionId);
 
 };

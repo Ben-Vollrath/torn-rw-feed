@@ -22,7 +22,6 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 	FFScouterApiService m_ffScouterApiService;
 
 	std::int64_t m_count = 100;
-	bool m_warNeedsStats = true;
 	std::optional<std::int64_t> m_enemyFactionId;
 	std::optional<std::int64_t> m_warId;
 
@@ -74,14 +73,13 @@ public:
 			auto dto = WarDto::fromWarResponse(factionWarResponse->wars->ranked);
 			auto newWar = m_warService.upsertById(dto);
 			m_warId = newWar->id;
-			m_warNeedsStats = true;
 			m_enemyFactionId = enemyFactionId;
 
 			//New war means new members -> reset old member state
 			auto room = m_room.lock();
 			if (room)
 			{
-				room->resetMemberState();
+				room->resetState();
 			}
 		}
 		m_count = 0;
@@ -100,13 +98,13 @@ public:
 
 		room->updateMembers(memberInfo);
 
-		if (m_warNeedsStats) {
-			auto stats = m_warFactionStatsService.getByFactionAndWarId(m_enemyFactionId.value(), m_warId.value());
+		if (room->needStats()) {
+			auto stats = m_memberStatsService.getAllForWar(m_warId.value(), m_enemyFactionId.value());
 
-			if (!stats) {
+			if (stats->empty()) {
 				return m_ffScouterApiService.getScout(memberInfo).callbackTo(&Fetcher::onScouts);
 			}
-			m_warNeedsStats = false;
+			room->updateStats(stats);
 		}
 
 		return scheduleNextTick();
@@ -114,10 +112,14 @@ public:
 
 	Action onScouts(const FFScouterResponseDto& scouts)
 	{
-	m_memberStatsService.createMany(MemberStatsDto::fromFFScouterResponse(m_warId.value(), m_enemyFactionId.value(), scouts));
-		m_warNeedsStats = false;
+		auto stats = m_memberStatsService.createMany(MemberStatsDto::fromFFScouterResponse(m_warId.value(), m_enemyFactionId.value(), scouts));
 		m_warFactionStatsService.createWithIds(m_enemyFactionId.value(), m_warId.value());
 
+		auto room = m_room.lock();
+		if (room)
+		{
+			room->updateStats(stats);
+		}
 		return scheduleNextTick();
 	}
 

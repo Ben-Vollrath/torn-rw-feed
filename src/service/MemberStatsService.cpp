@@ -1,13 +1,15 @@
 #include "MemberStatsService.hpp"
 
 
-void MemberStatsService::createMany(
-	const std::vector<oatpp::Object<MemberStatsDto>>& memberStats)
+oatpp::Vector < oatpp::Object<MemberStatsDto>> MemberStatsService::createMany(
+	const oatpp::Vector<oatpp::Object<MemberStatsDto>>& memberStats)
 {
-	for (const oatpp::Object<MemberStatsDto>& memberStat : memberStats)
+	auto out = oatpp::Vector<oatpp::Object<MemberStatsDto>>::createShared();
+	for (const oatpp::Object<MemberStatsDto>& memberStat : *memberStats)
 	{
-		create(memberStat);
+		out->emplace_back(create(memberStat));
 	}
+	return out;
 }
 
 oatpp::Vector<oatpp::Object<MemberStatsDto>> MemberStatsService::getAllForWar(std::int64_t warId,

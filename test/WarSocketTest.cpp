@@ -55,28 +55,30 @@ void WarSocketTest::testSocketOk()
 
 	std::thread pump([&] { socket->listen(); });
 
-	oatpp::Object<FactionMemberInfoResponseDto> msg;
-	bool got = listener->waitForNext(msg, std::chrono::seconds(5));
+	oatpp::Object<WarStateResponseDto> msg;
+	//factionMembersOfflineOKPath_
+	bool got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 2);
 	OATPP_ASSERT(msg->members[0]->last_action->status == TornActionStatus::OFFLINE);
 	auto warService = WarService();
 	OATPP_ASSERT(warService.getById(1073741824));
 
+	//ffscouterScoutOkPath_
+	got = listener->waitForNext(msg, std::chrono::seconds(500));
+	OATPP_ASSERT(got);
+	OATPP_ASSERT(!msg->members);
+	OATPP_ASSERT(msg->memberStats["1"]->total == 2989885521);
+	OATPP_ASSERT(!msg->memberStats["2"]->total);
 
-	got = listener->waitForNext(msg, std::chrono::seconds(5));
+	//factionMembersOneOnlineOKPath_
+	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 1);
 	OATPP_ASSERT(msg->members[0]->last_action->status == TornActionStatus::ONLINE);
-	auto memberStatsService = MemberStatsService();
-	auto memberStats = memberStatsService.getAllForWar(1073741824, 2);
-	OATPP_ASSERT(memberStats->size() == 2);
-	auto stats1 = memberStats[0]->member_id == 1 ? memberStats[0] : memberStats[1];
-	auto stats2 = memberStats[0]->member_id == 2 ? memberStats[1] : memberStats[0];
-	OATPP_ASSERT(stats1->total == 2989885521)
 
-
-	got = listener->waitForNext(msg, std::chrono::seconds(5));
+	//factionMembersOfflineOKPath_
+	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 1);
 	OATPP_ASSERT(msg->members[0]->last_action->status == TornActionStatus::OFFLINE);
@@ -114,7 +116,7 @@ void WarSocketTest::testMemberStatInsertOnlyOnce()
 
 	std::thread pump([&] { socket->listen(); });
 
-	oatpp::Object<FactionMemberInfoResponseDto> msg;
+	oatpp::Object<WarStateResponseDto> msg;
 	bool got = listener->waitForNext(msg, std::chrono::seconds(5));
 	OATPP_ASSERT(got);
 	got = listener->waitForNext(msg, std::chrono::seconds(5));
