@@ -81,6 +81,10 @@ public:
 	}());
 
 
+	OATPP_CREATE_COMPONENT(std::shared_ptr<Lobby>, lobby)([] {
+		return std::make_shared<Lobby>();
+	}());
+
 	/**
 	 *  Create websocket connection handler
 	 */
@@ -89,7 +93,8 @@ public:
 		{
 			OATPP_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor);
 			auto connectionHandler = oatpp::websocket::AsyncConnectionHandler::createShared(asyncExecutor);
-			connectionHandler->setSocketInstanceListener(std::make_shared<Lobby>());
+			OATPP_COMPONENT(std::shared_ptr<Lobby>, lobby);
+			connectionHandler->setSocketInstanceListener(lobby);
 			return connectionHandler;
 		}());
 

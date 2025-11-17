@@ -64,6 +64,15 @@ class TornFactionWarResponseDto : public oatpp::DTO
 		assert(factions[1]->id == factionId);
 		return factions[0]->id;
 	}
+
+	std::optional<std::int64_t> getWarId()
+	{
+		if (!this->wars->ranked->war_id)
+		{
+			return std::nullopt;
+		}
+		return this->wars->ranked->war_id;
+	}
 };
 
 #include OATPP_CODEGEN_END(DTO)

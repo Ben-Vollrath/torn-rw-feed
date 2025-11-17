@@ -28,7 +28,9 @@ public:
 		Action act() override
 		{
 			OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-			return _return(controller->createResponse(Status::CODE_200, mockResponseLoader->getNextResponse()));
+			auto rsp = mockResponseLoader->getNextResponse();
+			OATPP_LOGD("/user/basic", "Response: %s", rsp.c_str());
+			return _return(controller->createResponse(Status::CODE_200, rsp));
 		}
 	};
 
@@ -39,7 +41,9 @@ public:
 		Action act() override
 		{
 			OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-			return _return(controller->createResponse(Status::CODE_200, mockResponseLoader->getNextResponse()));
+			auto rsp = mockResponseLoader->getNextResponse();
+			OATPP_LOGD("/faction/basic", "Response: %s", rsp.c_str());
+			return _return(controller->createResponse(Status::CODE_200, rsp));
 		}
 	};
 
@@ -50,7 +54,9 @@ public:
 		Action act() override
 		{
 			OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-			return _return(controller->createResponse(Status::CODE_200, mockResponseLoader->getNextResponse()));
+			auto rsp = mockResponseLoader->getNextResponse();
+			OATPP_LOGD("/faction/wars", "Response: %s", rsp.c_str());
+			return _return(controller->createResponse(Status::CODE_200, rsp));
 		}
 	};
 
@@ -61,7 +67,9 @@ public:
 		Action act() override
 		{
 			OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-			return _return(controller->createResponse(Status::CODE_200, mockResponseLoader->getNextResponse()));
+			auto rsp = mockResponseLoader->getNextResponse();
+			OATPP_LOGD("/faction/{factionId}/members", "Response: %s", rsp.c_str());
+			return _return(controller->createResponse(Status::CODE_200, rsp));
 		}
 	};
 
@@ -70,7 +78,21 @@ public:
 
 			Action act() override {
 			OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-			return _return(controller->createResponse(Status::CODE_200, mockResponseLoader->getNextResponse()));
+			auto rsp = mockResponseLoader->getNextResponse();
+			OATPP_LOGD("/api/v1/get-stats", "Response: %s", rsp.c_str());
+			return _return(controller->createResponse(Status::CODE_200, rsp));
+		}
+	};
+
+
+	ENDPOINT_ASYNC("GET", "/api/v2/{key}/spy/faction/{faction_id}", GetSpies) {
+		ENDPOINT_ASYNC_INIT(GetSpies)
+
+			Action act() override {
+			OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
+			auto rsp = mockResponseLoader->getNextResponse();
+			OATPP_LOGD("/api/v2/{key}/spy/faction/{faction_id}", "Response: %s", rsp.c_str());
+			return _return(controller->createResponse(Status::CODE_200, rsp));
 		}
 	};
 

@@ -1,0 +1,16 @@
+{
+  "faction": {
+    "members": {
+      "1": {
+        "spy": {
+          "strength": 0,
+          "defense": 0,
+          "speed": 0,
+          "dexterity": 0,
+          "total": 100,
+          "timestamp": 1762894797
+        }
+      }
+    }
+  }
+}

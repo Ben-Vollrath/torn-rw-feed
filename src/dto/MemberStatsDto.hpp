@@ -2,6 +2,7 @@
 
 #include "Enums.hpp"
 #include "clients/FFScouterResponseDto.hpp"
+#include "clients/TornStatsSpieResponseDto.hpp"
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/Types.hpp"
 
@@ -23,7 +24,7 @@ class MemberStatsDto : public oatpp::DTO {
 
 	static oatpp::Object<MemberStatsDto> fromFFScouterItem(std::int64_t warId, std::int64_t factionId, const oatpp::Object<FFScouterItemDto>& rsp)
 	{
-		auto dto = MemberStatsDto::createShared();
+		auto dto = createShared();
 		dto->total = rsp->bs_estimate;
 		dto->member_id = rsp->player_id;
 		dto->war_id = warId;
@@ -38,6 +39,31 @@ class MemberStatsDto : public oatpp::DTO {
 		for (const auto& ffScout: *rsp)
 		{
 			out->emplace_back(fromFFScouterItem(warId, factionId, ffScout));
+		}
+		return out;
+	}
+
+	static oatpp::Object<MemberStatsDto> fromTornStatsSpyItem(std::int64_t warId, std::int64_t factionId, std::int64_t memberId, const oatpp::Object<SpyDto>& spy)
+	{
+		auto dto = createShared();
+		dto->total = spy->total;
+		dto->str = spy->strength;
+		dto->def = spy->defense;
+		dto->spd = spy->speed;
+		dto->dex = spy->dexterity;
+		dto->member_id = memberId;
+		dto->war_id = warId;
+		dto->faction_id = factionId;
+		dto->type = MemberStatsType::TORNSTATSSPIES;
+		return dto;
+	}
+
+	static oatpp::Vector<oatpp::Object<MemberStatsDto>> fromTornStatsSpyResponse(std::int64_t warId, std::int64_t factionId, const oatpp::Object<TornStatsSpyResponseDto>& spy)
+	{
+		auto out = oatpp::Vector<oatpp::Object<MemberStatsDto>>::createShared();
+		for (const auto& pair : *spy->faction->members)
+		{
+			out->emplace_back(fromTornStatsSpyItem(warId, factionId, std::stoll(pair.first), pair.second->spy));
 		}
 		return out;
 	}

@@ -46,7 +46,7 @@ public:
 
 		if (m_count >= 100)
 		{
-			return m_tornApiService.getFactionWar().callbackTo(&Fetcher::onFactionIdUpdate);
+			return m_tornApiService.getFactionWar().callbackTo(&Fetcher::onFactionWarResponse);
 		}
 
 		if (m_enemyFactionId)
@@ -62,7 +62,7 @@ public:
 		return scheduleNextTick();
 	}
 
-	Action onFactionIdUpdate(const oatpp::Object<TornFactionWarResponseDto>& factionWarResponse)
+	Action onFactionWarResponse(const oatpp::Object<TornFactionWarResponseDto>& factionWarResponse)
 	{
 		auto enemyFactionId = factionWarResponse->getEnemyFactionId(m_factionId);
 		if (m_enemyFactionId != enemyFactionId)
@@ -78,6 +78,7 @@ public:
 			if (room)
 			{
 				room->resetState();
+				room->updateWar(factionWarResponse);
 			}
 		}
 		m_count = 0;

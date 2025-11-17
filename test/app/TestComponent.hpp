@@ -14,6 +14,7 @@
 #include "../TestingFixtures.hpp"
 #include "../MockTorn/MockResponseLoader.hpp"
 #include "clients/FFScouterApiClient.hpp"
+#include "clients/TornStatsApiClient.hpp"
 #include "oatpp/web/server/AsyncHttpConnectionHandler.hpp"
 #include "war/Lobby.hpp"
 
@@ -129,6 +130,24 @@ public:
 		}());
 
 
+	OATPP_CREATE_COMPONENT(std::shared_ptr<TornStatsApiClient>, tornStatsApiClient)([] {
+		/* Get client connection provider for Api Client */
+		OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
+
+		/* Get object mapper component */
+		OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
+
+		/* Create http request executor for Api Client */
+		auto requestExecutor = oatpp::web::client::HttpRequestExecutor::createShared(clientConnectionProvider);
+
+		return TornStatsApiClient::createShared(requestExecutor, objectMapper);
+		}());
+
+
+	OATPP_CREATE_COMPONENT(std::shared_ptr<Lobby>, lobby)([] {
+		return std::make_shared<Lobby>();
+	}());
+
 	/**
 	 *  Create websocket connection handler
 	 */
@@ -137,7 +156,8 @@ public:
 		{
 			OATPP_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor);
 			auto connectionHandler = oatpp::websocket::AsyncConnectionHandler::createShared(asyncExecutor);
-			connectionHandler->setSocketInstanceListener(std::make_shared<Lobby>());
+			OATPP_COMPONENT(std::shared_ptr<Lobby>, lobby);
+			connectionHandler->setSocketInstanceListener(lobby);
 			return connectionHandler;
 		}());
 

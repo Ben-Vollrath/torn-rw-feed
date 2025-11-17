@@ -73,6 +73,13 @@ public:
 		return m_apiKeyService.issueKey(userId);
 	}
 
+	oatpp::web::protocol::http::Headers getUserAuthHeader(ApiKeyService::IssueResult issueResult)
+	{
+		oatpp::web::protocol::http::Headers headers;
+		headers.put(oatpp::web::protocol::http::Header::AUTHORIZATION, oatpp::String(issueResult.fullKey));
+		return headers;
+	}
+
 	oatpp::web::protocol::http::Headers getUserAuthHeader(std::int64_t userId)
 	{
 		auto issueResult = getUserApiKey(userId);
