@@ -3,6 +3,7 @@
 #include "oatpp/web/protocol/http/Http.hpp"
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp/core/Types.hpp"
+#include "oatpp-postgresql/orm.hpp"
 
 #include <memory>
 
@@ -13,12 +14,29 @@ protected:
 	using Status = oatpp::web::protocol::http::Status;
 	OATPP_COMPONENT(std::shared_ptr<DbT>, db_); // injected Db client
 
-	// Helper: fetch exactly one row or throw
+	// Helper: fetch exactly one row or 
 	static oatpp::Object<DtoT> fetchOne(const std::shared_ptr<oatpp::orm::QueryResult>& qr)
 	{
 		OATPP_ASSERT_HTTP(qr->isSuccess(), Status::CODE_500, qr->getErrorMessage());
 		auto rows = qr->fetch<oatpp::Vector<oatpp::Object<DtoT>>>();
 		OATPP_ASSERT_HTTP(rows && rows->size() == 1, Status::CODE_500, "Unknown Error");
+		return rows[0];
+	}
+
+	// Helper: fetch zero or one row (returns nullptr if no rows)
+	static oatpp::Object<DtoT> fetchOneOrNone(const std::shared_ptr<oatpp::orm::QueryResult>& qr)
+	{
+		OATPP_ASSERT_HTTP(qr->isSuccess(), Status::CODE_500, qr->getErrorMessage());
+		if (!qr->hasMoreToFetch())
+		{
+			return nullptr;
+		}
+		auto rows = qr->fetch<oatpp::Vector<oatpp::Object<DtoT>>>();
+		if (!rows || rows->empty())
+		{
+			return nullptr;
+		}
+		OATPP_ASSERT_HTTP(rows->size() == 1, Status::CODE_500, "Unknown Error");
 		return rows[0];
 	}
 
@@ -59,23 +77,20 @@ public:
 	oatpp::Object<DtoT> getByIdNullable(const std::int64_t& id) const
 	{
 		auto qr = db_->getById(id);
-		OATPP_ASSERT_HTTP(qr->isSuccess(), Status::CODE_500, qr->getErrorMessage());
-		if (!qr->hasMoreToFetch())
-		{
-			return nullptr;
-		}
-		auto rows = qr->template fetch<oatpp::Vector<oatpp::Object<DtoT>>>();
-		if (!rows || rows->empty())
-		{
-			return nullptr;
-		}
-		return rows[0];
+		return fetchOneOrNone(qr);
 	}
 
 	// DELETE (throws on error)
 	void removeById(const std::int64_t& id) const
 	{
 		auto qr = db_->deleteById(id);
+		OATPP_ASSERT_HTTP(qr->isSuccess(), Status::CODE_500, qr->getErrorMessage());
+	}
+
+	// DELETE (throws on error)
+	void removeAll() const
+	{
+		auto qr = db_->deleteAll();
 		OATPP_ASSERT_HTTP(qr->isSuccess(), Status::CODE_500, qr->getErrorMessage());
 	}
 };

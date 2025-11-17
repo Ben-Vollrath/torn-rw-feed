@@ -5,18 +5,30 @@
 #include <unordered_map>
 
 
-#include "dto/torn_client/TornFactionMembersResponseDto.hpp"
+#include "dto/MemberStatsDto.hpp"
+#include "dto/clients/TornFactionMembersResponseDto.hpp"
 #include "oatpp/core/data/mapping/ObjectMapper.hpp"
 #include "service/TornApiServiceKeyManaged.hpp"
 
 
 class Room
 {
-	std::unordered_map<std::int64_t, FactionMemberInfo> membersState;
+	/* Kept in order to inform new Peers about memberStats in [sendCurrentState].
+	 * All updates on [updateStats] are sent directly through messages and not checked for changes against [memberStats]
+	 */
+	std::unordered_map<std::int64_t, oatpp::Object<MemberStatsDto>> m_memberStats;
+
+	/* Kept in order to only update on new member Information */
+	std::unordered_map<std::int64_t, oatpp::Object<TornFactionMember>> m_memberState;
+
+	/* General information about the ongoing war */
+	oatpp::Object<TornFactionWarResponseDto> m_factionWar;
+
+
 	std::unordered_map<v_int32, std::shared_ptr<Peer>> m_peerById;
 	std::mutex m_peerByIdLock;
 
-	std::atomic<bool> closed_{false};
+	std::atomic<bool> m_closed{false};
 	std::int64_t m_factionId;
 	OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
 
@@ -28,6 +40,10 @@ public:
 	bool isClosed() const;
 
 	std::int64_t factionId() const;
+
+	std::optional<std::int64_t> getWarId();
+
+	std::optional<std::int64_t> getEnemyFactionId();
 
 	/**
 	 * Add peer to the room.
@@ -45,7 +61,26 @@ public:
 	/** Update member information.
 	 * @param memberInfos
 	 */
-	void updateMembers(std::vector<FactionMemberInfo> memberInfos);
+	void updateMembers(const oatpp::Object<TornFactionMembersResponse>& memberInfos);
+
+	/** Update member stats information.
+	 * Always updates all included fields.
+	 * @param memberStats
+	 */
+	void updateStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& memberStats);
+
+	/** Updates current war
+	 *
+	 */
+	void updateWar(const oatpp::Object<TornFactionWarResponseDto>& factionWarResponses);
+
+	/** Return true if room has no stat information.
+	 */
+	bool needStats();
+
+	/** Reset member state.
+	 */
+	void resetState();
 
 private:
 	/**

@@ -2,7 +2,7 @@
 
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/Types.hpp"
-#include "torn_client/TornFactionResponseDto.hpp"
+#include "clients/TornFactionResponseDto.hpp"
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 

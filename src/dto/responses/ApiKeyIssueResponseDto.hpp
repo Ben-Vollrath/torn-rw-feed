@@ -13,7 +13,6 @@ class ApiKeyIssueResponseDto : public oatpp::DTO
 	DTO_FIELD(oatpp::Int64, id);
 	DTO_FIELD(oatpp::String, prefix);
 
-	// Show the full API key ONCE (never store this)
 	DTO_FIELD(oatpp::String, apiKey, "api_key");
 
 	DTO_FIELD(oatpp::Int64, expiresAt, "expires_at");
@@ -30,4 +29,4 @@ class ApiKeyIssueResponseDto : public oatpp::DTO
 	}
 };
 
-#include OATPP_CODEGEN_BEGIN(DTO)
+#include OATPP_CODEGEN_END(DTO)

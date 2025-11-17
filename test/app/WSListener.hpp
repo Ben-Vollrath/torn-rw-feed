@@ -18,7 +18,7 @@ class WSListener : public oatpp::websocket::WebSocket::Listener
 	oatpp::data::stream::BufferOutputStream m_messageBuffer;
 	std::mutex m_mtx;
 	std::condition_variable m_cv;
-	std::queue<oatpp::Object<FactionMemberInfoResponseDto>> m_inbox;
+	std::queue<oatpp::Object<WarStateResponseDto>> m_inbox;
 	bool m_closed = false;
 
 public:
@@ -43,5 +43,5 @@ public:
 	void readMessage(const WebSocket& socket, v_uint8 opcode, p_char8 data, oatpp::v_io_size size) override;
 
 
-	bool waitForNext(oatpp::Object<FactionMemberInfoResponseDto>& out, std::chrono::milliseconds timeout);
+	bool waitForNext(oatpp::Object<WarStateResponseDto>& out, std::chrono::milliseconds timeout);
 };

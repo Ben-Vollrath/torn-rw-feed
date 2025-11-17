@@ -30,6 +30,11 @@ public:
 	v_int32 obtainNewUserId();
 
 	/**
+	 *Get room if one is available else return nullopt
+	 */
+	std::optional<std::shared_ptr<Room>> getRoomNullable(std::int64_t factionId);
+
+	/**
 	 * Get room by name or create new one if not exists.
 	 * @param roomName
 	 * @return

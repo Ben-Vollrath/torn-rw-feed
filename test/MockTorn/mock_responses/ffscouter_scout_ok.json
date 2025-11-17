@@ -1,0 +1,16 @@
+[
+  {
+    "player_id": 1,
+    "fair_fight": 5.39,
+    "bs_estimate": 2989885521,
+    "bs_estimate_human": "2.99b",
+    "last_updated": 1747333361
+  },
+  {
+    "player_id": 2,
+    "fair_fight": null,
+    "bs_estimate": null,
+    "bs_estimate_human": null,
+    "last_updated": null
+  }
+]

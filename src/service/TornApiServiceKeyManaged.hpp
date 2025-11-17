@@ -32,12 +32,6 @@ public:
 		return callWithKeyManagement(&TornApiService::getFactionMembers, factionId);
 	}
 
-	oatpp::async::CoroutineStarterForResult<const std::vector<FactionMemberInfo>&> getFactionMembersCompact(
-		const std::int64_t factionId)
-	{
-		return callWithKeyManagement(&TornApiService::getFactionMembersCompact, factionId);
-	}
-
 	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarResponseDto>&> getFactionWar()
 	{
 		return callWithKeyManagement(&TornApiService::getFactionWar);

@@ -5,11 +5,14 @@
 
 #include <unordered_set>
 
+#include "service/MemberStatsService.hpp"
+
 class TestingFixtures
 {
 	UserService m_userService;
 	FactionService m_factionService;
 	ApiKeyService m_apiKeyService;
+	MemberStatsService m_memberStatsService;
 
 	std::int64_t idx = 0;
 
@@ -17,28 +20,16 @@ class TestingFixtures
 	std::unordered_set<std::int64_t> m_factionIds;
 
 public:
-	~TestingFixtures()
-	{
-		reset();
-	}
 
 	void reset()
 	{
-		idx = 0;
-		for (const auto userId : m_userIds)
-		{
-			try { m_userService.removeById(userId); }
-			catch (...)
-			{
-			}
-		}
-		for (const auto factionId : m_factionIds)
-		{
-			try { m_factionService.removeById(factionId); }
-			catch (...)
-			{
-			}
-		}
+		m_userIds.clear();
+		m_factionIds.clear(); 
+
+		m_userService.removeAll();
+		m_factionService.removeAll();
+		m_apiKeyService.removeAll();
+		m_memberStatsService.removeAll();
 	}
 
 	oatpp::Object<FactionDto> createTestFaction(std::int64_t factionId)
@@ -77,6 +68,13 @@ public:
 	ApiKeyService::IssueResult getUserApiKey(std::int64_t userId)
 	{
 		return m_apiKeyService.issueKey(userId);
+	}
+
+	oatpp::web::protocol::http::Headers getUserAuthHeader(ApiKeyService::IssueResult issueResult)
+	{
+		oatpp::web::protocol::http::Headers headers;
+		headers.put(oatpp::web::protocol::http::Header::AUTHORIZATION, oatpp::String(issueResult.fullKey));
+		return headers;
 	}
 
 	oatpp::web::protocol::http::Headers getUserAuthHeader(std::int64_t userId)

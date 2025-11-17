@@ -7,6 +7,17 @@ v_int32 Lobby::obtainNewUserId()
 	return m_userIdCounter++;
 }
 
+std::optional<std::shared_ptr<Room>> Lobby::getRoomNullable(std::int64_t factionId)
+{
+	std::lock_guard<std::mutex> lock(m_roomsMutex);
+	std::shared_ptr<Room>& room = m_rooms[factionId];
+	if (!room)
+		return std::nullopt;
+
+	return room;
+}
+
+
 std::shared_ptr<Room> Lobby::getOrCreateRoom(const std::int64_t factionId)
 {
 	std::lock_guard<std::mutex> lock(m_roomsMutex);

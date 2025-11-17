@@ -59,7 +59,7 @@ public:
 		{
 			m_tornKey = request->getQueryParameter("torn_key");
 			return controller->m_tornApiService.getFactionBasic(m_tornKey).
-				                   callbackTo(&authorizeUser::upsertFaction);
+			                   callbackTo(&authorizeUser::upsertFaction);
 		}
 
 		oatpp::async::Action upsertFaction(const oatpp::Object<TornFactionResponseDto>& factionBasics)

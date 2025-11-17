@@ -22,4 +22,10 @@ ENUM(TornUserStatusState, v_int32,
      VALUE(TRAVELING, 8, "Traveling")
 )
 
+ENUM(MemberStatsType, v_int32,
+     VALUE(FFSCOUTER, 0, "ffscouter"),
+     VALUE(TORNSTATSSPIES, 1, "tornstatsspies")
+)
+
+
 #include OATPP_CODEGEN_END(DTO)

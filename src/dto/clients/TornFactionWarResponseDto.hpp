@@ -1,7 +1,12 @@
 #pragma once
 
+#include <cassert>
+#include <optional>
+
 #include "oatpp/core/Types.hpp"
 #include "oatpp/core/macro/codegen.hpp"
+#include "oatpp/core/macro/component.hpp"
+#include "oatpp/web/server/api/ApiController.hpp"
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
@@ -41,6 +46,34 @@ class TornFactionWarResponseDto : public oatpp::DTO
 	DTO_INIT(TornFactionWarResponseDto, DTO)
 
 	DTO_FIELD(Object<TornFactionWarsDto>, wars);
+
+
+	std::optional<std::int64_t> getEnemyFactionId(std::int64_t factionId)
+	{
+		if (!this->wars->ranked)
+		{
+			return std::nullopt;
+		}
+
+		const auto& factions = this->wars->ranked->factions;
+
+		OATPP_ASSERT_HTTP(factions->size() == 2, oatpp::web::protocol::http::Status::CODE_502, "502")
+
+		if (factions[0]->id == factionId)
+			return factions[1]->id;
+
+		assert(factions[1]->id == factionId);
+		return factions[0]->id;
+	}
+
+	std::optional<std::int64_t> getWarId()
+	{
+		if (!this->wars->ranked->war_id)
+		{
+			return std::nullopt;
+		}
+		return this->wars->ranked->war_id;
+	}
 };
 
 #include OATPP_CODEGEN_END(DTO)
