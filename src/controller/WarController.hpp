@@ -56,7 +56,7 @@ public:
 		authHeader.description = "Bearer token for authentication";
 		authHeader.required = true;
 
-		info->addTag("WebSocket");
+		info->addTag("War");
 	}
 	ENDPOINT_ASYNC("GET", "/wars/socket", WS)
 	{
@@ -93,7 +93,6 @@ public:
 
 	ENDPOINT_INFO(addWarSpy) {
 		info->summary = "Add War Spy Information";
-		info->addResponse<String>(Status::CODE_101, "text/plain", "WebSocket upgrade");
 		info->queryParams.add<oatpp::String>("torn_stats_key");
 
 		auto& authHeader = info->headers.add<oatpp::String>(oatpp::web::protocol::http::Header::AUTHORIZATION);
@@ -101,6 +100,8 @@ public:
 		authHeader.required = true;
 
 		info->addResponse<Object<SpyResponseDto>>(Status::CODE_200, "application/json");
+
+		info->addTag("War");
 	}
 	ENDPOINT_ASYNC("POST", "/wars/spy", addWarSpy) {
 		const std::string TAG = "ADDWARSPY";
