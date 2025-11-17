@@ -21,7 +21,7 @@ add_definitions(-DSQL_FILE_PATH="${CMAKE_SOURCE_DIR}/src/db/sql/")
 
 add_executable(torn_rw_feed
   src/App.cpp
- "src/service/ApiKeyService.cpp" "src/service/TornApiService.cpp" "src/war/Room.cpp" "src/war/Lobby.cpp" "src/war/Peer.cpp" "src/service/TornApiServiceKeyManaged.cpp" "src/service/UserService.cpp" "src/service/WarService.cpp"  "src/service/FFScouterApiService.cpp" "src/service/MemberStatsService.cpp" "src/service/TornStatsApiService.cpp")
+ "src/service/ApiKeyService.cpp" "src/service/TornApiService.cpp" "src/war/Room.cpp" "src/war/Lobby.cpp" "src/war/Peer.cpp" "src/service/TornApiServiceKeyManaged.cpp" "src/service/UserService.cpp"   "src/service/FFScouterApiService.cpp" "src/service/MemberStatsService.cpp" "src/service/TornStatsApiService.cpp")
 
 set(OATPP_SWAGGER_RES_PATH "${CMAKE_SOURCE_DIR}/libs/oatpp-swagger/res")
 
@@ -45,7 +45,7 @@ target_link_libraries(torn_rw_feed PRIVATE
 enable_testing()
 add_executable(torn_rw_feed_test
 	test/tests.cpp
- "src/service/ApiKeyService.cpp" "test/AuthControllerTest.cpp" "src/service/TornApiService.cpp" "src/war/Room.cpp" "src/war/Lobby.cpp" "src/war/Peer.cpp" "src/service/TornApiServiceKeyManaged.cpp" "src/service/UserService.cpp" "src/service/WarService.cpp" "test/WarSocketTest.cpp" "test/app/WSListener.cpp"  "src/service/FFScouterApiService.cpp" "src/service/MemberStatsService.cpp" "src/service/TornStatsApiService.cpp")
+ "src/service/ApiKeyService.cpp" "test/AuthControllerTest.cpp" "src/service/TornApiService.cpp" "src/war/Room.cpp" "src/war/Lobby.cpp" "src/war/Peer.cpp" "src/service/TornApiServiceKeyManaged.cpp" "src/service/UserService.cpp"  "test/WarSocketTest.cpp" "test/app/WSListener.cpp"  "src/service/FFScouterApiService.cpp" "src/service/MemberStatsService.cpp" "src/service/TornStatsApiService.cpp")
 
 add_definitions(-DMOCK_RESPONSE_BASE="${CMAKE_SOURCE_DIR}/test/MockTorn/mock_responses/")
 

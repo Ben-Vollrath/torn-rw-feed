@@ -1,12 +1,12 @@
 #pragma once
 
 #include "Room.hpp"
+#include "dto/WarDto.hpp"
 #include "oatpp/core/async/Coroutine.hpp"
 #include "service/FactionService.hpp"
 #include "service/FFScouterApiService.hpp"
 #include "service/MemberStatsService.hpp"
 #include "service/TornApiServiceKeyManaged.hpp"
-#include "service/WarService.hpp"
 
 class Fetcher : public oatpp::async::Coroutine<Fetcher>
 {
@@ -15,7 +15,6 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 	std::weak_ptr<Room> m_room;
 	std::chrono::microseconds m_interval;
 
-	WarService m_warService;
 	MemberStatsService m_memberStatsService;
 	FFScouterApiService m_ffScouterApiService;
 
@@ -68,8 +67,7 @@ public:
 		if (m_enemyFactionId != enemyFactionId)
 		{
 			//New war is detected
-			auto dto = WarDto::fromWarResponse(factionWarResponse->wars->ranked);
-			auto newWar = m_warService.upsertById(dto);
+			auto newWar = WarDto::fromWarResponse(factionWarResponse->wars->ranked);
 			m_warId = newWar->id;
 			m_enemyFactionId = enemyFactionId;
 

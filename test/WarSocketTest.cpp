@@ -13,7 +13,6 @@
 #include "oatpp-test/web/ClientServerTestRunner.hpp"
 
 #include "MockTorn/TornController.hpp"
-#include "service/WarService.hpp"
 
 namespace
 {
@@ -62,8 +61,6 @@ void WarSocketTest::testSocketOk()
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 2);
 	OATPP_ASSERT(msg->members[0]->last_action->status == TornActionStatus::OFFLINE);
-	auto warService = WarService();
-	OATPP_ASSERT(warService.getById(1073741824));
 
 	//ffscouterScoutOkPath_
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
@@ -122,9 +119,6 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 2);
 	OATPP_ASSERT(msg->members[0]->last_action->status == TornActionStatus::OFFLINE);
-	auto warService = WarService();
-	OATPP_ASSERT(warService.getById(1073741824));
-
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(!msg->members);
@@ -159,7 +153,6 @@ void WarSocketTest::testPostSpyWithoutRoom(const std::shared_ptr<ApiTestClient> 
 	auto user = testingFixtures->createTestUser(1);
 	auto issueResult = testingFixtures->getUserApiKey(user->id);
 	auto authHeader = testingFixtures->getUserAuthHeader(issueResult);
-	testingFixtures->createWar(1073741824);
 
 	auto rsp = client->warSpy("testKey", issueResult.fullKey);
 	OATPP_ASSERT(rsp->getStatusCode() == 200);

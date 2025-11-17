@@ -1,5 +1,5 @@
 CREATE TABLE member_stats (
-	war_id BIGINT NOT NULL REFERENCES wars(id) ON DELETE CASCADE,
+	war_id BIGINT NOT NULL,
 	faction_id BIGINT NOT NULL,
 	member_id BIGINT NOT NULL,
 	str BIGINT,

@@ -6,14 +6,12 @@
 #include <unordered_set>
 
 #include "service/MemberStatsService.hpp"
-#include "service/WarService.hpp"
 
 class TestingFixtures
 {
 	UserService m_userService;
 	FactionService m_factionService;
 	ApiKeyService m_apiKeyService;
-	WarService m_warService;
 	MemberStatsService m_memberStatsService;
 
 	std::int64_t idx = 0;
@@ -31,7 +29,6 @@ public:
 		m_userService.removeAll();
 		m_factionService.removeAll();
 		m_apiKeyService.removeAll();
-		m_warService.removeAll();
 		m_memberStatsService.removeAll();
 	}
 
@@ -86,13 +83,5 @@ public:
 		oatpp::web::protocol::http::Headers headers;
 		headers.put(oatpp::web::protocol::http::Header::AUTHORIZATION, oatpp::String(issueResult.fullKey));
 		return headers;
-	}
-
-	oatpp::Object<WarDto> createWar(std::int64_t warId)
-	{
-		auto dto = WarDto::createShared();
-		dto->id = warId;
-		dto->startAt = 1;
-		return m_warService.create(dto);
 	}
 };
