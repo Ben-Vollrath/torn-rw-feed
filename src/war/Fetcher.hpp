@@ -85,7 +85,6 @@ public:
 
 	Action onMemberUpdate(const oatpp::Object<TornFactionMembersResponse>& memberInfo)
 	{
-
 		auto room = m_room.lock();
 		if (!room || room->isClosed())
 		{
@@ -95,10 +94,12 @@ public:
 
 		room->updateMembers(memberInfo);
 
-		if (room->needStats()) {
+		if (room->needStats())
+		{
 			auto stats = m_memberStatsService.getAllForWar(m_warId.value(), m_enemyFactionId.value());
 
-			if (stats->empty()) {
+			if (stats->empty())
+			{
 				return m_ffScouterApiService.getScout(memberInfo).callbackTo(&Fetcher::onScouts);
 			}
 			room->updateStats(stats);
@@ -109,7 +110,8 @@ public:
 
 	Action onScouts(const FFScouterResponseDto& scouts)
 	{
-		auto stats = m_memberStatsService.createMany(MemberStatsDto::fromFFScouterResponse(m_warId.value(), m_enemyFactionId.value(), scouts));
+		auto stats = m_memberStatsService.createMany(
+			MemberStatsDto::fromFFScouterResponse(m_warId.value(), m_enemyFactionId.value(), scouts));
 
 		auto room = m_room.lock();
 		if (room)
@@ -119,14 +121,16 @@ public:
 		return scheduleNextTick();
 	}
 
-	Action scheduleNextTick() {
+	Action scheduleNextTick()
+	{
 		using namespace std::chrono;
 		auto now = duration_cast<microseconds>(seconds(std::time(nullptr)));
 		++m_count;
 		return oatpp::async::Action::createWaitRepeatAction(now.count() + m_interval.count());
 	}
 
-	Action handleError(Error* e) override {
+	Action handleError(Error* e) override
+	{
 		OATPP_LOGE(TAG, "Fetcher error: %s", e ? e->what() : "unknown");
 
 		return scheduleNextTick();

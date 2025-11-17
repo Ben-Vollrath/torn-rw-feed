@@ -5,7 +5,8 @@
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class SpyResponseDto : public oatpp::DTO {
+class SpyResponseDto : public oatpp::DTO
+{
 	DTO_INIT(SpyResponseDto, DTO)
 
 	DTO_FIELD(oatpp::Int64, importSize, "import_size");

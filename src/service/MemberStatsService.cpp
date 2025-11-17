@@ -1,7 +1,7 @@
 #include "MemberStatsService.hpp"
 
 
-oatpp::Vector < oatpp::Object<MemberStatsDto>> MemberStatsService::createMany(
+oatpp::Vector<oatpp::Object<MemberStatsDto>> MemberStatsService::createMany(
 	const oatpp::Vector<oatpp::Object<MemberStatsDto>>& memberStats)
 {
 	auto out = oatpp::Vector<oatpp::Object<MemberStatsDto>>::createShared();
@@ -13,7 +13,7 @@ oatpp::Vector < oatpp::Object<MemberStatsDto>> MemberStatsService::createMany(
 }
 
 oatpp::Vector<oatpp::Object<MemberStatsDto>> MemberStatsService::getAllForWar(std::int64_t warId,
-	std::int64_t factionId)
+                                                                              std::int64_t factionId)
 {
 	auto qr = db_->findByWarAndFaction(warId, factionId);
 	OATPP_ASSERT_HTTP(qr->isSuccess(), Status::CODE_500, qr->getErrorMessage());

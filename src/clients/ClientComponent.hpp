@@ -24,7 +24,8 @@ public:
 		return TornApiClient::createShared(requestExecutor, objectMapper);
 	}());
 
-	OATPP_CREATE_COMPONENT(std::shared_ptr<FFScouterApiClient>, ffScouterClient)([] {
+	OATPP_CREATE_COMPONENT(std::shared_ptr<FFScouterApiClient>, ffScouterClient)([]
+	{
 		using namespace oatpp::network;
 		using namespace oatpp::web;
 		using namespace oatpp::parser;
@@ -35,10 +36,11 @@ public:
 		OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
 
 		return FFScouterApiClient::createShared(requestExecutor, objectMapper);
-		}());
+	}());
 
 
-	OATPP_CREATE_COMPONENT(std::shared_ptr<TornStatsApiClient>, tornStatsClient)([] {
+	OATPP_CREATE_COMPONENT(std::shared_ptr<TornStatsApiClient>, tornStatsClient)([]
+	{
 		using namespace oatpp::network;
 		using namespace oatpp::web;
 		using namespace oatpp::parser;
@@ -49,5 +51,5 @@ public:
 		OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
 
 		return TornStatsApiClient::createShared(requestExecutor, objectMapper);
-		}());
+	}());
 };

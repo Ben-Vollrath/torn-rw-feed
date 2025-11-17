@@ -2,7 +2,8 @@
 #include <string>
 
 
-struct AppConfig {
+struct AppConfig
+{
 	std::string ffscouterApiKey;
 	std::string databaseUrl;
 };

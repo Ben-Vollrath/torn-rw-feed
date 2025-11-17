@@ -59,7 +59,7 @@ public:
 	      PARAM(oatpp::Int64, id))
 
 	QUERY(deleteAll,
-		"DELETE FROM api_keys;")
+	      "DELETE FROM api_keys;")
 };
 
 #include OATPP_CODEGEN_END(DbClient)

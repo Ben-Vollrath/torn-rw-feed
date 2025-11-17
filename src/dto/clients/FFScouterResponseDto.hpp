@@ -5,10 +5,11 @@
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class FFScouterItemDto : public oatpp::DTO {
+class FFScouterItemDto : public oatpp::DTO
+{
 	DTO_INIT(FFScouterItemDto, DTO)
 
-		DTO_FIELD(Int64, player_id);
+	DTO_FIELD(Int64, player_id);
 	DTO_FIELD(Int64, bs_estimate);
 };
 

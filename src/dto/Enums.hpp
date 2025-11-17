@@ -23,8 +23,8 @@ ENUM(TornUserStatusState, v_int32,
 )
 
 ENUM(MemberStatsType, v_int32,
-    VALUE(FFSCOUTER, 0, "ffscouter"),
-    VALUE(TORNSTATSSPIES, 1, "tornstatsspies")
+     VALUE(FFSCOUTER, 0, "ffscouter"),
+     VALUE(TORNSTATSSPIES, 1, "tornstatsspies")
 )
 
 

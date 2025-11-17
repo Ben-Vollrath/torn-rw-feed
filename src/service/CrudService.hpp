@@ -24,13 +24,16 @@ protected:
 	}
 
 	// Helper: fetch zero or one row (returns nullptr if no rows)
-	static oatpp::Object<DtoT> fetchOneOrNone(const std::shared_ptr<oatpp::orm::QueryResult>& qr) {
+	static oatpp::Object<DtoT> fetchOneOrNone(const std::shared_ptr<oatpp::orm::QueryResult>& qr)
+	{
 		OATPP_ASSERT_HTTP(qr->isSuccess(), Status::CODE_500, qr->getErrorMessage());
-		if (!qr->hasMoreToFetch()) {
+		if (!qr->hasMoreToFetch())
+		{
 			return nullptr;
 		}
 		auto rows = qr->fetch<oatpp::Vector<oatpp::Object<DtoT>>>();
-		if (!rows || rows->empty()) {
+		if (!rows || rows->empty())
+		{
 			return nullptr;
 		}
 		OATPP_ASSERT_HTTP(rows->size() == 1, Status::CODE_500, "Unknown Error");
@@ -85,7 +88,8 @@ public:
 	}
 
 	// DELETE (throws on error)
-	void removeAll() const {
+	void removeAll() const
+	{
 		auto qr = db_->deleteAll();
 		OATPP_ASSERT_HTTP(qr->isSuccess(), Status::CODE_500, qr->getErrorMessage());
 	}

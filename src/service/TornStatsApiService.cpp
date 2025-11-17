@@ -1,10 +1,13 @@
 #include "TornStatsApiService.hpp"
 
 
-oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornStatsSpyResponseDto>&> TornStatsApiService::getSpies(std::string key,
+oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornStatsSpyResponseDto>&> TornStatsApiService::getSpies(
+	std::string key,
 	std::string factionId)
 {
-	class GetSpiesCoroutine : public oatpp::async::CoroutineWithResult<GetSpiesCoroutine, const oatpp::Object<TornStatsSpyResponseDto>&> {
+	class GetSpiesCoroutine : public oatpp::async::CoroutineWithResult<
+			GetSpiesCoroutine, const oatpp::Object<TornStatsSpyResponseDto>&>
+	{
 		const std::shared_ptr<TornStatsApiClient> m_client;
 		const std::shared_ptr<oatpp::data::mapping::ObjectMapper> m_om;
 		const std::string m_key;
@@ -16,15 +19,18 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornStatsSpyResponse
 			const std::shared_ptr<oatpp::data::mapping::ObjectMapper>& om,
 			std::string key,
 			std::string factionId) :
-			m_client(client), m_om(om), m_key(std::move(key)), m_factionId(std::move(factionId)){
+			m_client(client), m_om(om), m_key(std::move(key)), m_factionId(std::move(factionId))
+		{
 		}
 
 	private:
-		oatpp::async::Action act() override {
+		oatpp::async::Action act() override
+		{
 			return m_client->getSpies(m_key, m_factionId).callbackTo(&GetSpiesCoroutine::parseResponse);
 		}
 
-		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp) {
+		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
+		{
 			return _return(rsp->readBodyToDto<oatpp::Object<TornStatsSpyResponseDto>>(m_om));
 		}
 	};

@@ -14,11 +14,10 @@
 class DatabaseComponent
 {
 public:
-
 	// Provider (backend-specific) toggles between sqlite and postgre depending on environment
 	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionProvider>, connectionProvider)([]
 	{
-			OATPP_COMPONENT(std::shared_ptr<AppConfig>, appConfig);
+		OATPP_COMPONENT(std::shared_ptr<AppConfig>, appConfig);
 		return std::make_shared<oatpp::postgresql::ConnectionProvider>(appConfig->databaseUrl);
 	}());
 
@@ -63,7 +62,8 @@ public:
 	}());
 
 	OATPP_CREATE_COMPONENT(std::shared_ptr<MemberStatsDb>, memberStatsDb)
-		([] {
+	([]
+	{
 		OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
 		return std::make_shared<MemberStatsDb>(dbExecutor);
 	}());

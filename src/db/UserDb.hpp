@@ -58,7 +58,7 @@ public:
 	      PARAM(oatpp::String, torn_key))
 
 	QUERY(deleteAll,
-		"DELETE FROM users;")
+	      "DELETE FROM users;")
 };
 
 #include OATPP_CODEGEN_END(DbClient)

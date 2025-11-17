@@ -50,7 +50,8 @@ class TornFactionWarResponseDto : public oatpp::DTO
 
 	std::optional<std::int64_t> getEnemyFactionId(std::int64_t factionId)
 	{
-		if (!this->wars->ranked) {
+		if (!this->wars->ranked)
+		{
 			return std::nullopt;
 		}
 

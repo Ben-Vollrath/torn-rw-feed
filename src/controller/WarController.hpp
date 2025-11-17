@@ -58,6 +58,7 @@ public:
 
 		info->addTag("War");
 	}
+
 	ENDPOINT_ASYNC("GET", "/wars/socket", WS)
 	{
 		const std::string TAG = "WARSOCKET";
@@ -85,13 +86,15 @@ public:
 			return _return(response);
 		}
 
-		Action handleError(Error* e) override {
+		Action handleError(Error* e) override
+		{
 			OATPP_LOGE(TAG, " Error: %s", e ? e->what() : "unknown");
 			return _return(controller->createResponse(Status::CODE_500, "Internal Server Error"));
 		}
 	};
 
-	ENDPOINT_INFO(addWarSpy) {
+	ENDPOINT_INFO(addWarSpy)
+	{
 		info->summary = "Add War Spy Information";
 		info->queryParams.add<oatpp::String>("torn_stats_key");
 
@@ -103,7 +106,9 @@ public:
 
 		info->addTag("War");
 	}
-	ENDPOINT_ASYNC("POST", "/wars/spy", addWarSpy) {
+
+	ENDPOINT_ASYNC("POST", "/wars/spy", addWarSpy)
+	{
 		const std::string TAG = "ADDWARSPY";
 
 		std::int64_t m_factionId;
@@ -115,7 +120,7 @@ public:
 
 		ENDPOINT_ASYNC_INIT(addWarSpy)
 
-			Action act() override
+		Action act() override
 		{
 			const oatpp::String authHeader = request->getHeader(oatpp::web::protocol::http::Header::AUTHORIZATION);
 			auto baseObj = controller->authHandler()->authorize(authHeader);
@@ -139,8 +144,10 @@ public:
 			return controller->m_tornApiService.getFactionWar(m_tornStatsKey).callbackTo(&addWarSpy::parseFactionWar);
 		}
 
-		Action parseFactionWar(const oatpp::Object<TornFactionWarResponseDto>& factionWar) {
-			if (factionWar->getWarId() && factionWar->getEnemyFactionId(m_factionId)) {
+		Action parseFactionWar(const oatpp::Object<TornFactionWarResponseDto>& factionWar)
+		{
+			if (factionWar->getWarId() && factionWar->getEnemyFactionId(m_factionId))
+			{
 				m_warId = factionWar->getWarId().value();
 				m_enemyFactionId = factionWar->getEnemyFactionId(m_factionId).value();
 				return sendSpyRequest();
@@ -151,8 +158,8 @@ public:
 		Action sendSpyRequest()
 		{
 			return controller->m_tornStatsService.getSpies(
-				m_tornStatsKey, std::to_string(m_enemyFactionId))
-				.callbackTo(&addWarSpy::parseTornStatsSpy);
+				                 m_tornStatsKey, std::to_string(m_enemyFactionId))
+			                 .callbackTo(&addWarSpy::parseTornStatsSpy);
 		}
 
 		Action parseTornStatsSpy(const oatpp::Object<TornStatsSpyResponseDto>& spyResponse)
@@ -160,14 +167,16 @@ public:
 			auto dto = MemberStatsDto::fromTornStatsSpyResponse(m_warId, m_enemyFactionId, spyResponse);
 			auto stats = controller->m_memberStatsService.createMany(dto);
 
-			if (m_room) {
+			if (m_room)
+			{
 				m_room->updateStats(stats);
 			}
 
 			return _return(controller->createDtoResponse(Status::CODE_200, SpyResponseDto::fromSize(stats->size())));
 		}
 
-		Action handleError(Error* e) override {
+		Action handleError(Error* e) override
+		{
 			OATPP_LOGE(TAG, " Error: %s", e ? e->what() : "unknown");
 			return _return(controller->createResponse(Status::CODE_500, "Internal Server Error"));
 		}
