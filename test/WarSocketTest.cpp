@@ -86,7 +86,7 @@ void WarSocketTest::testSocketOk()
 	if (pump.joinable()) pump.join();
 }
 
-void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> client)
+void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
 {
 	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
 	testingFixtures->reset();
@@ -127,6 +127,8 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 
 	auto rsp = client->warSpy("testKey", issueResult.fullKey);
 	OATPP_ASSERT(rsp->getStatusCode() == 200);
+	auto body = rsp->readBodyToDto<oatpp::Object<SpyResponseDto>>(objectMapper);
+	OATPP_ASSERT(body->importSize == 1)
 
 	//ffscouterScoutOkPath_
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
@@ -139,7 +141,7 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 	if (pump.joinable()) pump.join();
 }
 
-void WarSocketTest::testPostSpyWithoutRoom(const std::shared_ptr<ApiTestClient> client)
+void WarSocketTest::testPostSpyWithoutRoom(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
 {
 	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
 	testingFixtures->reset();
@@ -156,6 +158,8 @@ void WarSocketTest::testPostSpyWithoutRoom(const std::shared_ptr<ApiTestClient> 
 
 	auto rsp = client->warSpy("testKey", issueResult.fullKey);
 	OATPP_ASSERT(rsp->getStatusCode() == 200);
+	auto body = rsp->readBodyToDto<oatpp::Object<SpyResponseDto>>(objectMapper);
+	OATPP_ASSERT(body->importSize == 1)
 
 	auto statsService = MemberStatsService();
 	auto stats = statsService.getAllForWar(1073741824, 2);
@@ -194,8 +198,8 @@ void WarSocketTest::onRun()
 
 
 		testSocketOk();
-		testPostSpyWithRoom(client);
-		testPostSpyWithoutRoom(client);
+		testPostSpyWithRoom(client, objectMapper);
+		testPostSpyWithoutRoom(client, objectMapper);
 	}, std::chrono::minutes(10) /* test timeout */);
 
 	OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionPool>, connectionPool);

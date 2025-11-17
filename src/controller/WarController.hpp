@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AuthHandler.hpp"
+#include "dto/responses/SpyResponseDto.hpp"
 #include "oatpp/web/server/api/ApiController.hpp"
 
 #include "oatpp/parser/json/mapping/ObjectMapper.hpp"
@@ -57,7 +58,6 @@ public:
 
 		info->addTag("WebSocket");
 	}
-
 	ENDPOINT_ASYNC("GET", "/wars/socket", WS)
 	{
 		const std::string TAG = "WARSOCKET";
@@ -91,7 +91,17 @@ public:
 		}
 	};
 
+	ENDPOINT_INFO(addWarSpy) {
+		info->summary = "Add War Spy Information";
+		info->addResponse<String>(Status::CODE_101, "text/plain", "WebSocket upgrade");
+		info->queryParams.add<oatpp::String>("torn_stats_key");
 
+		auto& authHeader = info->headers.add<oatpp::String>(oatpp::web::protocol::http::Header::AUTHORIZATION);
+		authHeader.description = "Bearer token for authentication";
+		authHeader.required = true;
+
+		info->addResponse<Object<SpyResponseDto>>(Status::CODE_200, "application/json");
+	}
 	ENDPOINT_ASYNC("POST", "/wars/spy", addWarSpy) {
 		const std::string TAG = "ADDWARSPY";
 
@@ -153,7 +163,7 @@ public:
 				m_room->updateStats(stats);
 			}
 
-			return _return(controller->createResponse(Status::CODE_200, "Successfully imported TornStatsSpies."));
+			return _return(controller->createDtoResponse(Status::CODE_200, SpyResponseDto::fromSize(stats->size())));
 		}
 
 		Action handleError(Error* e) override {
