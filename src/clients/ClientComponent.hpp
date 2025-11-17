@@ -36,4 +36,18 @@ public:
 
 		return FFScouterApiClient::createShared(requestExecutor, objectMapper);
 		}());
+
+
+	OATPP_CREATE_COMPONENT(std::shared_ptr<FFScouterApiClient>, tornStatsClient)([] {
+		using namespace oatpp::network;
+		using namespace oatpp::web;
+		using namespace oatpp::parser;
+
+		auto requestExecutor = oatpp::curl::RequestExecutor::createShared("https://www.tornstats.com");
+
+		/* get Object Mapper */
+		OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
+
+		return FFScouterApiClient::createShared(requestExecutor, objectMapper);
+		}());
 };
