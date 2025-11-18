@@ -34,6 +34,8 @@ jobs:
       VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
       FEED_URL: https://nuget.pkg.github.com/Ben-Vollrath/index.json
       VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/Ben-Vollrath/index.json,readwrite"
+      SQL_FILE_PATH: ${{ github.workspace }}/src/db/sql/
+      OATPP_SWAGGER_RES_PATH: ${{ github.workspace }}/libs/oatpp-swagger/res/
 
     steps:
       - uses: actions/checkout@v4
