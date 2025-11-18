@@ -105,7 +105,7 @@ jobs:
           set -euo pipefail
           mkdir -p release
           # Adjust path if your build output differs
-          cp build/Release/torn_rw_feed release/
+          cp builds/ninja-multi/Release/torn_rw_feed release/
           chmod +x release/torn_rw_feed
           echo "Runtime deps (ldd):"
           ldd release/torn_rw_feed || true
@@ -121,7 +121,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: Dockerfile.runtime
+          file: Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/torn-rw-feed:latest
 
