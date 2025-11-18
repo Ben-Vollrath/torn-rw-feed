@@ -48,3 +48,5 @@ build/
 builds/
 out/
 CMakeUserPresets.json
+
+.env
