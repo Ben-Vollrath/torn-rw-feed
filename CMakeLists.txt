@@ -14,19 +14,9 @@ find_package(oatpp-curl CONFIG REQUIRED)
 find_package(oatpp-websocket CONFIG REQUIRED)
 find_package(cryptopp CONFIG REQUIRED)
 
-# Definitions
-add_definitions(-DSQL_FILE_PATH="${CMAKE_SOURCE_DIR}/src/db/sql/")
-
-
 add_executable(torn_rw_feed
   src/App.cpp
  "src/service/ApiKeyService.cpp" "src/service/TornApiService.cpp" "src/war/Room.cpp" "src/war/Lobby.cpp" "src/war/Peer.cpp" "src/service/TornApiServiceKeyManaged.cpp" "src/service/UserService.cpp"   "src/service/FFScouterApiService.cpp" "src/service/MemberStatsService.cpp" "src/service/TornStatsApiService.cpp")
-
-set(OATPP_SWAGGER_RES_PATH "${CMAKE_SOURCE_DIR}/libs/oatpp-swagger/res")
-
-target_compile_definitions(torn_rw_feed PRIVATE
-  OATPP_SWAGGER_RES_PATH="${OATPP_SWAGGER_RES_PATH}"
-)
 
 target_include_directories(torn_rw_feed PRIVATE ${CMAKE_SOURCE_DIR}/src)
 

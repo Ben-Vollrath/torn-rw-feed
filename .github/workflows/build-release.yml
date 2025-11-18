@@ -1,12 +1,13 @@
-﻿name: CI
+name: CI
 
 
 on:
   push:
-  pull_request:
+    branches:
+      - main
 
 jobs:
-  build-and-test:
+  build-and-release:
     runs-on: ubuntu-latest
 
     permissions:
@@ -95,9 +96,32 @@ jobs:
         with:
           vcpkgJsonGlob: 'vcpkg.json'
 
-      - name: Configure/Build/Test with run-cmake
+      - name: Configure/Build with run-cmake
         uses: lukka/run-cmake@v10
         with:
             configurePreset: 'ninja-multi'
             buildPreset: 'build-release'
-            testPreset: 'test-release'
+
+      - name: Prepare docker context (copy Release binary)
+        run: |
+          set -euo pipefail
+          mkdir -p release
+          # Adjust path if your build output differs
+          cp builds/ninja-multi/Release/torn_rw_feed release/
+          chmod +x release/torn_rw_feed
+          echo "Runtime deps (ldd):"
+          ldd release/torn_rw_feed || true
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish a Docker image for ${{ github.repository }}
+        uses: macbre/push-to-ghcr@master
+        with:
+          image_name: ${{ github.repository }}  # it will be lowercased internally
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+

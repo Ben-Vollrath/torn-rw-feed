@@ -1,18 +1,21 @@
 #pragma once
 
 #include "dto/FactionDto.hpp"
+#include "AppConfig.hpp"
+#include "oatpp/core/macro/component.hpp"
 #include "oatpp-postgresql/orm.hpp"
 
 #include OATPP_CODEGEN_BEGIN(DbClient)
 
 class FactionDb : public oatpp::orm::DbClient
 {
+	OATPP_COMPONENT(std::shared_ptr<AppConfig>, appConfig);
 public:
 	FactionDb(const std::shared_ptr<oatpp::orm::Executor>& executor)
 		: DbClient(executor)
 	{
 		oatpp::orm::SchemaMigration m(executor, "factions");
-		m.addFile(1, SQL_FILE_PATH"factions/init.sql");
+		m.addFile(1, appConfig->sqlFilePath + "factions/init.sql");
 		m.migrate();
 	}
 

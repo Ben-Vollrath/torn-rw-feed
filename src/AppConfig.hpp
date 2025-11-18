@@ -6,4 +6,6 @@ struct AppConfig
 {
 	std::string ffscouterApiKey;
 	std::string databaseUrl;
+	std::string oatppSwaggerResPath;
+	std::string sqlFilePath;
 };

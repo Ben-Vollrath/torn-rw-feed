@@ -30,11 +30,14 @@ public:
 		return std::string(def);
 	}
 
-	OATPP_CREATE_COMPONENT(std::shared_ptr<AppConfig>, appConfig)([] {
-		auto cfg = std::make_shared<AppConfig>();
-		cfg->ffscouterApiKey = getenv_or("FFSCOUTER_API_KEY", "");
-		cfg->databaseUrl = getenv_or("DATABASE_URL", "postgresql://torn:tornpass@192.168.0.117:5432/torn_rw_feed");
-		return cfg;
+	OATPP_CREATE_COMPONENT(std::shared_ptr<AppConfig>, appConfig)([]
+		{
+			auto cfg = std::make_shared<AppConfig>();
+			cfg->ffscouterApiKey = getenv_or("FFSCOUTER_API_KEY", "");
+			cfg->databaseUrl = getenv_or("DATABASE_URL", "postgresql://torn:tornpass@192.168.0.117:5432/torn_rw_feed");
+			cfg->oatppSwaggerResPath = getenv_or("OATPP_SWAGGER_RES_PATH", "./libs/oatpp-swagger/res/");
+			cfg->sqlFilePath = getenv_or("SQL_FILE_PATH", "./src/db/sql/");
+			return cfg;
 		}());
 
 	DatabaseComponent databaseComponent;
