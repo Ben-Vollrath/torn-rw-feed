@@ -13,6 +13,6 @@ public:
 	using CrudService::getById;
 	using CrudService::getByIdNullable;
 	using CrudService::removeById;
-	std::vector<std::string> getTornKeys(std::int64_t factionId);
+	oatpp::Vector<oatpp::Object<TornKeyRow>> getTornKeys(std::int64_t factionId);
 	void removeTornKey(const std::string& tornKey);
 };

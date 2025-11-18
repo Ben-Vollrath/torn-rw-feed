@@ -44,7 +44,7 @@ public:
 	}
 
 private:
-	std::vector<std::string> m_keys;
+	oatpp::Vector<oatpp::Object<TornKeyRow>> m_keys;
 	std::size_t index = 0;
 	UserService m_UserService;
 
