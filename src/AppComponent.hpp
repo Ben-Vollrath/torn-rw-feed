@@ -32,7 +32,7 @@ public:
 		cfg->ffscouterApiKey = getenv_or("FFSCOUTER_API_KEY", "");
 		cfg->databaseUrl = getenv_or("DATABASE_URL", "postgresql://torn:tornpass@192.168.0.117:5432/torn_rw_feed");
 		cfg->oatppSwaggerResPath = getenv_or("OATPP_SWAGGER_RES_PATH", "./libs/oatpp-swagger/res");
-		cfg->sqlFilePath = getenv_or("SQL_FILE_PATH", ".src/db/sql");
+		cfg->sqlFilePath = getenv_or("SQL_FILE_PATH", "./src/db/sql");
 		return cfg;
 	}());
 
