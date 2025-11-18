@@ -42,6 +42,28 @@ jobs:
         with:
           submodules: true
 
+      - name: Debug list workspace, env and important paths
+        run: |
+          set -euo pipefail
+          echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
+          echo "Resolved env vars:"
+          echo "  SQL_FILE_PATH=${SQL_FILE_PATH:-<not-set>}"
+          echo "  OATPP_SWAGGER_RES_PATH=${OATPP_SWAGGER_RES_PATH:-<not-set>}"
+          echo "  DATABASE_URL=${DATABASE_URL:-<not-set>}"
+          echo
+          echo "Top-level workspace listing:"
+          ls -la "$GITHUB_WORKSPACE" || true
+          echo
+          echo "src/db/sql listing:"
+          ls -la "$GITHUB_WORKSPACE/src/db/sql" || true
+          echo
+          echo "libs/oatpp-swagger/res listing:"
+          ls -la "$GITHUB_WORKSPACE/libs/oatpp-swagger/res" || true
+          echo
+          echo "builds directory (if present):"
+          ls -la "$GITHUB_WORKSPACE/builds" || true
+      
+
       - name: Install system deps
         run: |
           sudo apt-get update
