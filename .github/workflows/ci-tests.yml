@@ -1,0 +1,105 @@
+﻿name: CI
+
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: torn
+          POSTGRES_PASSWORD: tornpass
+          POSTGRES_DB: torn_rw_feed
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U torn -d torn_rw_feed"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      DATABASE_URL: postgresql://torn:tornpass@127.0.0.1:5432/torn_rw_feed
+      USERNAME: Ben-Vollrath
+      VCPKG_EXE: ${{ github.workspace }}/vcpkg/vcpkg
+      FEED_URL: https://nuget.pkg.github.com/Ben-Vollrath/index.json
+      VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/Ben-Vollrath/index.json,readwrite"
+      SQL_FILE_PATH: ${{ github.workspace }}/src/db/sql/
+      OATPP_SWAGGER_RES_PATH: ${{ github.workspace }}/libs/oatpp-swagger/res/
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build mono-complete
+
+      # Install CMake & Ninja
+      - name: Install CMake and Ninja
+        uses: lukka/get-cmake@latest
+
+      - name: Bootstrap vcpkg
+        shell: pwsh
+        run: ${{ github.workspace }}/vcpkg/bootstrap-vcpkg.sh
+
+      - name: Add NuGet sources via vcpkg-acquired nuget.exe (Linux)
+        shell: bash
+        run: |
+            set -euo pipefail
+
+            # Get only the path to nuget.exe from the fetch output (last line)
+            RAW="$(${VCPKG_EXE} fetch nuget | tr -d '\r')"
+            echo "fetch nuget raw output:"
+            echo "${RAW}"
+
+            NUGET_EXE="$(printf '%s\n' "${RAW}" | grep -E '/nuget\.exe$' | tail -n1)"
+            if [ -z "${NUGET_EXE:-}" ] || [ ! -f "${NUGET_EXE}" ]; then
+              echo "Failed to resolve nuget.exe path from 'vcpkg fetch nuget' output."
+              exit 1
+            fi
+            echo "Using nuget.exe at: ${NUGET_EXE}"
+            ls -l "${NUGET_EXE}"
+
+            # Run nuget.exe under mono
+            mono "${NUGET_EXE}" help | head -n 5 || true
+
+            # Clean and add source with GITHUB_TOKEN
+            mono "${NUGET_EXE}" sources remove -Name GitHubPackages || true
+            mono "${NUGET_EXE}" sources add \
+              -Source "${FEED_URL}" \
+              -StorePasswordInClearText \
+              -Name GitHubPackages \
+              -UserName "${USERNAME}" \
+              -Password "${{ secrets.GITHUB_TOKEN }}"
+
+            # Set API key for push/restore
+            mono "${NUGET_EXE}" setapikey "${{ secrets.GITHUB_TOKEN }}" -Source "${FEED_URL}"
+
+            # Verify
+            mono "${NUGET_EXE}" sources list -Format Detailed
+
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgJsonGlob: 'vcpkg.json'
+
+      - name: Configure/Build/Test with run-cmake
+        uses: lukka/run-cmake@v10
+        with:
+            configurePreset: 'ninja-multi'
+            buildPreset: 'build-release'
+            testPreset: 'test-release'

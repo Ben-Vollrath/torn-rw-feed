@@ -33,6 +33,7 @@ public:
 
 	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::swagger::Resources>, swaggerResources)([]
 	{
-		return oatpp::swagger::Resources::loadResources(OATPP_SWAGGER_RES_PATH);
+		OATPP_COMPONENT(std::shared_ptr<AppConfig>, appConfig);
+		return oatpp::swagger::Resources::loadResources(appConfig->oatppSwaggerResPath);
 	}());
 };

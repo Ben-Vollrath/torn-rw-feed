@@ -5,10 +5,8 @@ services:
     image: postgres:16
     container_name: torn_rw_feed_db
     restart: unless-stopped
-    environment:
-      POSTGRES_USER: torn
-      POSTGRES_PASSWORD: tornpass
-      POSTGRES_DB: torn_rw_feed
+    env_file:
+      - .env
     ports:
       - "5432:5432"
     volumes:
