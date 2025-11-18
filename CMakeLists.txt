@@ -10,7 +10,6 @@ find_package(OpenSSL REQUIRED)
 find_package(oatpp CONFIG REQUIRED)
 find_package(oatpp-swagger CONFIG REQUIRED)
 find_package(oatpp-postgresql CONFIG REQUIRED)
-find_package(oatpp-sqlite CONFIG REQUIRED)
 find_package(oatpp-curl CONFIG REQUIRED)
 find_package(oatpp-websocket CONFIG REQUIRED)
 find_package(cryptopp CONFIG REQUIRED)
@@ -35,7 +34,6 @@ target_link_libraries(torn_rw_feed PRIVATE
   oatpp::oatpp
   oatpp::oatpp-swagger
   oatpp::oatpp-postgresql
-  oatpp::oatpp-sqlite
   oatpp::oatpp-curl
   oatpp::oatpp-websocket
   cryptopp::cryptopp
@@ -55,7 +53,6 @@ target_link_libraries(torn_rw_feed_test PRIVATE
   oatpp::oatpp
   oatpp::oatpp-swagger
   oatpp::oatpp-postgresql
-  oatpp::oatpp-sqlite
   oatpp::oatpp-curl
   oatpp::oatpp-websocket
   cryptopp::cryptopp
