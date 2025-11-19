@@ -18,6 +18,9 @@ void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client,
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
 	mockResponseLoader->setResponsePaths({ factionBasicOKPath_, userBasicOkPath_});
+	auto factionInfo = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionResponseDto>>(factionBasicOKPath_);
+	auto userInfo = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornUserBasicResponseDto>>(userBasicOkPath_);
+
 	/* Call server API */
 	/* Call root endpoint of MyController */
 	auto response = client->auth("ok");
@@ -37,8 +40,8 @@ void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client,
 	OATPP_ASSERT(message->expiresAt - now >= seconds_in_day)
 
 	auto m_userService = UserService();
-	auto user = m_userService.getById(123);
-	OATPP_ASSERT(user && user->factionId == 123456 && user->tornKey == "ok")
+	auto user = m_userService.getById(userInfo->profile->id);
+	OATPP_ASSERT(user && user->factionId == factionInfo->basic->id && user->tornKey == "ok")
 }
 
 void AuthControllerTest::testAuthError(const std::shared_ptr<ApiTestClient> client,

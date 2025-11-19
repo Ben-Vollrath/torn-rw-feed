@@ -3,9 +3,12 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include "oatpp/core/macro/component.hpp"
 
 class MockResponseLoader
 {
+	OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, apiObjectMapper);
+
 	std::vector<std::string> responsePaths;
 	std::int8_t index = 0;
 
@@ -26,6 +29,12 @@ public:
 		index++;
 
 		return response;
+	}
+
+	template <typename DtoT>
+	DtoT loadDtoFromFile(const std::string& path)
+	{
+		return apiObjectMapper->readFromString<DtoT>(loadFile(path));
 	}
 
 private:
