@@ -12,7 +12,7 @@
 
 #include "oatpp-test/web/ClientServerTestRunner.hpp"
 
-#include "MockTorn/TornController.hpp"
+#include "MockTorn/MockController.hpp"
 
 namespace
 {
@@ -177,7 +177,7 @@ void WarSocketTest::onRun()
 	oatpp::test::web::ClientServerTestRunner runner;
 
 	/* Add Controller endpoints to the router of the test server */
-	runner.addController(TornController::createShared());
+	runner.addController(MockController::createShared());
 	runner.addController(WarController::createShared());
 
 

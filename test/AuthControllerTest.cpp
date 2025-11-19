@@ -8,7 +8,7 @@
 
 #include "oatpp-test/web/ClientServerTestRunner.hpp"
 
-#include "MockTorn/TornController.hpp"
+#include "MockTorn/MockController.hpp"
 
 void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client,
                                     std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
@@ -63,7 +63,7 @@ void AuthControllerTest::onRun()
 	oatpp::test::web::ClientServerTestRunner runner;
 
 	/* Add Controller endpoints to the router of the test server */
-	runner.addController(TornController::createShared());
+	runner.addController(MockController::createShared());
 	runner.addController(AuthController::createShared());
 
 

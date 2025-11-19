@@ -7,18 +7,18 @@
 
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
-class TornController : public oatpp::web::server::api::ApiController
+class MockController : public oatpp::web::server::api::ApiController
 {
 public:
-	TornController(const std::shared_ptr<ObjectMapper>& objectMapper)
+	MockController(const std::shared_ptr<ObjectMapper>& objectMapper)
 		: ApiController(objectMapper)
 	{
 	}
 
-	static std::shared_ptr<TornController> createShared(
+	static std::shared_ptr<MockController> createShared(
 		OATPP_COMPONENT(std::shared_ptr<ObjectMapper>, objectMapper))
 	{
-		return std::make_shared<TornController>(objectMapper);
+		return std::make_shared<MockController>(objectMapper);
 	}
 
 	ENDPOINT_ASYNC("GET", "/user/basic", GetUserBasic)
