@@ -16,7 +16,7 @@ find_package(cryptopp CONFIG REQUIRED)
 
 add_executable(torn_rw_feed
   src/App.cpp
- "src/service/ApiKeyService.cpp" "src/service/TornApiService.cpp" "src/war/Room.cpp" "src/war/Lobby.cpp" "src/war/Peer.cpp" "src/service/TornApiServiceKeyManaged.cpp" "src/service/UserService.cpp"   "src/service/FFScouterApiService.cpp" "src/service/MemberStatsService.cpp" "src/service/TornStatsApiService.cpp")
+ "src/service/ApiKeyService.cpp" "src/service/TornApiService.cpp" "src/war/Room.cpp" "src/war/Lobby.cpp" "src/war/Peer.cpp" "src/service/TornApiServiceKeyManaged.cpp" "src/service/UserService.cpp"   "src/service/FFScouterApiService.cpp" "src/service/MemberStatsService.cpp" "src/service/TornStatsApiService.cpp" )
 
 target_include_directories(torn_rw_feed PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
@@ -33,7 +33,7 @@ target_link_libraries(torn_rw_feed PRIVATE
 enable_testing()
 add_executable(torn_rw_feed_test
 	test/tests.cpp
- "src/service/ApiKeyService.cpp" "test/AuthControllerTest.cpp" "src/service/TornApiService.cpp" "src/war/Room.cpp" "src/war/Lobby.cpp" "src/war/Peer.cpp" "src/service/TornApiServiceKeyManaged.cpp" "src/service/UserService.cpp"  "test/WarSocketTest.cpp" "test/app/WSListener.cpp"  "src/service/FFScouterApiService.cpp" "src/service/MemberStatsService.cpp" "src/service/TornStatsApiService.cpp")
+ "src/service/ApiKeyService.cpp" "test/AuthControllerTest.cpp" "src/service/TornApiService.cpp" "src/war/Room.cpp" "src/war/Lobby.cpp" "src/war/Peer.cpp" "src/service/TornApiServiceKeyManaged.cpp" "src/service/UserService.cpp"  "test/WarSocketTest.cpp" "test/app/WSListener.cpp"  "src/service/FFScouterApiService.cpp" "src/service/MemberStatsService.cpp" "src/service/TornStatsApiService.cpp" "test/LocationParserTest.cpp" )
 
 add_definitions(-DMOCK_RESPONSE_BASE="${CMAKE_SOURCE_DIR}/test/MockTorn/mock_responses/")
 

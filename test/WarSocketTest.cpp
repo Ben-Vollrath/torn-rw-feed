@@ -41,9 +41,12 @@ void WarSocketTest::testSocketOk(std::shared_ptr<oatpp::data::mapping::ObjectMap
 	});
 	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarResponseDto>>(factionWarOKPath_);
 	auto factionMembersOffline = mockResponseLoader->loadDtoFromFile< oatpp::Object<TornFactionMembersResponse>>(factionMembersOfflineOKPath_);
+	factionMembersOffline->members[0]->status->parseLocation();
+	factionMembersOffline->members[1]->status->parseLocation();
 	auto memberOneId = factionMembersOffline->members[0]->id;
 	auto memberTwoId = factionMembersOffline->members[1]->id;
 	auto factionMembersOnline = mockResponseLoader->loadDtoFromFile< oatpp::Object<TornFactionMembersResponse>>(factionMembersOneOnlineOKPath_);
+	factionMembersOnline->members[0]->status->parseLocation();
 	auto ffScouter = mockResponseLoader->loadDtoFromFile<FFScouterResponseDto>(ffscouterScoutOkPath_);
 	auto memberOneStats = ffScouter[0]->bs_estimate;
 	auto memberTwoStats = ffScouter[1]->bs_estimate;
@@ -70,6 +73,7 @@ void WarSocketTest::testSocketOk(std::shared_ptr<oatpp::data::mapping::ObjectMap
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 2);
 	OATPP_ASSERT(dtoFieldsEqual(msg->members[0], factionMembersOffline->members[0], objectMapper))
+	OATPP_ASSERT(dtoFieldsEqual(msg->members[1], factionMembersOffline->members[1], objectMapper))
 
 	//ffscouterScoutOkPath_
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
@@ -106,9 +110,12 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 		});
 	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarResponseDto>>(factionWarOKPath_);
 	auto factionMembersOffline = mockResponseLoader->loadDtoFromFile< oatpp::Object<TornFactionMembersResponse>>(factionMembersOfflineOKPath_);
+	factionMembersOffline->members[0]->status->parseLocation();
+	factionMembersOffline->members[1]->status->parseLocation();
 	auto memberOneId = factionMembersOffline->members[0]->id;
 	auto memberTwoId = factionMembersOffline->members[1]->id;
 	auto factionMembersOnline = mockResponseLoader->loadDtoFromFile< oatpp::Object<TornFactionMembersResponse>>(factionMembersOneOnlineOKPath_);
+	factionMembersOnline->members[0]->status->parseLocation();
 	auto ffScouter = mockResponseLoader->loadDtoFromFile<FFScouterResponseDto>(ffscouterScoutOkPath_);
 	auto memberOneStats = ffScouter[0]->bs_estimate;
 	auto memberTwoStats = ffScouter[1]->bs_estimate;

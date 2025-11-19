@@ -11,9 +11,9 @@
         "relative": "28 minutes ago"
       },
       "status": {
-        "description": "Okay",
+        "description": "Traveling from Torn to Japan",
         "details": null,
-        "state": "Okay",
+        "state": "Traveling",
         "color": "green",
         "until": null
       },
@@ -35,9 +35,9 @@
         "relative": "22 minutes ago"
       },
       "status": {
-        "description": "Okay",
+        "description": "In South Africa",
         "details": null,
-        "state": "Okay",
+        "state": "Abroad",
         "color": "green",
         "until": null
       },

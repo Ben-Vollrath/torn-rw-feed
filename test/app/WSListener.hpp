@@ -2,7 +2,7 @@
 #include <queue>
 #include <oatpp/core/macro/component.hpp>
 
-#include "dto/FactionMemberInfoDto.hpp"
+#include "dto/responses/WarStateResponseDto.hpp"
 #include "oatpp/core/data/mapping/ObjectMapper.hpp"
 #include "oatpp-websocket/ConnectionHandler.hpp"
 #include "oatpp-websocket/WebSocket.hpp"
