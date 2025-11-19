@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "TornApiClient.hpp"
-#include "dto/FactionMemberInfoDto.hpp"
+#include "dto/responses/WarStateResponseDto.hpp"
 #include "dto/clients/TornFactionResponseDto.hpp"
 #include "dto/clients/TornUserBasicResponseDto.hpp"
 #include "dto/clients/TornErrorResponseDto.hpp"

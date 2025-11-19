@@ -1,11 +1,11 @@
 #pragma once
 
 
-#include "Enums.hpp"
+#include "dto/Enums.hpp"
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/Types.hpp"
-#include "clients/TornFactionMembersResponseDto.hpp"
-#include "MemberStatsDto.hpp"
+#include "dto/clients/TornFactionMembersResponseDto.hpp"
+#include "dto/MemberStatsDto.hpp"
 
 
 #include OATPP_CODEGEN_BEGIN(DTO)
@@ -21,6 +21,7 @@ class WarStateResponseDto : public oatpp::DTO
 	{
 		auto dto = createShared();
 		dto->members = memberInfos;
+		dto->parseMemberLocation();
 		return dto;
 	}
 
@@ -36,6 +37,7 @@ class WarStateResponseDto : public oatpp::DTO
 			dto->members->emplace_back(statePair.second);
 		}
 
+		dto->parseMemberLocation();
 		return dto;
 	}
 
@@ -69,6 +71,12 @@ class WarStateResponseDto : public oatpp::DTO
 		for (const oatpp::Object<MemberStatsDto>& stats : *memberStats)
 		{
 			this->memberStats[std::to_string(stats->member_id)] = stats;
+		}
+	}
+
+	void parseMemberLocation() {
+		for (const Object<TornFactionMember> member : *members) {
+			member->status->parseLocation();
 		}
 	}
 };

@@ -2,11 +2,13 @@
 
 #include "AuthControllerTest.hpp"
 #include "WarSocketTest.hpp"
+#include "LocationParserTest.hpp"
 
 void runTests()
 {
 	OATPP_RUN_TEST(AuthControllerTest);
 	OATPP_RUN_TEST(WarSocketTest);
+	OATPP_RUN_TEST(LocationParserTest);
 }
 
 int main()

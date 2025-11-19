@@ -1,6 +1,6 @@
 #include "Room.hpp"
 
-#include "dto/FactionMemberInfoDto.hpp"
+#include "dto/responses/WarStateResponseDto.hpp"
 
 bool Room::isClosed() const
 {
@@ -78,6 +78,7 @@ void Room::updateMembers(const oatpp::Object<TornFactionMembersResponse>& member
 			const auto& old = it->second;
 			if (old->last_action->timestamp != member->last_action->timestamp ||
 				old->status->state != member->status->state ||
+				old->status->description != member->status->description ||
 				old->last_action->status != member->last_action->status)
 			{
 				it->second = member;
