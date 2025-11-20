@@ -27,6 +27,7 @@ void run()
 	/* Add all controllers */
 	router->addController(authController);
 	router->addController(warController);
+	router->addController(userController);
 
 	oatpp::web::server::api::Endpoints docEndpoints;
 	docEndpoints.append(authController->getEndpoints());
