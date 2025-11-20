@@ -14,7 +14,7 @@ class WarStateResponseDto : public oatpp::DTO
 {
 	DTO_INIT(WarStateResponseDto, DTO)
 
-	DTO_FIELD(UnorderedFields<Object<MemberStatsDto>>, memberStats);
+	DTO_FIELD(Fields<Object<MemberStatsDto>>, memberStats);
 	DTO_FIELD(Vector<Object<TornFactionMember>>, members);
 
 	static oatpp::Object<WarStateResponseDto> fromMembersInfo(const Vector<Object<TornFactionMember>>& memberInfos)
@@ -59,6 +59,7 @@ class WarStateResponseDto : public oatpp::DTO
 
 	void addMemberStats(const std::unordered_map<std::int64_t, oatpp::Object<MemberStatsDto>>& memberStats)
 	{
+		this->memberStats = Fields<Object<MemberStatsDto>>::createShared();
 		for (const auto& statsPair : memberStats)
 		{
 			this->memberStats[std::to_string(statsPair.first)] = statsPair.second;
@@ -67,7 +68,7 @@ class WarStateResponseDto : public oatpp::DTO
 
 	void addMemberStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& memberStats)
 	{
-		this->memberStats = UnorderedFields<Object<MemberStatsDto>>::createShared();
+		this->memberStats = Fields<Object<MemberStatsDto>>::createShared();
 		for (const oatpp::Object<MemberStatsDto>& stats : *memberStats)
 		{
 			this->memberStats[std::to_string(stats->member_id)] = stats;

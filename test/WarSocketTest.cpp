@@ -162,7 +162,7 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->memberStats[std::to_string(memberOneId)]->total == memberOneSpy->total);
-	OATPP_ASSERT(msg->memberStats->find(std::to_string(memberTwoId)) == msg->memberStats->end());
+	OATPP_ASSERT(!msg->memberStats[std::to_string(memberTwoId)]);
 
 	socket->sendClose(1000, "test done");
 

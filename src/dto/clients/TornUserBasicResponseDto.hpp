@@ -12,10 +12,8 @@ class TornUserStatusDto : public oatpp::DTO
 	DTO_INIT(TornUserStatusDto, DTO)
 
 	DTO_FIELD(String, description);
-	DTO_FIELD(Any, details);
 	DTO_FIELD(Enum<TornUserStatusState>::AsString, state);
 	DTO_FIELD(String, color);
-	DTO_FIELD(Any, until);
 	DTO_FIELD(Enum<TornLocation>::AsString, location);
 
 public:
