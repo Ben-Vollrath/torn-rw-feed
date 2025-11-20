@@ -1,5 +1,7 @@
 #include "controller/AuthController.hpp"
 #include "controller/WarController.hpp"
+#include "controller/UserController.hpp"
+
 #include "AppComponent.hpp"
 
 #include "oatpp/network/Server.hpp"
@@ -20,6 +22,7 @@ void run()
 
 	auto authController = AuthController::createShared();
 	auto warController = WarController::createShared();
+	auto userController = UserController::createShared();
 	authController->setErrorHandler(std::make_shared<ApiErrorHandler>());
 	/* Add all controllers */
 	router->addController(authController);
