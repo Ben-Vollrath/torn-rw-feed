@@ -50,7 +50,7 @@ private:
 
 
 	std::string getKey();
-	void removeCurrentKey();
+	void removeLastKey();
 
 	template <typename MemFn, typename... Args>
 	std::invoke_result_t<MemFn, TornApiService*, const std::string&, Args...> callWithKeyManagement(
@@ -76,7 +76,7 @@ private:
 				return callWithKeyManagement<MemFn, Args...>(mf, std::forward<Args>(args)...);
 			case 401:
 				m_UserService.removeTornKey(key);
-				removeCurrentKey();
+				removeLastKey();
 				return callWithKeyManagement<MemFn, Args...>(mf, std::forward<Args>(args)...);
 			default:
 				throw; // rethrow

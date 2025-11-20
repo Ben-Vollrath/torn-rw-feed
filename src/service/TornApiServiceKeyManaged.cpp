@@ -12,9 +12,9 @@ std::string TornApiServiceKeyManaged::getKey()
 	return key;
 }
 
-void TornApiServiceKeyManaged::removeCurrentKey()
+void TornApiServiceKeyManaged::removeLastKey()
 {
-	m_keys->erase(m_keys->begin() + index);
+	m_keys->erase(m_keys->begin() + index-1);
 }
 
 std::chrono::microseconds TornApiServiceKeyManaged::getCooldown()
