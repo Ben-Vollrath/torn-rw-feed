@@ -16,7 +16,7 @@ class ApiTestClient : public oatpp::web::client::ApiClient
 	API_CLIENT_INIT(ApiTestClient)
 
 	API_CALL("GET", "/auth", auth, QUERY(String, torn_key))
-	API_CALL("GET", "/wars/socket", war)
+	API_CALL("GET", "/delete", deleteUser, HEADER(String, key, "Authorization"))
 	API_CALL("POST", "/wars/spy", warSpy, QUERY(String, torn_stats_key), HEADER(String, key, "Authorization"))
 };
 

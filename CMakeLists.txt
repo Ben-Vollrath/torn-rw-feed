@@ -33,7 +33,7 @@ target_link_libraries(torn_rw_feed PRIVATE
 enable_testing()
 add_executable(torn_rw_feed_test
 	test/tests.cpp
- "src/service/ApiKeyService.cpp" "test/AuthControllerTest.cpp" "src/service/TornApiService.cpp" "src/war/Room.cpp" "src/war/Lobby.cpp" "src/war/Peer.cpp" "src/service/TornApiServiceKeyManaged.cpp" "src/service/UserService.cpp"  "test/WarSocketTest.cpp" "test/app/WSListener.cpp"  "src/service/FFScouterApiService.cpp" "src/service/MemberStatsService.cpp" "src/service/TornStatsApiService.cpp" "test/LocationParserTest.cpp" )
+ "src/service/ApiKeyService.cpp" "test/AuthControllerTest.cpp" "src/service/TornApiService.cpp" "src/war/Room.cpp" "src/war/Lobby.cpp" "src/war/Peer.cpp" "src/service/TornApiServiceKeyManaged.cpp" "src/service/UserService.cpp"  "test/WarSocketTest.cpp" "test/app/WSListener.cpp"  "src/service/FFScouterApiService.cpp" "src/service/MemberStatsService.cpp" "src/service/TornStatsApiService.cpp" "test/LocationParserTest.cpp"  "test/UserControllerTest.cpp")
 
 add_definitions(-DMOCK_RESPONSE_BASE="${CMAKE_SOURCE_DIR}/test/MockTorn/mock_responses/")
 
