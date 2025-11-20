@@ -42,7 +42,6 @@ public:
 	ENDPOINT_INFO(deleteUser)
 	{
 		info->summary = "Delete User";
-		info->queryParams.add<oatpp::String>("torn_stats_key");
 
 		auto& authHeader = info->headers.add<oatpp::String>(oatpp::web::protocol::http::Header::AUTHORIZATION);
 		authHeader.description = "Bearer token for authentication";
