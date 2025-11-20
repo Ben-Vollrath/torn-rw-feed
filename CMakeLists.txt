@@ -29,6 +29,9 @@ target_link_libraries(torn_rw_feed PRIVATE
   cryptopp::cryptopp
 )
 
+add_definitions(-DOATPP_SWAGGER_RES_PATH="${CMAKE_SOURCE_DIR}/libs/oatpp-swagger/res")
+add_definitions(-DSQL_FILE_PATH="${CMAKE_SOURCE_DIR}/src/db/sql/")
+
 
 enable_testing()
 add_executable(torn_rw_feed_test

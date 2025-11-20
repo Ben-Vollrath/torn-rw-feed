@@ -2,6 +2,7 @@
 
 #include "AuthHandler.hpp"
 #include "dto/responses/SpyResponseDto.hpp"
+#include "dto/responses/WarStateResponseDto.hpp"
 #include "oatpp/web/server/api/ApiController.hpp"
 
 #include "oatpp/parser/json/mapping/ObjectMapper.hpp"
@@ -51,6 +52,7 @@ public:
 			"to authenticate before the upgrade.";
 
 		info->addResponse<String>(Status::CODE_101, "text/plain", "WebSocket upgrade");
+		info->addResponse<Object<WarStateResponseDto>>(Status::CODE_200, "application/json");
 
 		auto& authHeader = info->headers.add<oatpp::String>(oatpp::web::protocol::http::Header::AUTHORIZATION);
 		authHeader.description = "Bearer token for authentication";
