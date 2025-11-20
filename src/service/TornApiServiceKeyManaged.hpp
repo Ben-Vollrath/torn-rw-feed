@@ -43,6 +43,8 @@ public:
 		return callWithKeyManagement(&TornApiService::getEnemyWarFaction, factionId);
 	}
 
+	void removeLastKey();
+
 private:
 	oatpp::Vector<oatpp::Object<TornKeyRow>> m_keys;
 	std::size_t index = 0;
@@ -50,7 +52,6 @@ private:
 
 
 	std::string getKey();
-	void removeCurrentKey();
 
 	template <typename MemFn, typename... Args>
 	std::invoke_result_t<MemFn, TornApiService*, const std::string&, Args...> callWithKeyManagement(
@@ -75,8 +76,7 @@ private:
 				// Retry with same args
 				return callWithKeyManagement<MemFn, Args...>(mf, std::forward<Args>(args)...);
 			case 401:
-				m_UserService.removeTornKey(key);
-				removeCurrentKey();
+				removeLastKey();
 				return callWithKeyManagement<MemFn, Args...>(mf, std::forward<Args>(args)...);
 			default:
 				throw; // rethrow

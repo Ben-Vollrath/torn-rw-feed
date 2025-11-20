@@ -50,7 +50,7 @@ class TornFactionWarResponseDto : public oatpp::DTO
 
 	std::optional<std::int64_t> getEnemyFactionId(std::int64_t factionId)
 	{
-		if (!this->wars->ranked)
+		if (!wars->ranked)
 		{
 			return std::nullopt;
 		}
@@ -68,11 +68,24 @@ class TornFactionWarResponseDto : public oatpp::DTO
 
 	std::optional<std::int64_t> getWarId()
 	{
-		if (!this->wars->ranked->war_id)
+		if (!wars->ranked->war_id)
 		{
 			return std::nullopt;
 		}
-		return this->wars->ranked->war_id;
+		return wars->ranked->war_id;
+	}
+
+	// Check if the war involves the given faction ID
+	std::optional<bool> isCorrectWar(std::int64_t factionId)
+	{
+		if (!wars->ranked)
+		{
+			return std::nullopt;
+		}
+
+		const auto& factions = wars->ranked->factions;
+
+		return factions[0]->id == factionId || factions[1]->id == factionId;
 	}
 };
 
