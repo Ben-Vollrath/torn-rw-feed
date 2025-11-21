@@ -49,8 +49,9 @@ public:
 		OATPP_COMPONENT(std::shared_ptr<AppConfig>, appConfig);
 		auto config = oatpp::openssl::Config::createDefaultServerConfigShared(appConfig->certPath, appConfig->keyPath);
 		return oatpp::openssl::server::ConnectionProvider::createShared(config, {
-			"0.0.0.0", 8000, oatpp::network::Address::IP_4
-		});
+			                                                                "0.0.0.0", 8000,
+			                                                                oatpp::network::Address::IP_4
+		                                                                });
 	}());
 
 	/**

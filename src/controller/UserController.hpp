@@ -3,7 +3,6 @@
 #include <iostream>
 
 
-
 #include "oatpp/web/server/api/ApiController.hpp"
 #include "oatpp/parser/json/mapping/ObjectMapper.hpp"
 #include "oatpp/core/macro/codegen.hpp"
@@ -66,7 +65,7 @@ public:
 			return _return(controller->createResponse(Status::CODE_200));
 		}
 
-		Action handleError(Error * e) override
+		Action handleError(Error* e) override
 		{
 			// Workaround until fix oatpp-1.4.0
 			auto status = Status(std::atoi(e->what()), e->what());
