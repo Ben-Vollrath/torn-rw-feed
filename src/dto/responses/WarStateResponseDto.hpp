@@ -75,8 +75,10 @@ class WarStateResponseDto : public oatpp::DTO
 		}
 	}
 
-	void parseMemberLocation() {
-		for (const Object<TornFactionMember> member : *members) {
+	void parseMemberLocation()
+	{
+		for (const Object<TornFactionMember> member : *members)
+		{
 			member->status->parseLocation();
 		}
 	}

@@ -10,6 +10,7 @@
 class FactionDb : public oatpp::orm::DbClient
 {
 	OATPP_COMPONENT(std::shared_ptr<AppConfig>, appConfig);
+
 public:
 	FactionDb(const std::shared_ptr<oatpp::orm::Executor>& executor)
 		: DbClient(executor)

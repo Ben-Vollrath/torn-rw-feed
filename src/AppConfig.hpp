@@ -8,4 +8,6 @@ struct AppConfig
 	std::string databaseUrl;
 	std::string oatppSwaggerResPath;
 	std::string sqlFilePath;
+	std::string certPath;
+	std::string keyPath;
 };

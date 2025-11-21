@@ -10,6 +10,7 @@
 class MemberStatsDb : public oatpp::orm::DbClient
 {
 	OATPP_COMPONENT(std::shared_ptr<AppConfig>, appConfig);
+
 public:
 	MemberStatsDb(const std::shared_ptr<oatpp::orm::Executor>& executor)
 		: DbClient(executor)

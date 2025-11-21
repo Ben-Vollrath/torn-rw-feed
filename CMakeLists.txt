@@ -6,12 +6,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON) 
 set(CMAKE_CXX_EXTENSIONS ON)  
 
-find_package(OpenSSL REQUIRED)
 find_package(oatpp CONFIG REQUIRED)
 find_package(oatpp-swagger CONFIG REQUIRED)
 find_package(oatpp-postgresql CONFIG REQUIRED)
 find_package(oatpp-curl CONFIG REQUIRED)
 find_package(oatpp-websocket CONFIG REQUIRED)
+find_package(oatpp-openssl CONFIG REQUIRED)
 find_package(cryptopp CONFIG REQUIRED)
 
 add_executable(torn_rw_feed
@@ -26,11 +26,14 @@ target_link_libraries(torn_rw_feed PRIVATE
   oatpp::oatpp-postgresql
   oatpp::oatpp-curl
   oatpp::oatpp-websocket
+  oatpp::oatpp-openssl
   cryptopp::cryptopp
 )
 
 add_definitions(-DOATPP_SWAGGER_RES_PATH="${CMAKE_SOURCE_DIR}/libs/oatpp-swagger/res")
 add_definitions(-DSQL_FILE_PATH="${CMAKE_SOURCE_DIR}/src/db/sql/")
+add_definitions(-DCERT_PATH="${CMAKE_SOURCE_DIR}/cert/test_cert.crt")
+add_definitions(-DKEY_PATH="${CMAKE_SOURCE_DIR}/cert/test_key.pem")
 
 
 enable_testing()
@@ -48,6 +51,7 @@ target_link_libraries(torn_rw_feed_test PRIVATE
   oatpp::oatpp-postgresql
   oatpp::oatpp-curl
   oatpp::oatpp-websocket
+  oatpp::oatpp-openssl
   cryptopp::cryptopp
 )
 

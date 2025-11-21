@@ -10,6 +10,7 @@
 class ApiKeyDb : public oatpp::orm::DbClient
 {
 	OATPP_COMPONENT(std::shared_ptr<AppConfig>, appConfig);
+
 public:
 	ApiKeyDb(const std::shared_ptr<oatpp::orm::Executor>& executor)
 		: DbClient(executor)
