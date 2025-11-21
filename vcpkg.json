@@ -6,7 +6,7 @@
     "oatpp-postgresql",
     "oatpp-sqlite",
     "oatpp-swagger",
-    "openssl",
-    "oatpp-websocket"
+    "oatpp-websocket",
+    "oatpp-openssl"
   ]
 }

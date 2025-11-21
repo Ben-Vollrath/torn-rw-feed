@@ -10,6 +10,9 @@
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
 #include "oatpp/parser/json/mapping/ObjectMapper.hpp"
 #include "oatpp/core/macro/component.hpp"
+#include "oatpp-openssl/server/ConnectionProvider.hpp"
+#include "oatpp-openssl/Config.hpp"
+
 #include "war/Lobby.hpp"
 
 
@@ -33,6 +36,8 @@ public:
 		cfg->databaseUrl = getenv_or("DATABASE_URL", "postgresql://torn:tornpass@192.168.0.117:5432/torn_rw_feed");
 		cfg->oatppSwaggerResPath = getenv_or("OATPP_SWAGGER_RES_PATH", OATPP_SWAGGER_RES_PATH);
 		cfg->sqlFilePath = getenv_or("SQL_FILE_PATH", SQL_FILE_PATH);
+		cfg->certPath = getenv_or("CERT_PATH", CERT_PATH);
+		cfg->keyPath = getenv_or("KEY_PATH", KEY_PATH);
 		return cfg;
 	}());
 
@@ -41,7 +46,9 @@ public:
 	*/
 	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, serverConnectionProvider)([]
 	{
-		return oatpp::network::tcp::server::ConnectionProvider::createShared({
+		OATPP_COMPONENT(std::shared_ptr<AppConfig>, appConfig);
+		auto config = oatpp::openssl::Config::createDefaultServerConfigShared(appConfig->certPath, appConfig->keyPath);
+		return oatpp::openssl::server::ConnectionProvider::createShared(config, {
 			"0.0.0.0", 8000, oatpp::network::Address::IP_4
 		});
 	}());
