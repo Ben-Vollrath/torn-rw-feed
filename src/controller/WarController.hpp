@@ -51,12 +51,11 @@ public:
 			"The client must provide a valid `Authorization` header (Bearer token) "
 			"to authenticate before the upgrade.";
 
+		info->queryParams.add<oatpp::String>("token");
+
 		info->addResponse<String>(Status::CODE_101, "text/plain", "WebSocket upgrade");
 		info->addResponse<Object<WarStateResponseDto>>(Status::CODE_200, "application/json");
 
-		auto& authHeader = info->headers.add<oatpp::String>(oatpp::web::protocol::http::Header::AUTHORIZATION);
-		authHeader.description = "Bearer token for authentication";
-		authHeader.required = true;
 
 		info->addTag("War");
 	}
@@ -69,9 +68,9 @@ public:
 
 		Action act() override
 		{
-			const oatpp::String authHeader = request->getHeader(oatpp::web::protocol::http::Header::AUTHORIZATION);
 
-			auto baseObj = controller->authHandler()->authorize(authHeader);
+			auto token = request->getQueryParameter("token");
+			auto baseObj = controller->authHandler()->authorize(token);
 			auto authObj = std::dynamic_pointer_cast<AuthObject>(baseObj);
 
 			/* Websocket handshake */
