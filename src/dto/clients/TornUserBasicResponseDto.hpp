@@ -14,6 +14,7 @@ class TornUserStatusDto : public oatpp::DTO
 	DTO_FIELD(String, description);
 	DTO_FIELD(Enum<TornUserStatusState>::AsString, state);
 	DTO_FIELD(String, color);
+	DTO_FIELD(Int64, until);
 	DTO_FIELD(Enum<TornLocation>::AsString, location);
 
 	void parseLocation()
