@@ -52,11 +52,11 @@ void WarSocketTest::testSocketOk(std::shared_ptr<oatpp::data::mapping::ObjectMap
 	auto memberTwoStats = ffScouter[1]->bs_estimate;
 
 	auto user = testingFixtures->createTestUser(1);
-	auto authHeader = testingFixtures->getUserAuthHeader(user->id);
+	auto issueResult = testingFixtures->getUserApiKey(user->id);
 
 	OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
 	auto connector = oatpp::websocket::Connector::createShared(clientConnectionProvider);
-	auto connection = connector->connect("/wars/socket", authHeader);
+	auto connection = connector->connect("/wars/socket?token=" + issueResult.fullKey);
 
 	OATPP_LOGI(TAG, "Connected");
 
@@ -128,7 +128,7 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 
 	OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
 	auto connector = oatpp::websocket::Connector::createShared(clientConnectionProvider);
-	auto connection = connector->connect("/wars/socket", authHeader);
+	auto connection = connector->connect("/wars/socket?token=" + issueResult.fullKey);
 
 	OATPP_LOGI(TAG, "Connected");
 
