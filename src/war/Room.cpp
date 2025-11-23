@@ -1,4 +1,6 @@
 #include "Room.hpp"
+#include "Room.hpp"
+#include "Room.hpp"
 
 #include "dto/responses/WarStateResponseDto.hpp"
 
@@ -79,6 +81,7 @@ void Room::updateMembers(const oatpp::Object<TornFactionMembersResponse>& member
 			if (old->last_action->timestamp != member->last_action->timestamp ||
 				old->status->state != member->status->state ||
 				old->status->description != member->status->description ||
+				old->status->until != member->status->until || 
 				old->last_action->status != member->last_action->status)
 			{
 				it->second = member;
