@@ -7,7 +7,9 @@ oatpp::Vector<oatpp::Object<MemberStatsDto>> MemberStatsService::createMany(
 	auto out = oatpp::Vector<oatpp::Object<MemberStatsDto>>::createShared();
 	for (const oatpp::Object<MemberStatsDto>& memberStat : *memberStats)
 	{
-		out->emplace_back(create(memberStat));
+		auto qr = db_->upsert(memberStat);
+
+		out->emplace_back(fetchOne(qr));
 	}
 	return out;
 }

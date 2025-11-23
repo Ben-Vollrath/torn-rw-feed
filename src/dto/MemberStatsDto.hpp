@@ -68,6 +68,11 @@ class MemberStatsDto : public oatpp::DTO
 		auto out = oatpp::Vector<oatpp::Object<MemberStatsDto>>::createShared();
 		for (const auto& pair : *spy->faction->members)
 		{
+			if (!pair.second->spy)
+			{
+				continue; 
+			}
+
 			out->emplace_back(fromTornStatsSpyItem(warId, factionId, std::stoll(pair.first), pair.second->spy));
 		}
 		return out;
