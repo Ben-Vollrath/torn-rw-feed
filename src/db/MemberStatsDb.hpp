@@ -26,6 +26,19 @@ public:
 	      "RETURNING *;",
 	      PARAM(oatpp::Object<MemberStatsDto>, memberStats))
 
+	QUERY(upsert,
+		"INSERT INTO member_stats (war_id, faction_id, member_id, type, str, def, spd, dex, total) "
+		"VALUES (:memberStats.war_id, :memberStats.faction_id, :memberStats.member_id, :memberStats.type, :memberStats.str, :memberStats.def, :memberStats.spd, :memberStats.dex, :memberStats.total) "
+		"ON CONFLICT (war_id, faction_id, member_id, type) DO UPDATE SET "
+		"  str = EXCLUDED.str, "
+		"  def = EXCLUDED.def, "
+		"  spd = EXCLUDED.spd, "
+		"  dex = EXCLUDED.dex, "
+		"  total = EXCLUDED.total "
+		"RETURNING *;",
+		PARAM(oatpp::Object<MemberStatsDto>, memberStats))
+
+
 	QUERY(findByWarAndFaction,
 	      "SELECT DISTINCT ON(member_id) * "
 	      "FROM member_stats "
