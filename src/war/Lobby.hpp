@@ -27,7 +27,7 @@ public:
 	 * Generate id for new user
 	 * @return
 	 */
-	v_int32 obtainNewUserId();
+	v_int32 obtainNewPeerId();
 
 	/**
 	 *Get room if one is available else return nullopt

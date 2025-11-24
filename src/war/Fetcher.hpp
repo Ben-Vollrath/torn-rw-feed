@@ -12,7 +12,8 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 {
 	enum class Phase : std::uint8_t {
 		WAR,
-		MEMBERS,
+		ENEMIES,
+		ALLIES
 	};
 
 	std::int64_t m_factionId;
@@ -30,7 +31,7 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 
 	const std::string TAG = "FETCHER";
 
-	std::vector<Phase> m_cycle{ Phase::WAR, Phase::MEMBERS };
+	std::vector<Phase> m_cycle{ Phase::WAR, Phase::ENEMIES, Phase::ALLIES };
 	std::size_t m_phaseIndex = 0;
 
 public:
@@ -58,16 +59,19 @@ public:
 				advancePhase();
 				return m_tornApiService.getFactionWar().callbackTo(&Fetcher::onFactionWarResponse);
 
-			case Phase::MEMBERS:
+			case Phase::ENEMIES:
 				if (m_enemyFactionId) {
 					OATPP_LOGD(TAG, "Fetching Faction Members.")
 						advancePhase();
 					return m_tornApiService.getFactionMembers(m_enemyFactionId.value())
-						.callbackTo(&Fetcher::onMemberUpdate);
+						.callbackTo(&Fetcher::onEnemiesUpdate);
 				}
 
 				advancePhase();
 				break;
+			case Phase::ALLIES:
+				advancePhase();
+				return m_tornApiService.getFactionMembers(m_factionId).callbackTo(&Fetcher::onAlliesUpdate);
 			}
 		}
 
@@ -105,7 +109,7 @@ public:
 		return scheduleNextTick();
 	}
 
-	Action onMemberUpdate(const oatpp::Object<TornFactionMembersResponse>& memberInfo)
+	Action onEnemiesUpdate(const oatpp::Object<TornFactionMembersResponse>& memberInfo)
 	{
 		auto room = m_room.lock();
 		if (!room || room->isClosed())
@@ -114,7 +118,7 @@ public:
 			return finish();
 		}
 
-		room->updateMembers(memberInfo);
+		room->updateEnemies(memberInfo);
 
 		if (room->needStats())
 		{
@@ -128,6 +132,22 @@ public:
 		}
 
 		return scheduleNextTick();
+	}
+	
+	Action onAlliesUpdate(const oatpp::Object<TornFactionMembersResponse>& memberInfo)
+	{
+		auto room = m_room.lock();
+		if (!room || room->isClosed())
+		{
+			OATPP_LOGD(TAG, "Room is closed, finishing fetcher.")
+			return finish();
+		}
+
+		room->updateAllies(memberInfo);
+
+		return scheduleNextTick();
+
+
 	}
 
 	Action onScouts(const FFScouterResponseDto& scouts)

@@ -18,24 +18,30 @@ class Room
 	 */
 	std::unordered_map<std::int64_t, oatpp::Object<MemberStatsDto>> m_memberStats;
 
-	/* Kept in order to only update on new member Information */
-	std::unordered_map<std::int64_t, oatpp::Object<TornFactionMember>> m_memberState;
+	/* Kept in order to only update on new enemy Information */
+	std::unordered_map<std::int64_t, oatpp::Object<TornFactionMember>> m_enemiesState;
+
+	/* Kept in order to only update on new ally Information */
+	std::unordered_map<std::int64_t, oatpp::Object<TornFactionMember>> m_alliesState;
 
 	/* General information about the ongoing war */
 	oatpp::Object<TornFactionWarResponseDto> m_factionWar;
 
 
-	std::unordered_map<v_int32, std::shared_ptr<Peer>> m_peerById;
+	std::unordered_map<v_int64, std::shared_ptr<Peer>> m_peerById;
+	std::unordered_map<std::int64_t,
+		std::unordered_map<std::int64_t, std::shared_ptr<Peer>>> m_peersByUserId;
+
 	std::mutex m_peerByIdLock;
 
 	std::atomic<bool> m_closed{false};
 	std::int64_t m_factionId;
+
 	OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
 
 public:
 	explicit Room(std::int64_t factionId) : m_factionId(factionId)
-	{
-	}
+	{}
 
 	bool isClosed() const;
 
@@ -53,15 +59,20 @@ public:
 
 	/**
 	 * Remove peer from the room.
-	 * @param userId
+	 * @param peerId
 	 */
-	void removePeerByUserId(v_int32 userId);
+	void removePeerByPeerId(v_int32 peerId);
 
 
-	/** Update member information.
+	/** Update enemies information.
 	 * @param memberInfos
 	 */
-	void updateMembers(const oatpp::Object<TornFactionMembersResponse>& memberInfos);
+	void updateEnemies(const oatpp::Object<TornFactionMembersResponse>& memberInfos);
+
+	/** Update allies information.
+	 * @param memberInfos
+	 */
+	void updateAllies(const oatpp::Object<TornFactionMembersResponse>& memberInfos);
 
 	/** Update member stats information.
 	 * Always updates all included fields.
@@ -88,6 +99,7 @@ private:
 	* @param message
 	*/
 	void sendMessage(const oatpp::String& message);
+	void sendMessage(const oatpp::String& message, std::int64_t peerId);
 
 	/**
 	* Sends the current state of the room to the given Peer.

@@ -46,7 +46,7 @@ public:
 		return newFaction;
 	}
 
-	oatpp::Object<UserDto> createTestUser(std::optional<std::int64_t> factionId = std::nullopt)
+	oatpp::Object<UserDto> createTestUser(std::optional<std::int64_t> factionId = std::nullopt, std::optional<std::int64_t> userId = std::nullopt)
 	{
 		if (factionId)
 		{
@@ -54,7 +54,7 @@ public:
 		}
 
 		auto dto = UserDto::createShared();
-		dto->id = idx;
+		dto->id = userId ? userId.value() : idx;
 		dto->tornKey = std::to_string(idx);
 		if (factionId) dto->factionId = *factionId;
 

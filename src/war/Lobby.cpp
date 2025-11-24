@@ -2,7 +2,7 @@
 
 #include "Fetcher.hpp"
 
-v_int32 Lobby::obtainNewUserId()
+v_int32 Lobby::obtainNewPeerId()
 {
 	return m_userIdCounter++;
 }
@@ -36,9 +36,10 @@ void Lobby::onAfterCreate_NonBlocking(const std::shared_ptr<AsyncWebSocket>& soc
 	OATPP_LOGD(TAG, "onAfterCreate_NonBlocking called");
 
 	std::int64_t factionId = std::stoll(params->find("faction_id")->second);
+	std::int64_t userId = std::stoll(params->find("user_id")->second);
 	auto room = getOrCreateRoom(factionId);
 
-	auto peer = std::make_shared<Peer>(socket, room, obtainNewUserId());
+	auto peer = std::make_shared<Peer>(socket, room, obtainNewPeerId(), userId);
 	socket->setListener(peer);
 
 	room->addPeer(peer);
@@ -50,7 +51,7 @@ void Lobby::onBeforeDestroy_NonBlocking(const std::shared_ptr<AsyncWebSocket>& s
 	auto peer = std::static_pointer_cast<Peer>(socket->getListener());
 	auto room = peer->getRoom();
 
-	room->removePeerByUserId(peer->getPeerId());
+	room->removePeerByPeerId(peer->getPeerId());
 
 	/* Remove circle `std::shared_ptr` dependencies */
 	socket->setListener(nullptr);

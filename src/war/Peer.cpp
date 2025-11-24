@@ -30,7 +30,7 @@ void Peer::sendMessage(const oatpp::String& message)
 
 std::shared_ptr<Room> Peer::getRoom()
 {
-	return m_room;
+	return m_room.lock();
 }
 
 oatpp::async::CoroutineStarter Peer::onPing(const std::shared_ptr<AsyncWebSocket>& socket, const oatpp::String& message)

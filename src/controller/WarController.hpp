@@ -80,6 +80,7 @@ public:
 			auto parameters = std::make_shared<oatpp::network::ConnectionHandler::ParameterMap>();
 
 			(*parameters)["faction_id"] = std::to_string(authObj->factionId);
+			(*parameters)["user_id"] = std::to_string(authObj->userId);
 
 			/* Set connection upgrade params */
 			response->setConnectionUpgradeParameters(parameters);

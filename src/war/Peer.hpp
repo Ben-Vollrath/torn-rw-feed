@@ -22,8 +22,9 @@ class Peer : public oatpp::websocket::AsyncWebSocket::Listener
 	oatpp::async::Lock m_writeLock;
 
 	std::shared_ptr<AsyncWebSocket> m_socket;
-	std::shared_ptr<Room> m_room;
+	std::weak_ptr<Room> m_room;
 	std::int64_t m_peerId;
+	std::int64_t m_userId;
 
 	/**
 	 * Inject async executor object.
@@ -33,10 +34,12 @@ class Peer : public oatpp::websocket::AsyncWebSocket::Listener
 public:
 	Peer(const std::shared_ptr<AsyncWebSocket>& socket,
 	     const std::shared_ptr<Room>& room,
-	     const std::int64_t peerId)
+	     const std::int64_t peerId,
+	     const std::int64_t userId)
 		: m_socket(socket)
 		  , m_room(room)
 		  , m_peerId(peerId)
+	      , m_userId(userId)
 	{
 	}
 
@@ -46,6 +49,15 @@ public:
 	std::int64_t getPeerId()
 	{
 		return m_peerId;
+	}
+
+
+	/**
+	 * Get the peer Id
+	 */
+	std::int64_t getUserId()
+	{
+		return m_userId;
 	}
 
 	/**

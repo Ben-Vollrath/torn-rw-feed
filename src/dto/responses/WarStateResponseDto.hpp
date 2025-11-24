@@ -18,7 +18,15 @@ class WarStateResponseDto : public oatpp::DTO
 	DTO_FIELD(Fields<Object<MemberStatsDto>>, memberStats);
 	DTO_FIELD(Vector<Object<TornFactionMember>>, members);
 	DTO_FIELD(Object<TornFactionWarResponseDto>, war);
+	DTO_FIELD(Object<TornFactionMember>, user);
 
+	static oatpp::Object<WarStateResponseDto> fromUser(const Object<TornFactionMember>& user)
+	{
+		auto dto = createShared();
+		dto->user = user;
+		dto->user->status->parseLocation();
+		return dto;
+	}
 
 	static oatpp::Object<WarStateResponseDto> fromWar(const Object<TornFactionWarResponseDto>& war)
 	{
@@ -66,6 +74,17 @@ class WarStateResponseDto : public oatpp::DTO
 		dto->addMemberStats(memberStats);
 		return dto;
 	}
+
+	void addUser(const Object<TornFactionMember>& user)
+	{
+		this->user = user;
+	}
+
+	void addWar(const Object<TornFactionWarResponseDto>& war)
+	{
+		this->war = war;
+	}
+
 
 	void addMemberStats(const std::unordered_map<std::int64_t, oatpp::Object<MemberStatsDto>>& memberStats)
 	{
