@@ -1,0 +1,28 @@
+{
+  "pacts": [],
+  "wars": {
+    "ranked": {
+      "war_id": 1073741824,
+      "start": 1073741822,
+      "end": 1073741825,
+      "target": 10737467,
+      "winner": 107374189,
+      "factions": [
+        {
+          "id": 1,
+          "name": "Faction1",
+          "score": 1,
+          "chain": 0
+        },
+        {
+          "id": 2,
+          "name": "Faction2",
+          "score": 0,
+          "chain": 0
+        }
+      ]
+    },
+    "raids": [],
+    "territory": []
+  }
+}

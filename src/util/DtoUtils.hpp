@@ -1,4 +1,4 @@
-
+#pragma once
 
 template <typename DtoOneT, typename DtoTwoT>
 inline bool dtoFieldsEqual(DtoOneT DtoOne, DtoTwoT DtoTwo, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper) {

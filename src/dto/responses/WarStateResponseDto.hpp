@@ -5,6 +5,7 @@
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/Types.hpp"
 #include "dto/clients/TornFactionMembersResponseDto.hpp"
+#include "dto/clients/TornFactionWarResponseDto.hpp"
 #include "dto/MemberStatsDto.hpp"
 
 
@@ -16,6 +17,15 @@ class WarStateResponseDto : public oatpp::DTO
 
 	DTO_FIELD(Fields<Object<MemberStatsDto>>, memberStats);
 	DTO_FIELD(Vector<Object<TornFactionMember>>, members);
+	DTO_FIELD(Object<TornFactionWarResponseDto>, war);
+
+
+	static oatpp::Object<WarStateResponseDto> fromWar(const Object<TornFactionWarResponseDto>& war)
+	{
+		auto dto = createShared();
+		dto->war = war;
+		return dto;
+	}
 
 	static oatpp::Object<WarStateResponseDto> fromMembersInfo(const Vector<Object<TornFactionMember>>& memberInfos)
 	{

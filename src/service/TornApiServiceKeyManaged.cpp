@@ -36,5 +36,5 @@ std::chrono::microseconds TornApiServiceKeyManaged::getCooldown()
 	microseconds cooldown = duration_cast<microseconds>(keyRefillCooldown) / (m_keys->size() * usesPerKey);
 
 	// Ensure minimum cooldown of 1 second
-	return std::max(cooldown, duration_cast<microseconds>(1s));
+	return std::max(cooldown, duration_cast<microseconds>(500ms));
 }
