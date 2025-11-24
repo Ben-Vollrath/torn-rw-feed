@@ -10,6 +10,11 @@
 
 class Fetcher : public oatpp::async::Coroutine<Fetcher>
 {
+	enum class Phase : std::uint8_t {
+		WAR,
+		MEMBERS,
+	};
+
 	std::int64_t m_factionId;
 	TornApiServiceKeyManaged m_tornApiService;
 	std::weak_ptr<Room> m_room;
@@ -25,6 +30,9 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 
 	const std::string TAG = "FETCHER";
 
+	std::vector<Phase> m_cycle{ Phase::WAR, Phase::MEMBERS };
+	std::size_t m_phaseIndex = 0;
+
 public:
 	Fetcher(const std::int64_t factionId, const std::weak_ptr<Room>& room)
 		: m_factionId(factionId)
@@ -37,27 +45,32 @@ public:
 	Action act() override
 	{
 		auto room = m_room.lock();
-		if (!room || room->isClosed())
-		{
+		if (!room || room->isClosed()) {
 			OATPP_LOGD(TAG, "Room is closed, finishing fetcher.")
-			return finish();
+				return finish();
 		}
 
-		if (m_count >= 100)
-		{
-			return m_tornApiService.getFactionWar().callbackTo(&Fetcher::onFactionWarResponse);
+		for (std::size_t attempts = 0; attempts < m_cycle.size(); ++attempts) {
+			Phase phase = m_cycle[m_phaseIndex];
+
+			switch (phase) {
+			case Phase::WAR:
+				advancePhase();
+				return m_tornApiService.getFactionWar().callbackTo(&Fetcher::onFactionWarResponse);
+
+			case Phase::MEMBERS:
+				if (m_enemyFactionId) {
+					OATPP_LOGD(TAG, "Fetching Faction Members.")
+						advancePhase();
+					return m_tornApiService.getFactionMembers(m_enemyFactionId.value())
+						.callbackTo(&Fetcher::onMemberUpdate);
+				}
+
+				advancePhase();
+				break;
+			}
 		}
 
-		if (m_enemyFactionId)
-		{
-			OATPP_LOGD(TAG, "Fetching Faction Members.")
-			return m_tornApiService.getFactionMembers(m_enemyFactionId.value()).callbackTo(
-				&Fetcher::onMemberUpdate);
-		}
-		OATPP_LOGD(TAG, "Currently no war running.")
-
-
-		m_count++;
 		return scheduleNextTick();
 	}
 
@@ -67,16 +80,18 @@ public:
 		if (correctWar && correctWar.value())
 		{
 			auto enemyFactionId = factionWarResponse->getEnemyFactionId(m_factionId);
-			//New war is detected
-			auto newWar = WarDto::fromWarResponse(factionWarResponse->wars->ranked);
-			m_warId = newWar->id;
+			bool newWar = factionWarResponse->getWarId() != m_warId;
+			m_warId = factionWarResponse->getWarId();
 			m_enemyFactionId = enemyFactionId;
 
-			//New war means new members -> reset old member state
 			auto room = m_room.lock();
 			if (room)
 			{
-				room->resetState();
+				if (newWar) {
+					//New war means new members -> reset old member state
+					room->resetState();
+				}
+
 				room->updateWar(factionWarResponse);
 			}
 			m_count = 0;
@@ -142,4 +157,10 @@ public:
 
 		return scheduleNextTick();
 	}
+
+	private:
+		void advancePhase()
+		{
+			m_phaseIndex = (m_phaseIndex + 1) % m_cycle.size();
+		}
 };

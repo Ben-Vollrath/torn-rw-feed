@@ -3,6 +3,7 @@
 #include "Room.hpp"
 
 #include "dto/responses/WarStateResponseDto.hpp"
+#include "util/DtoUtils.hpp"
 
 bool Room::isClosed() const
 {
@@ -111,7 +112,14 @@ void Room::updateStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& stats
 
 void Room::updateWar(const oatpp::Object<TornFactionWarResponseDto>& factionWarResponses)
 {
-	m_factionWar = factionWarResponses;
+	bool isNewData = !dtoFieldsEqual(m_factionWar, factionWarResponses, objectMapper);
+
+	if (isNewData) {
+		m_factionWar = factionWarResponses;
+		auto out = WarStateResponseDto::fromWar(factionWarResponses);
+		oatpp::String updateJson = objectMapper->writeToString(out);
+		sendMessage(updateJson->c_str());
+	}
 }
 
 bool Room::needStats()

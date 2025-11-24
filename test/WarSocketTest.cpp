@@ -13,7 +13,7 @@
 #include "oatpp-test/web/ClientServerTestRunner.hpp"
 
 #include "MockTorn/MockController.hpp"
-#include "AssertionHelper.hpp"
+#include "util/DtoUtils.hpp"
 
 namespace
 {
@@ -37,9 +37,12 @@ void WarSocketTest::testSocketOk(std::shared_ptr<oatpp::data::mapping::ObjectMap
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
 	mockResponseLoader->setResponsePaths({
-		factionWarOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_, factionMembersOneOnlineOKPath_, factionMembersOfflineOKPath_
+		factionWarOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_,
+		factionWarChangedScoreOKPath_, factionMembersOneOnlineOKPath_, factionWarChangedScoreOKPath_, factionMembersOfflineOKPath_
 	});
+
 	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarResponseDto>>(factionWarOKPath_);
+	auto factionWarChangedScore = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarResponseDto>>(factionWarChangedScoreOKPath_);
 	auto factionMembersOffline = mockResponseLoader->loadDtoFromFile< oatpp::Object<TornFactionMembersResponse>>(factionMembersOfflineOKPath_);
 	factionMembersOffline->members[0]->status->parseLocation();
 	factionMembersOffline->members[1]->status->parseLocation();
@@ -68,8 +71,14 @@ void WarSocketTest::testSocketOk(std::shared_ptr<oatpp::data::mapping::ObjectMap
 	std::thread pump([&] { socket->listen(); });
 
 	oatpp::Object<WarStateResponseDto> msg;
-	//factionMembersOfflineOKPath_
+	//factionWarOKPath_
 	bool got = listener->waitForNext(msg, std::chrono::seconds(500));
+	OATPP_ASSERT(got);
+	OATPP_ASSERT(!msg->members);
+	OATPP_ASSERT(dtoFieldsEqual(msg->war, factionWar, objectMapper))
+
+	//factionMembersOfflineOKPath_
+	listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 2);
 	OATPP_ASSERT(dtoFieldsEqual(msg->members[0], factionMembersOffline->members[0], objectMapper))
@@ -81,6 +90,12 @@ void WarSocketTest::testSocketOk(std::shared_ptr<oatpp::data::mapping::ObjectMap
 	OATPP_ASSERT(!msg->members);
 	OATPP_ASSERT(msg->memberStats[std::to_string(memberOneId)]->total == memberOneStats);
 	OATPP_ASSERT(!msg->memberStats[std::to_string(memberTwoId)]->total);
+
+	//factionWarOKPath_
+	got = listener->waitForNext(msg, std::chrono::seconds(500));
+	OATPP_ASSERT(got);
+	OATPP_ASSERT(!msg->members);
+	OATPP_ASSERT(dtoFieldsEqual(msg->war, factionWarChangedScore, objectMapper))
 
 	//factionMembersOneOnlineOKPath_
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
@@ -106,7 +121,7 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
 	mockResponseLoader->setResponsePaths({
-		factionWarOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_, tornStatsSpyOkPath_, factionMembersOfflineOKPath_
+		factionWarOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_, tornStatsSpyOkPath_, factionWarOKPath_, factionMembersOfflineOKPath_
 		});
 	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarResponseDto>>(factionWarOKPath_);
 	auto factionMembersOffline = mockResponseLoader->loadDtoFromFile< oatpp::Object<TornFactionMembersResponse>>(factionMembersOfflineOKPath_);
@@ -140,8 +155,14 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 	std::thread pump([&] { socket->listen(); });
 
 	oatpp::Object<WarStateResponseDto> msg;
-	//factionMembersOfflineOKPath_
+	//factionWarOKPath_
 	bool got = listener->waitForNext(msg, std::chrono::seconds(500));
+	OATPP_ASSERT(got);
+	OATPP_ASSERT(!msg->members);
+	OATPP_ASSERT(dtoFieldsEqual(msg->war, factionWar, objectMapper))
+
+	//factionMembersOfflineOKPath_
+	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 2);
 	OATPP_ASSERT(dtoFieldsEqual(msg->members[0], factionMembersOffline->members[0], objectMapper))
