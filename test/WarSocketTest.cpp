@@ -32,14 +32,14 @@ namespace
 
 void WarSocketTest::testSocketOk(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
 {
+	OATPP_LOGD(TAG, "TestSocketOk Started"); 
 	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
 	testingFixtures->reset();
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
 	mockResponseLoader->setResponsePaths({
-		factionWarOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_,
-		factionWarChangedScoreOKPath_, factionMembersOneOnlineOKPath_, factionWarChangedScoreOKPath_, factionMembersOfflineOKPath_
-	});
+		factionWarOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_, factionMembersOfflineOKPath_,
+		factionWarChangedScoreOKPath_, factionMembersOneOnlineOKPath_, factionMembersOfflineOKPath_, factionWarChangedScoreOKPath_, factionMembersOfflineOKPath_});
 
 	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarResponseDto>>(factionWarOKPath_);
 	auto factionWarChangedScore = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarResponseDto>>(factionWarChangedScoreOKPath_);
@@ -54,7 +54,7 @@ void WarSocketTest::testSocketOk(std::shared_ptr<oatpp::data::mapping::ObjectMap
 	auto memberOneStats = ffScouter[0]->bs_estimate;
 	auto memberTwoStats = ffScouter[1]->bs_estimate;
 
-	auto user = testingFixtures->createTestUser(1);
+	auto user = testingFixtures->createTestUser(1, memberOneId);
 	auto issueResult = testingFixtures->getUserApiKey(user->id);
 
 	OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
@@ -75,14 +75,17 @@ void WarSocketTest::testSocketOk(std::shared_ptr<oatpp::data::mapping::ObjectMap
 	bool got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(!msg->members);
-	OATPP_ASSERT(dtoFieldsEqual(msg->war, factionWar, objectMapper))
+	OATPP_ASSERT(!msg->user);
+	OATPP_ASSERT(dtoFieldsEqualLogger(msg->war, factionWar, objectMapper))
 
-	//factionMembersOfflineOKPath_
+	//factionMembersOfflineOKPath_ - members
 	listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 2);
-	OATPP_ASSERT(dtoFieldsEqual(msg->members[0], factionMembersOffline->members[0], objectMapper))
-	OATPP_ASSERT(dtoFieldsEqual(msg->members[1], factionMembersOffline->members[1], objectMapper))
+	OATPP_ASSERT(!msg->war);
+	OATPP_ASSERT(!msg->user);
+	OATPP_ASSERT(dtoFieldsEqualLogger(msg->members[0], factionMembersOffline->members[0], objectMapper))
+	OATPP_ASSERT(dtoFieldsEqualLogger(msg->members[1], factionMembersOffline->members[1], objectMapper))
 
 	//ffscouterScoutOkPath_
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
@@ -91,31 +94,40 @@ void WarSocketTest::testSocketOk(std::shared_ptr<oatpp::data::mapping::ObjectMap
 	OATPP_ASSERT(msg->memberStats[std::to_string(memberOneId)]->total == memberOneStats);
 	OATPP_ASSERT(!msg->memberStats[std::to_string(memberTwoId)]->total);
 
-	//factionWarOKPath_
+	//factionMembersOfflineOKPath_ - user
+	got = listener->waitForNext(msg, std::chrono::seconds(500));
+	OATPP_ASSERT(got);
+	OATPP_ASSERT(!msg->war);
+	OATPP_ASSERT(!msg->members);
+	OATPP_ASSERT(dtoFieldsEqualLogger(msg->user, factionMembersOffline->members[0], objectMapper))
+
+	//factionWarChangedScoreOKPath_
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(!msg->members);
-	OATPP_ASSERT(dtoFieldsEqual(msg->war, factionWarChangedScore, objectMapper))
+	OATPP_ASSERT(dtoFieldsEqualLogger(msg->war, factionWarChangedScore, objectMapper))
 
-	//factionMembersOneOnlineOKPath_
+	//factionMembersOneOnlineOKPath_ - members
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 1);
-	OATPP_ASSERT(dtoFieldsEqual(msg->members[0], factionMembersOnline->members[0], objectMapper))
+	OATPP_ASSERT(dtoFieldsEqualLogger(msg->members[0], factionMembersOnline->members[0], objectMapper))
 
-	//factionMembersOfflineOKPath_
+	//factionMembersOfflineOKPath_ - members
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 1);
-	OATPP_ASSERT(dtoFieldsEqual(msg->members[0], factionMembersOffline->members[0], objectMapper))
+	OATPP_ASSERT(dtoFieldsEqualLogger(msg->members[0], factionMembersOffline->members[0], objectMapper))
 
 	socket->sendClose(1000, "test done");
 
 	if (pump.joinable()) pump.join();
+	OATPP_LOGD(TAG, "TestSocketOk Completed");
 }
 
 void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
 {
+	OATPP_LOGD(TAG, "TestPostSpyWithRoom Started");
 	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
 	testingFixtures->reset();
 
@@ -159,13 +171,13 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 	bool got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(!msg->members);
-	OATPP_ASSERT(dtoFieldsEqual(msg->war, factionWar, objectMapper))
+	OATPP_ASSERT(dtoFieldsEqualLogger(msg->war, factionWar, objectMapper))
 
 	//factionMembersOfflineOKPath_
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->members->size() == 2);
-	OATPP_ASSERT(dtoFieldsEqual(msg->members[0], factionMembersOffline->members[0], objectMapper))
+	OATPP_ASSERT(dtoFieldsEqualLogger(msg->members[0], factionMembersOffline->members[0], objectMapper))
 
 	//ffscouterScoutOkPath_
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
@@ -188,10 +200,12 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 	socket->sendClose(1000, "test done");
 
 	if (pump.joinable()) pump.join();
+	OATPP_LOGD(TAG, "TestPostSpyWithRoom Completed");
 }
 
 void WarSocketTest::testPostSpyWithoutRoom(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
 {
+	OATPP_LOGD(TAG, "TestPostSpyWithoutRoom Started");
 	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
 	testingFixtures->reset();
 
@@ -218,6 +232,7 @@ void WarSocketTest::testPostSpyWithoutRoom(const std::shared_ptr<ApiTestClient> 
 	OATPP_ASSERT(stats->size() == 1)
 	auto stat = stats[0];
 	OATPP_ASSERT(stat->total == memberOneSpy->total)
+		OATPP_LOGD(TAG, "TestPostSpyWithoutRoom Completed");
 }
 
 void WarSocketTest::onRun()
