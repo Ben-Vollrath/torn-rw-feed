@@ -80,14 +80,14 @@ public:
 		if (correctWar && correctWar.value())
 		{
 			auto enemyFactionId = factionWarResponse->getEnemyFactionId(m_factionId);
-			bool newWar = factionWarResponse->getWarId() != m_warId;
+			bool isNewWar = factionWarResponse->getWarId() != m_warId;
 			m_warId = factionWarResponse->getWarId();
 			m_enemyFactionId = enemyFactionId;
 
 			auto room = m_room.lock();
 			if (room)
 			{
-				if (newWar) {
+				if (isNewWar) {
 					//New war means new members -> reset old member state
 					room->resetState();
 				}
