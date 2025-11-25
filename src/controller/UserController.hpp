@@ -65,7 +65,7 @@ public:
 			return _return(controller->createResponse(Status::CODE_200));
 		}
 
-		Action handleError(Error* e) override
+		oatpp::async::Action handleError(Error* e) override
 		{
 			// Workaround until fix oatpp-1.4.0
 			auto status = Status(std::atoi(e->what()), e->what());

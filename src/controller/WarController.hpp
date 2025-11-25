@@ -87,10 +87,11 @@ public:
 			return _return(response);
 		}
 
-		Action handleError(Error* e) override
+		oatpp::async::Action handleError(Error* e) override
 		{
-			OATPP_LOGE(TAG, " Error: %s", e ? e->what() : "unknown");
-			return _return(controller->createResponse(Status::CODE_500, "Internal Server Error"));
+			// Workaround until fix oatpp-1.4.0
+			auto status = Status(std::atoi(e->what()), e->what());
+			return _return(controller->createResponse(status, "Error occured."));
 		}
 	};
 
@@ -176,10 +177,11 @@ public:
 			return _return(controller->createDtoResponse(Status::CODE_200, SpyResponseDto::fromSize(stats->size())));
 		}
 
-		Action handleError(Error* e) override
+		oatpp::async::Action handleError(Error* e) override
 		{
-			OATPP_LOGE(TAG, " Error: %s", e ? e->what() : "unknown");
-			return _return(controller->createResponse(Status::CODE_500, "Internal Server Error"));
+			// Workaround until fix oatpp-1.4.0
+			auto status = Status(std::atoi(e->what()), e->what());
+			return _return(controller->createResponse(status, "Error occured."));
 		}
 	};
 };

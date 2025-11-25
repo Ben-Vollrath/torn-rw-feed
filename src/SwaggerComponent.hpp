@@ -22,7 +22,7 @@ public:
 			.setTitle("Torn RW Feed")
 			.setDescription("")
 			.setVersion("1.0")
-			.addServer("http://localhost:8000", "server on localhost")
+			.addServer("https://localhost:8000", "server on localhost")
 			.addSecurityScheme("basic_auth",
 			                   oatpp::swagger::DocumentInfo::SecuritySchemeBuilder::DefaultBearerAuthorizationSecurityScheme(
 				                   "Authorization"));
