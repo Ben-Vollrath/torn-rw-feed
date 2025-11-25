@@ -10,7 +10,7 @@
 #include "oatpp/core/macro/component.hpp"
 
 #include "DatabaseComponent.hpp"
-#include "TornApiClient.hpp"
+#include "clients/TornApiClient.hpp"
 #include "../TestingFixtures.hpp"
 #include "../MockTorn/MockResponseLoader.hpp"
 #include "clients/FFScouterApiClient.hpp"

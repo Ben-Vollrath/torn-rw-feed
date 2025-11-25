@@ -3,7 +3,6 @@
 #include <cassert>
 #include <iostream>
 
-#include "TornApiClient.hpp"
 #include "dto/responses/WarStateResponseDto.hpp"
 #include "dto/clients/TornFactionResponseDto.hpp"
 #include "dto/clients/TornUserBasicResponseDto.hpp"
@@ -64,7 +63,7 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionResponseD
 	private:
 		oatpp::async::Action act() override
 		{
-			return this->m_client->getFactionBasic(m_key).callbackTo(&GetFactionCoroutine::parseResponse);
+			return this->m_client->getFactionBasic(m_key, m_apiService->COMMENT).callbackTo(&GetFactionCoroutine::parseResponse);
 		}
 
 		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
@@ -91,7 +90,7 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornUserBasicRespons
 	private:
 		oatpp::async::Action act() override
 		{
-			return this->m_client->getUserBasic(m_key).callbackTo(&GetUserCoroutine::parseResponse);
+			return this->m_client->getUserBasic(m_key, m_apiService->COMMENT).callbackTo(&GetUserCoroutine::parseResponse);
 		}
 
 		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
@@ -121,7 +120,7 @@ TornApiService::getFactionMembers(
 		oatpp::async::Action act() override
 		{
 			const auto now = std::time(nullptr);
-			return this->m_client->getFactionMembers(m_key, now, m_factionId).callbackTo(
+			return this->m_client->getFactionMembers(m_key, now, m_factionId, m_apiService->COMMENT).callbackTo(
 				&GetFactionMembersCoroutine::parseResponse);
 		}
 
@@ -149,7 +148,7 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarRespon
 	private:
 		oatpp::async::Action act() override
 		{
-			return this->m_client->getFactionWars(m_key).callbackTo(&GetFactionWarCoroutine::parseResponse);
+			return this->m_client->getFactionWars(m_key, m_apiService->COMMENT).callbackTo(&GetFactionWarCoroutine::parseResponse);
 		}
 
 		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
