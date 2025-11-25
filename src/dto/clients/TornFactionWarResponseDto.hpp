@@ -88,8 +88,6 @@ class TornFactionWarResponseDto : public oatpp::DTO
 		return factions[0]->id == factionId || factions[1]->id == factionId;
 	}
 
-
-	// Check if the war involves the given faction ID
 	bool isWarActive()
 	{
 		return static_cast<bool>(wars->ranked);

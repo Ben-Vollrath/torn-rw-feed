@@ -10,7 +10,8 @@
 
 class Fetcher : public oatpp::async::Coroutine<Fetcher>
 {
-	enum class Phase : std::uint8_t {
+	enum class Phase : std::uint8_t
+	{
 		WAR,
 		ENEMIES,
 		ALLIES
@@ -31,7 +32,7 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 
 	const std::string TAG = "FETCHER";
 
-	std::vector<Phase> m_cycle{ Phase::WAR, Phase::ENEMIES, Phase::ALLIES };
+	std::vector<Phase> m_cycle{Phase::WAR, Phase::ENEMIES, Phase::ALLIES};
 	std::size_t m_phaseIndex = 0;
 
 public:
@@ -46,25 +47,29 @@ public:
 	Action act() override
 	{
 		auto room = m_room.lock();
-		if (!room || room->isClosed()) {
+		if (!room || room->isClosed())
+		{
 			OATPP_LOGD(TAG, "Room is closed, finishing fetcher.")
-				return finish();
+			return finish();
 		}
 
-		for (std::size_t attempts = 0; attempts < m_cycle.size(); ++attempts) {
+		for (std::size_t attempts = 0; attempts < m_cycle.size(); ++attempts)
+		{
 			Phase phase = m_cycle[m_phaseIndex];
 
-			switch (phase) {
+			switch (phase)
+			{
 			case Phase::WAR:
 				advancePhase();
 				return m_tornApiService.getFactionWar().callbackTo(&Fetcher::onFactionWarResponse);
 
 			case Phase::ENEMIES:
-				if (m_enemyFactionId) {
+				if (m_enemyFactionId)
+				{
 					OATPP_LOGD(TAG, "Fetching Faction Members.")
-						advancePhase();
+					advancePhase();
 					return m_tornApiService.getFactionMembers(m_enemyFactionId.value())
-						.callbackTo(&Fetcher::onEnemiesUpdate);
+					                       .callbackTo(&Fetcher::onEnemiesUpdate);
 				}
 
 				advancePhase();
@@ -100,7 +105,8 @@ public:
 			auto room = m_room.lock();
 			if (room)
 			{
-				if (isNewWar) {
+				if (isNewWar)
+				{
 					//New war means new members -> reset old member state
 					room->resetState();
 				}
@@ -142,7 +148,7 @@ public:
 
 		return scheduleNextTick();
 	}
-	
+
 	Action onAlliesUpdate(const oatpp::Object<TornFactionMembersResponse>& memberInfo)
 	{
 		auto room = m_room.lock();
@@ -155,8 +161,6 @@ public:
 		room->updateAllies(memberInfo);
 
 		return scheduleNextTick();
-
-
 	}
 
 	Action onScouts(const FFScouterResponseDto& scouts)
@@ -187,9 +191,9 @@ public:
 		return scheduleNextTick();
 	}
 
-	private:
-		void advancePhase()
-		{
-			m_phaseIndex = (m_phaseIndex + 1) % m_cycle.size();
-		}
+private:
+	void advancePhase()
+	{
+		m_phaseIndex = (m_phaseIndex + 1) % m_cycle.size();
+	}
 };

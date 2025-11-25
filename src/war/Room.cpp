@@ -35,19 +35,23 @@ void Room::removePeerByPeerId(v_int32 peerId)
 {
 	std::lock_guard<std::mutex> guard(m_peerByIdLock);
 	auto it = m_peerById.find(peerId);
-	if (it != m_peerById.end()) {
+	if (it != m_peerById.end())
+	{
 		auto userId = it->second->getUserId();
 		m_peerById.erase(it);
 		// remove from user index
 		auto uit = m_peersByUserId.find(userId);
-		if (uit != m_peersByUserId.end()) {
+		if (uit != m_peersByUserId.end())
+		{
 			uit->second.erase(peerId);
-			if (uit->second.empty()) {
+			if (uit->second.empty())
+			{
 				m_peersByUserId.erase(uit);
 			}
 		}
 	}
-	if (m_peerById.empty()) {
+	if (m_peerById.empty())
+	{
 		m_closed.store(true, std::memory_order_release);
 	}
 }
@@ -66,7 +70,8 @@ void Room::sendMessage(const oatpp::String& message, std::int64_t userId)
 	{
 		std::lock_guard<std::mutex> guard(m_peerByIdLock);
 		auto it = m_peersByUserId.find(userId);
-		if (it == m_peersByUserId.end()) {
+		if (it == m_peersByUserId.end())
+		{
 			return;
 		}
 		for (auto pIt : it->second)
@@ -74,7 +79,6 @@ void Room::sendMessage(const oatpp::String& message, std::int64_t userId)
 			auto peer = pIt.second;
 			peer->sendMessage(message);
 		}
-		
 	}
 }
 
@@ -110,7 +114,7 @@ void Room::updateEnemies(const oatpp::Object<TornFactionMembersResponse>& member
 			if (old->last_action->timestamp != member->last_action->timestamp ||
 				old->status->state != member->status->state ||
 				old->status->description != member->status->description ||
-				old->status->until != member->status->until || 
+				old->status->until != member->status->until ||
 				old->last_action->status != member->last_action->status)
 			{
 				it->second = member;
@@ -152,13 +156,13 @@ void Room::updateAllies(const oatpp::Object<TornFactionMembersResponse>& memberI
 				shouldUpdate = true;
 			}
 		}
-		if (shouldUpdate) {
+		if (shouldUpdate)
+		{
 			auto out = WarStateResponseDto::fromUser(member);
 			oatpp::String updateJson = objectMapper->writeToString(out);
 			sendMessage(updateJson->c_str(), member->id);
 		}
 	}
-
 }
 
 void Room::updateStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& stats)
@@ -176,7 +180,8 @@ void Room::updateWar(const oatpp::Object<TornFactionWarResponseDto>& factionWarR
 {
 	bool isNewData = !dtoFieldsEqual(m_factionWar, factionWarResponses, objectMapper);
 
-	if (isNewData) {
+	if (isNewData)
+	{
 		m_factionWar = factionWarResponses;
 		auto out = WarStateResponseDto::fromWar(factionWarResponses);
 		oatpp::String updateJson = objectMapper->writeToString(out);

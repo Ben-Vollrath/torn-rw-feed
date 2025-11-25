@@ -39,7 +39,7 @@ public:
 		: m_socket(socket)
 		  , m_room(room)
 		  , m_peerId(peerId)
-	      , m_userId(userId)
+		  , m_userId(userId)
 	{
 	}
 
