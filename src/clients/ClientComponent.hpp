@@ -1,7 +1,7 @@
 #pragma once
 
 #include "FFScouterApiClient.hpp"
-#include "../TornApiClient.hpp"
+#include "clients/TornApiClient.hpp"
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp/network/tcp/client/ConnectionProvider.hpp"
 #include "oatpp-curl/RequestExecutor.hpp"

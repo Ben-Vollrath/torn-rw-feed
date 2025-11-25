@@ -2,7 +2,7 @@
 
 #include <optional>
 
-#include "TornApiClient.hpp"
+#include "clients/TornApiClient.hpp"
 #include "dto/clients/TornErrorResponseDto.hpp"
 #include "dto/clients/TornFactionMembersResponseDto.hpp"
 #include "dto/clients/TornFactionResponseDto.hpp"
@@ -18,6 +18,7 @@ class TornApiService
 	OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
 
 	using Status = oatpp::web::protocol::http::Status;
+	std::string COMMENT = "Torn-RW-Feed";
 
 	template <typename T, typename TDto>
 	class ApiActionBase : public oatpp::async::CoroutineWithResult<T, TDto>
