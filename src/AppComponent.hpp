@@ -12,6 +12,7 @@
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp-openssl/server/ConnectionProvider.hpp"
 #include "oatpp-openssl/Config.hpp"
+#include "oatpp/web/server/interceptor/AllowCorsGlobal.hpp"
 
 #include "war/Lobby.hpp"
 
@@ -79,7 +80,10 @@ public:
 	{
 		OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 		OATPP_COMPONENT(std::shared_ptr<oatpp::async::Executor>, asyncExecutor);
-		return oatpp::web::server::AsyncHttpConnectionHandler::createShared(router, asyncExecutor);
+		auto connectionHandler = oatpp::web::server::AsyncHttpConnectionHandler::createShared(router, asyncExecutor);
+		connectionHandler->addRequestInterceptor(std::make_shared<oatpp::web::server::interceptor::AllowOptionsGlobal>());
+		connectionHandler->addResponseInterceptor(std::make_shared<oatpp::web::server::interceptor::AllowCorsGlobal>());
+		return connectionHandler;
 	}());
 
 
