@@ -63,7 +63,8 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionResponseD
 	private:
 		oatpp::async::Action act() override
 		{
-			return this->m_client->getFactionBasic(m_key, m_apiService->COMMENT).callbackTo(&GetFactionCoroutine::parseResponse);
+			return this->m_client->getFactionBasic(m_key, m_apiService->COMMENT).callbackTo(
+				&GetFactionCoroutine::parseResponse);
 		}
 
 		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
@@ -90,7 +91,8 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornUserBasicRespons
 	private:
 		oatpp::async::Action act() override
 		{
-			return this->m_client->getUserBasic(m_key, m_apiService->COMMENT).callbackTo(&GetUserCoroutine::parseResponse);
+			return this->m_client->getUserBasic(m_key, m_apiService->COMMENT).callbackTo(
+				&GetUserCoroutine::parseResponse);
 		}
 
 		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
@@ -148,7 +150,8 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarRespon
 	private:
 		oatpp::async::Action act() override
 		{
-			return this->m_client->getFactionWars(m_key, m_apiService->COMMENT).callbackTo(&GetFactionWarCoroutine::parseResponse);
+			return this->m_client->getFactionWars(m_key, m_apiService->COMMENT).callbackTo(
+				&GetFactionWarCoroutine::parseResponse);
 		}
 
 		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)

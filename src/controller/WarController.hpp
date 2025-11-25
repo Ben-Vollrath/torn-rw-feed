@@ -68,7 +68,6 @@ public:
 
 		Action act() override
 		{
-
 			auto token = request->getQueryParameter("token");
 			auto baseObj = controller->authHandler()->authorize(token);
 			auto authObj = std::dynamic_pointer_cast<AuthObject>(baseObj);

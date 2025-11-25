@@ -53,6 +53,7 @@ inline auto factionMembersOfflineOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_mem
 inline auto factionMembersOneOnlineOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_members_one_online_ok.json";
 inline auto factionWarOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_war_ok.json";
 inline auto factionWarChangedScoreOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_war_changed_score_ok.json";
+inline auto factionWarNoWarOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_war_no_war_ok.json";
 inline auto userBasicOkPath_ = MOCK_RESPONSE_BASE "/torn_user_basic_ok.json";
 inline auto errorInactiveKey_ = MOCK_RESPONSE_BASE "/torn_error_incorrect_api_key.json";
 

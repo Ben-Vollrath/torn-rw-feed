@@ -70,7 +70,7 @@ class MemberStatsDto : public oatpp::DTO
 		{
 			if (!pair.second->spy)
 			{
-				continue; 
+				continue;
 			}
 
 			out->emplace_back(fromTornStatsSpyItem(warId, factionId, std::stoll(pair.first), pair.second->spy));
