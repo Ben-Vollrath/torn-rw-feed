@@ -76,16 +76,23 @@ class TornFactionWarResponseDto : public oatpp::DTO
 	}
 
 	// Check if the war involves the given faction ID
-	std::optional<bool> isCorrectWar(std::int64_t factionId)
+	bool isValidResponse(std::int64_t factionId)
 	{
-		if (!wars->ranked)
+		if (!isWarActive())
 		{
-			return std::nullopt;
+			return false;
 		}
 
 		const auto& factions = wars->ranked->factions;
 
 		return factions[0]->id == factionId || factions[1]->id == factionId;
+	}
+
+
+	// Check if the war involves the given faction ID
+	bool isWarActive()
+	{
+		return static_cast<bool>(wars->ranked);
 	}
 };
 

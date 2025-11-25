@@ -80,8 +80,17 @@ public:
 
 	Action onFactionWarResponse(const oatpp::Object<TornFactionWarResponseDto>& factionWarResponse)
 	{
-		auto correctWar = factionWarResponse->isCorrectWar(m_factionId);
-		if (correctWar && correctWar.value())
+		if (!factionWarResponse->isWarActive())
+		{
+			auto room = m_room.lock();
+			if (room)
+			{
+				room->updateWar(factionWarResponse);
+			}
+			return scheduleNextTick();
+		}
+
+		if (factionWarResponse->isValidResponse(m_factionId))
 		{
 			auto enemyFactionId = factionWarResponse->getEnemyFactionId(m_factionId);
 			bool isNewWar = factionWarResponse->getWarId() != m_warId;
@@ -100,7 +109,7 @@ public:
 			}
 			m_count = 0;
 		}
-		else if (correctWar && !correctWar.value())
+		else
 		{
 			//Key is outdated
 			m_tornApiService.removeLastKey();

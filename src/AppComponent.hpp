@@ -33,7 +33,7 @@ public:
 	{
 		auto cfg = std::make_shared<AppConfig>();
 		cfg->ffscouterApiKey = getenv_or("FFSCOUTER_API_KEY", "");
-		cfg->databaseUrl = getenv_or("DATABASE_URL", "postgresql://torn:tornpass@192.168.0.117:5432/torn_rw_feed");
+		cfg->databaseUrl = getenv_or("DATABASE_URL", "postgresql://torn:tornpass@localhost:5432/torn_rw_feed");
 		cfg->oatppSwaggerResPath = getenv_or("OATPP_SWAGGER_RES_PATH", OATPP_SWAGGER_RES_PATH);
 		cfg->sqlFilePath = getenv_or("SQL_FILE_PATH", SQL_FILE_PATH);
 		cfg->certPath = getenv_or("CERT_PATH", CERT_PATH);
