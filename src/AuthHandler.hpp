@@ -34,26 +34,26 @@ public:
 	std::shared_ptr<AuthorizationObject>
 	authorize(const oatpp::String& token) override
 	{
-		OATPP_ASSERT_HTTP(token, Status::CODE_401, "No token provided");
+		OATPP_ASSERT_HTTP(token, Status::CODE_401, "401");
 
 		// Token format: "ak_<prefix>_<secretB64>"
 		std::vector<std::string> parts = split(token, '.');
 		OATPP_ASSERT_HTTP(parts.size() == 3 && parts[0] == "ak",
-		                  Status::CODE_401, "Malformed token");
+		                  Status::CODE_401, "401");
 
 		const std::string& prefix = parts[1];
 		const std::string& secretB64 = parts[2];
 
 		// Lookup by prefix
 		auto key = m_apiKeyService.getByprefix(prefix);
-		OATPP_ASSERT_HTTP(key, Status::CODE_401, "Invalid token");
+		OATPP_ASSERT_HTTP(key, Status::CODE_401, "401");
 
 		// State checks
 		const auto now = std::time(nullptr);
-		OATPP_ASSERT_HTTP(!(key->revoked && *key->revoked), Status::CODE_401, "Key revoked");
+		OATPP_ASSERT_HTTP(!(key->revoked && *key->revoked), Status::CODE_401, "401");
 		if (key->expiresAt && *key->expiresAt > 0)
 		{
-			OATPP_ASSERT_HTTP(now <= *key->expiresAt, Status::CODE_401, "Key expired");
+			OATPP_ASSERT_HTTP(now <= *key->expiresAt, Status::CODE_401, "401");
 		}
 
 		// Decode secret and hash
@@ -71,7 +71,7 @@ public:
 
 		// Constant-time compare
 		OATPP_ASSERT_HTTP(ct_equal(storedHex, presentedHashHex),
-		                  Status::CODE_401, "Invalid token");
+		                  Status::CODE_401, "401");
 
 
 		m_apiKeyService.touchLastUsedAt(key->id);
