@@ -5,7 +5,7 @@
 oatpp::Object<ApiKeyDto> ApiKeyService::getByprefix(const std::string& prefix) const
 {
 	auto qr = db_->getKeyByPrefix(prefix);
-	return fetchOne(qr);
+	return fetchOneOrNone(qr);
 }
 
 oatpp::Object<ApiKeyDto> ApiKeyService::touchLastUsedAt(const std::int64_t id) const
