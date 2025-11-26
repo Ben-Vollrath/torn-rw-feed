@@ -49,7 +49,7 @@ public:
 		auto room = m_room.lock();
 		if (!room || room->isClosed())
 		{
-			OATPP_LOGD(TAG, "Room is closed, finishing fetcher.")
+			OATPP_LOGD(TAG, "Act Room is closed, finishing fetcher.")
 			return finish();
 		}
 
@@ -129,7 +129,7 @@ public:
 		auto room = m_room.lock();
 		if (!room || room->isClosed())
 		{
-			OATPP_LOGD(TAG, "Room is closed, finishing fetcher.")
+			OATPP_LOGD(TAG, "Enemies, Room is closed, finishing fetcher.")
 			return finish();
 		}
 
@@ -154,7 +154,7 @@ public:
 		auto room = m_room.lock();
 		if (!room || room->isClosed())
 		{
-			OATPP_LOGD(TAG, "Room is closed, finishing fetcher.")
+			OATPP_LOGD(TAG, "Allies, Room is closed, finishing fetcher.")
 			return finish();
 		}
 
@@ -188,7 +188,7 @@ public:
 	{
 		OATPP_LOGE(TAG, "Fetcher error: %s", e ? e->what() : "unknown");
 
-		return scheduleNextTick();
+		return yieldTo(&Fetcher::act);
 	}
 
 private:
