@@ -73,6 +73,19 @@ public:
 		}
 	};
 
+	ENDPOINT_ASYNC("GET", "/faction", GetFactionSelection)
+	{
+		ENDPOINT_ASYNC_INIT(GetFactionSelection)
+
+			Action act() override
+		{
+			OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
+			auto rsp = mockResponseLoader->getNextResponse();
+			OATPP_LOGD("/faction", "Response: %s", rsp.c_str());
+			return _return(controller->createResponse(Status::CODE_200, rsp));
+		}
+	};
+
 	ENDPOINT_ASYNC("GET", "/api/v1/get-stats", FFScouts) {
 		ENDPOINT_ASYNC_INIT(FFScouts)
 

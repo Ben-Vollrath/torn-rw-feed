@@ -12,9 +12,8 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 {
 	enum class Phase : std::uint8_t
 	{
-		WAR,
+		WARWITHALLIES,
 		ENEMIES,
-		ALLIES
 	};
 
 	std::int64_t m_factionId;
@@ -32,7 +31,7 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 
 	const std::string TAG = "FETCHER";
 
-	std::vector<Phase> m_cycle{Phase::WAR, Phase::ENEMIES, Phase::ALLIES};
+	std::vector<Phase> m_cycle{Phase::WARWITHALLIES, Phase::ENEMIES};
 	std::size_t m_phaseIndex = 0;
 
 public:
@@ -59,9 +58,9 @@ public:
 
 			switch (phase)
 			{
-			case Phase::WAR:
+			case Phase::WARWITHALLIES:
 				advancePhase();
-				return m_tornApiService.getFactionWar().callbackTo(&Fetcher::onFactionWarResponse);
+				return m_tornApiService.getFactionWarAndMembers().callbackTo(&Fetcher::onFactionWarAndMembersResponse);
 
 			case Phase::ENEMIES:
 				if (m_enemyFactionId)
@@ -74,23 +73,20 @@ public:
 
 				advancePhase();
 				break;
-			case Phase::ALLIES:
-				advancePhase();
-				return m_tornApiService.getFactionMembers(m_factionId).callbackTo(&Fetcher::onAlliesUpdate);
 			}
 		}
 
 		return scheduleNextTick();
 	}
 
-	Action onFactionWarResponse(const oatpp::Object<TornFactionWarResponseDto>& factionWarResponse)
+	Action onFactionWarAndMembersResponse(const oatpp::Object<TornFactionWarAndMembersResponseDto>& factionWarResponse)
 	{
 		if (!factionWarResponse->isWarActive())
 		{
 			auto room = m_room.lock();
 			if (room)
 			{
-				room->updateWar(factionWarResponse);
+				room->updateWarAndAllies(factionWarResponse);
 			}
 			return scheduleNextTick();
 		}
@@ -111,7 +107,7 @@ public:
 					room->resetState();
 				}
 
-				room->updateWar(factionWarResponse);
+				room->updateWarAndAllies(factionWarResponse);
 			}
 			m_count = 0;
 		}
@@ -145,20 +141,6 @@ public:
 			}
 			room->updateStats(stats);
 		}
-
-		return scheduleNextTick();
-	}
-
-	Action onAlliesUpdate(const oatpp::Object<TornFactionMembersResponse>& memberInfo)
-	{
-		auto room = m_room.lock();
-		if (!room || room->isClosed())
-		{
-			OATPP_LOGD(TAG, "Allies, Room is closed, finishing fetcher.")
-			return finish();
-		}
-
-		room->updateAllies(memberInfo);
 
 		return scheduleNextTick();
 	}
