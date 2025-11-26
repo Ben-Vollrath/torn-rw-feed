@@ -37,6 +37,7 @@ class Room
 	std::atomic<bool> m_closed{false};
 	std::int64_t m_factionId;
 
+	std::string TAG = "ROOM";
 	OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
 
 public:

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <functional>
 
 #include "TornApiService.hpp"
@@ -15,32 +15,45 @@ public:
 
 	std::chrono::microseconds getCooldown();
 
-
-	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionResponseDto>&> getFactionBasic()
+	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionResponseDto>&>
+		getFactionBasic()
 	{
-		return callWithKeyManagement(&TornApiService::getFactionBasic);
+		using Result = oatpp::Object<TornFactionResponseDto>;
+		return callWithKeyManagementAsync<Result>(&TornApiService::getFactionBasic);
 	}
 
-	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornUserBasicResponseDto>&> getUserBasic()
+	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornUserBasicResponseDto>&>
+		getUserBasic()
 	{
-		return callWithKeyManagement(&TornApiService::getUserBasic);
+		using Result = oatpp::Object<TornUserBasicResponseDto>;
+		return callWithKeyManagementAsync<Result>(&TornApiService::getUserBasic);
 	}
 
-	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionMembersResponse>&> getFactionMembers(
-		const std::int64_t factionId)
+	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionMembersResponse>&>
+		getFactionMembers(const std::int64_t factionId)
 	{
-		return callWithKeyManagement(&TornApiService::getFactionMembers, factionId);
+		using Result = oatpp::Object<TornFactionMembersResponse>;
+		return callWithKeyManagementAsync<Result>(
+			&TornApiService::getFactionMembers,
+			factionId
+		);
 	}
 
-	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarResponseDto>&> getFactionWar()
+	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarResponseDto>&>
+		getFactionWar()
 	{
-		return callWithKeyManagement(&TornApiService::getFactionWar);
+		using Result = oatpp::Object<TornFactionWarResponseDto>;
+		return callWithKeyManagementAsync<Result>(&TornApiService::getFactionWar);
 	}
 
-	oatpp::async::CoroutineStarterForResult<const std::optional<std::int64_t>&> getEnemyWarFaction(
-		const std::int64_t factionId)
+	oatpp::async::CoroutineStarterForResult<const std::optional<std::int64_t>&>
+		getEnemyWarFaction(const std::int64_t factionId)
 	{
-		return callWithKeyManagement(&TornApiService::getEnemyWarFaction, factionId);
+		using Result = std::optional<std::int64_t>;
+		return callWithKeyManagementAsync<Result>(
+			&TornApiService::getEnemyWarFaction,
+			factionId
+		);
 	}
 
 	void removeLastKey();
@@ -49,38 +62,75 @@ private:
 	oatpp::Vector<oatpp::Object<TornKeyRow>> m_keys;
 	std::size_t index = 0;
 	UserService m_UserService;
+	TornApiService m_tornApiService;
 
 
 	std::string getKey();
 
-	template <typename MemFn, typename... Args>
-	std::invoke_result_t<MemFn, TornApiService*, const std::string&, Args...> callWithKeyManagement(
-		MemFn mf, Args&&... args)
+	template<typename Result, typename MemFn, typename... Args>
+	oatpp::async::CoroutineStarterForResult<const Result&>
+		callWithKeyManagementAsync(MemFn mf, Args&&... args)
 	{
-		using Return = std::invoke_result_t<MemFn, TornApiService*, const std::string&, Args...>;
+		using Action = oatpp::async::Action;
 
-		auto key = getKey();
-		try
+		// Local coroutine type that closes over template args
+		class Coroutine
+			: public oatpp::async::CoroutineWithResult<Coroutine, const Result&>
 		{
-			return std::invoke(mf,
-			                   static_cast<TornApiService*>(this),
-			                   key,
-			                   std::forward<Args>(args)...);
-		}
-		catch (oatpp::web::protocol::http::HttpError& e)
-		{
-			auto status = e.getInfo().status;
-			switch (status.code)
+			TornApiServiceKeyManaged* m_self;
+			MemFn m_mf;
+			std::tuple<std::decay_t<Args>...> m_args;
+
+		public:
+			Coroutine(TornApiServiceKeyManaged* self, MemFn mf, Args&&... args)
+				: m_self(self)
+				, m_mf(mf)
+				, m_args(std::forward<Args>(args)...)
 			{
-			case 429:
-				// Retry with same args
-				return callWithKeyManagement<MemFn, Args...>(mf, std::forward<Args>(args)...);
-			case 401:
-				removeLastKey();
-				return callWithKeyManagement<MemFn, Args...>(mf, std::forward<Args>(args)...);
-			default:
-				throw; // rethrow
 			}
-		}
+
+			Action act() override
+			{
+				auto key = m_self->getKey();
+
+				// Call underlying TornApiService method with key + stored args
+				return std::apply(
+					[&](auto&&... unpackedArgs)
+					{
+						return (m_self->m_tornApiService.*m_mf)(
+							key,
+							std::forward<decltype(unpackedArgs)>(unpackedArgs)...
+							).template callbackTo<Coroutine>(&Coroutine::returnResponse);
+					},
+					m_args
+				);
+			}
+
+			Action returnResponse(const Result& r)
+			{
+				return this->_return(r);
+			}
+
+			Action handleError(oatpp::async::Error* e) override
+			{
+				OATPP_LOGE("KeyManaged", "Fetcher error: %s", e ? e->what() : "unknown");
+
+				const int code = std::atoi(e ? e->what() : "0");
+				switch (code)
+				{
+				case 429:
+					// Rate-limit, retry with same key & args
+					return this->yieldTo(&Coroutine::act);
+				case 401:
+					// Key invalid -> drop and retry with next key
+					m_self->removeLastKey();
+					return this->yieldTo(&Coroutine::act);
+				default:
+					throw e;
+				}
+			}
+		};
+
+		return Coroutine::startForResult(this, mf, std::forward<Args>(args)...);
 	}
 };
