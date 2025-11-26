@@ -52,6 +52,7 @@ void Room::removePeerByPeerId(v_int32 peerId)
 	}
 	if (m_peerById.empty())
 	{
+		OATPP_LOGD(TAG, "All peers disconnected, closing room: %s", std::to_string(m_factionId));
 		m_closed.store(true, std::memory_order_release);
 	}
 }

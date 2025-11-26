@@ -56,6 +56,7 @@ inline auto factionWarChangedScoreOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_wa
 inline auto factionWarNoWarOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_war_no_war_ok.json";
 inline auto userBasicOkPath_ = MOCK_RESPONSE_BASE "/torn_user_basic_ok.json";
 inline auto errorInactiveKey_ = MOCK_RESPONSE_BASE "/torn_error_incorrect_api_key.json";
+inline auto errorTooManyRequests_ = MOCK_RESPONSE_BASE "/torn_error_too_many_requests.json";
 
 inline auto ffscouterScoutOkPath_ = MOCK_RESPONSE_BASE "/ffscouter_scout_ok.json";
 inline auto tornStatsSpyOkPath_ = MOCK_RESPONSE_BASE "/tornstats_spy_ok.json";
