@@ -29,8 +29,6 @@ class Room
 
 
 	std::unordered_map<v_int64, std::shared_ptr<Peer>> m_peerById;
-	std::unordered_map<std::int64_t,
-	                   std::unordered_map<std::int64_t, std::shared_ptr<Peer>>> m_peersByUserId;
 
 	std::mutex m_peerByIdLock;
 
