@@ -1,4 +1,25 @@
 {
+  "basic": {
+    "id": 1,
+    "name": "Test Faction",
+    "tag": "TST",
+    "tag_image": null,
+    "leader_id": 111,
+    "co_leader_id": 222,
+    "respect": 987654321,
+    "days_old": 2500,
+    "capacity": 80,
+    "members": 73,
+    "is_enlisted": true,
+    "rank": {
+      "level": 10,
+      "name": "Diamond",
+      "division": 1,
+      "position": 2,
+      "wins": 42
+    },
+    "best_chain": 250
+  },
   "pacts": [],
   "wars": {
     "ranked": {

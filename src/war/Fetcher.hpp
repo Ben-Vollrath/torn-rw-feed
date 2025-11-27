@@ -24,7 +24,6 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 	MemberStatsService m_memberStatsService;
 	FFScouterApiService m_ffScouterApiService;
 
-	std::int64_t m_count = 100;
 	std::optional<std::int64_t> m_enemyFactionId;
 	std::optional<std::int64_t> m_warId;
 
@@ -81,6 +80,31 @@ public:
 
 	Action onFactionWarAndMembersResponse(const oatpp::Object<TornFactionWarAndMembersResponseDto>& factionWarResponse)
 	{
+		if (factionWarResponse->basic->id != m_factionId) // Key is outdated (member moved to another faction)
+		{
+			m_tornApiService.removeLastKey();
+			return scheduleNextTick();
+		}
+
+		auto room = m_room.lock();
+		if (!room || room->isClosed())
+		{
+			OATPP_LOGD(TAG, "Act Room is closed, finishing fetcher.")
+				return finish();
+		}
+
+		bool isNewWar = factionWarResponse->getWarId() != m_warId;
+		if (isNewWar)
+		{
+			//New war means new members -> reset old member state
+			room->resetState();
+		}
+
+		m_warId = factionWarResponse->getWarId();
+		m_enemyFactionId = factionWarResponse->getEnemyFactionId(m_factionId);
+		room->updateWarAndAllies(factionWarResponse);
+
+
 		if (!factionWarResponse->isWarActive())
 		{
 			auto room = m_room.lock();
@@ -91,32 +115,6 @@ public:
 			return scheduleNextTick();
 		}
 
-		if (factionWarResponse->isValidResponse(m_factionId))
-		{
-			auto enemyFactionId = factionWarResponse->getEnemyFactionId(m_factionId);
-			bool isNewWar = factionWarResponse->getWarId() != m_warId;
-			m_warId = factionWarResponse->getWarId();
-			m_enemyFactionId = enemyFactionId;
-
-			auto room = m_room.lock();
-			if (room)
-			{
-				if (isNewWar)
-				{
-					//New war means new members -> reset old member state
-					room->resetState();
-				}
-
-				room->updateWarAndAllies(factionWarResponse);
-			}
-			m_count = 0;
-		}
-		else
-		{
-			//Key is outdated
-			m_tornApiService.removeLastKey();
-			m_count = 100;
-		}
 		return scheduleNextTick();
 	}
 
@@ -162,7 +160,6 @@ public:
 	{
 		using namespace std::chrono;
 		auto now = duration_cast<microseconds>(seconds(std::time(nullptr)));
-		++m_count;
 		return oatpp::async::Action::createWaitRepeatAction(now.count() + m_interval.count());
 	}
 

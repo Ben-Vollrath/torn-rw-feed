@@ -217,7 +217,7 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarAndMem
 	private:
 		oatpp::async::Action act() override
 		{
-			return this->m_client->getFactionSelection(m_key, "wars,members", m_apiService->COMMENT).callbackTo(
+			return this->m_client->getFactionSelection(m_key, "basic,wars,members", m_apiService->COMMENT).callbackTo(
 				&GetWarAndMembersCoroutine::parseResponse);
 		}
 
