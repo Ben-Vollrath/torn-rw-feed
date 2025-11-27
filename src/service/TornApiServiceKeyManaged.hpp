@@ -46,6 +46,13 @@ public:
 		return callWithKeyManagementAsync<Result>(&TornApiService::getFactionWar);
 	}
 
+	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarAndMembersResponseDto>&>
+		getFactionWarAndMembers()
+	{
+		using Result = oatpp::Object<TornFactionWarAndMembersResponseDto>;
+		return callWithKeyManagementAsync<Result>(&TornApiService::getFactionWarAndMembers);
+	}
+
 	oatpp::async::CoroutineStarterForResult<const std::optional<std::int64_t>&>
 		getEnemyWarFaction(const std::int64_t factionId)
 	{

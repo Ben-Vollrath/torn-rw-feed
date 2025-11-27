@@ -8,6 +8,7 @@
 #include "dto/clients/TornFactionResponseDto.hpp"
 #include "dto/clients/TornFactionWarResponseDto.hpp"
 #include "dto/clients/TornUserBasicResponseDto.hpp"
+#include "dto/clients/TornFactionWarAndMembersResponseDto.hpp"
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp/web/client/ApiClient.hpp"
 
@@ -84,4 +85,6 @@ public:
 		const std::string& key);
 	oatpp::async::CoroutineStarterForResult<const std::optional<std::int64_t>&> getEnemyWarFaction(
 		const std::string& key, std::int64_t factionId);
+	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarAndMembersResponseDto>&> getFactionWarAndMembers(
+		const std::string& key);
 };

@@ -202,3 +202,31 @@ oatpp::async::CoroutineStarterForResult<const std::optional<std::int64_t>&> Torn
 
 	return GetEnemyWarFactionCoroutine::startForResult(this, tornApiClient, objectMapper, key, factionId);
 }
+
+oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarAndMembersResponseDto>&> TornApiService::getFactionWarAndMembers(
+	const std::string& key)
+{
+	class GetWarAndMembersCoroutine : public ApiActionBase<
+		GetWarAndMembersCoroutine, const oatpp::Object<TornFactionWarAndMembersResponseDto>&>
+	{
+		using Base = ApiActionBase;
+
+	public:
+		using Base::Base;
+
+	private:
+		oatpp::async::Action act() override
+		{
+			return this->m_client->getFactionSelection(m_key, "wars,members", m_apiService->COMMENT).callbackTo(
+				&GetWarAndMembersCoroutine::parseResponse);
+		}
+
+		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
+		{
+			oatpp::String body = rsp->readBodyToString();
+			return _return(m_apiService->parseSafely<TornFactionWarAndMembersResponseDto>(body));
+		}
+	};
+
+	return GetWarAndMembersCoroutine::startForResult(this, tornApiClient, objectMapper, key);
+}

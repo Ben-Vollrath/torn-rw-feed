@@ -18,19 +18,17 @@ class Room
 	 */
 	std::unordered_map<std::int64_t, oatpp::Object<MemberStatsDto>> m_memberStats;
 
-	/* Kept in order to only update on new enemy Information */
+	/* Maps userid to member data. Kept in order to only update on new enemy Information */
 	std::unordered_map<std::int64_t, oatpp::Object<TornFactionMember>> m_enemiesState;
 
-	/* Kept in order to only update on new ally Information */
+	/* Maps userid to member data. Kept in order to only update on new ally Information */
 	std::unordered_map<std::int64_t, oatpp::Object<TornFactionMember>> m_alliesState;
 
 	/* General information about the ongoing war */
-	oatpp::Object<TornFactionWarResponseDto> m_factionWar;
+	oatpp::Object<TornFactionWarsDto> m_factionWar;
 
 
 	std::unordered_map<v_int64, std::shared_ptr<Peer>> m_peerById;
-	std::unordered_map<std::int64_t,
-	                   std::unordered_map<std::int64_t, std::shared_ptr<Peer>>> m_peersByUserId;
 
 	std::mutex m_peerByIdLock;
 
@@ -71,11 +69,6 @@ public:
 	 */
 	void updateEnemies(const oatpp::Object<TornFactionMembersResponse>& memberInfos);
 
-	/** Update allies information.
-	 * @param memberInfos
-	 */
-	void updateAllies(const oatpp::Object<TornFactionMembersResponse>& memberInfos);
-
 	/** Update member stats information.
 	 * Always updates all included fields.
 	 * @param memberStats
@@ -83,9 +76,15 @@ public:
 	void updateStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& memberStats);
 
 	/** Updates current war
+	*
+	*/
+	void updateWar(const oatpp::Object<TornFactionWarsDto>& factionWarResponses);
+
+
+	/** Updates current war and allies
 	 *
 	 */
-	void updateWar(const oatpp::Object<TornFactionWarResponseDto>& factionWarResponses);
+	void updateWarAndAllies(const oatpp::Object<TornFactionWarAndMembersResponseDto>& factionWarAndAlliesResponse);
 
 	/** Return true if room has no stat information.
 	 */

@@ -27,7 +27,6 @@ void Room::addPeer(const std::shared_ptr<Peer>& peer)
 {
 	std::lock_guard<std::mutex> guard(m_peerByIdLock);
 	m_peerById[peer->getPeerId()] = peer;
-	m_peersByUserId[peer->getUserId()][peer->getPeerId()] = peer;
 	sendCurrentState(peer);
 }
 
@@ -39,16 +38,6 @@ void Room::removePeerByPeerId(v_int32 peerId)
 	{
 		auto userId = it->second->getUserId();
 		m_peerById.erase(it);
-		// remove from user index
-		auto uit = m_peersByUserId.find(userId);
-		if (uit != m_peersByUserId.end())
-		{
-			uit->second.erase(peerId);
-			if (uit->second.empty())
-			{
-				m_peersByUserId.erase(uit);
-			}
-		}
 	}
 	if (m_peerById.empty())
 	{
@@ -63,23 +52,6 @@ void Room::sendMessage(const oatpp::String& message)
 	for (auto& pair : m_peerById)
 	{
 		pair.second->sendMessage(message);
-	}
-}
-
-void Room::sendMessage(const oatpp::String& message, std::int64_t userId)
-{
-	{
-		std::lock_guard<std::mutex> guard(m_peerByIdLock);
-		auto it = m_peersByUserId.find(userId);
-		if (it == m_peersByUserId.end())
-		{
-			return;
-		}
-		for (auto pIt : it->second)
-		{
-			auto peer = pIt.second;
-			peer->sendMessage(message);
-		}
 	}
 }
 
@@ -131,41 +103,6 @@ void Room::updateEnemies(const oatpp::Object<TornFactionMembersResponse>& member
 	}
 }
 
-void Room::updateAllies(const oatpp::Object<TornFactionMembersResponse>& memberInfos)
-{
-	const auto& members = memberInfos->members;
-	auto updates = oatpp::Vector<oatpp::Object<TornFactionMember>>::createShared();
-	for (const oatpp::Object<TornFactionMember>& member : *members)
-	{
-		bool shouldUpdate = false;
-		auto it = m_alliesState.find(member->id);
-
-		if (it == m_alliesState.end())
-		{
-			m_alliesState[member->id] = member;
-			shouldUpdate = true;
-		}
-		else
-		{
-			const auto& old = it->second;
-			if (old->status->state != member->status->state ||
-				old->status->description != member->status->description ||
-				old->status->until != member->status->until ||
-				old->last_action->status != member->last_action->status)
-			{
-				it->second = member;
-				shouldUpdate = true;
-			}
-		}
-		if (shouldUpdate)
-		{
-			auto out = WarStateResponseDto::fromUser(member);
-			oatpp::String updateJson = objectMapper->writeToString(out);
-			sendMessage(updateJson->c_str(), member->id);
-		}
-	}
-}
-
 void Room::updateStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& stats)
 {
 	for (const oatpp::Object<MemberStatsDto>& stat : *stats)
@@ -177,7 +114,63 @@ void Room::updateStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& stats
 	sendMessage(updateJson->c_str());
 }
 
-void Room::updateWar(const oatpp::Object<TornFactionWarResponseDto>& factionWarResponses)
+void Room::updateWarAndAllies(const oatpp::Object<TornFactionWarAndMembersResponseDto>& warAndAllies)
+{
+    // Update in-memory state first
+	bool warHasUpdates = !dtoFieldsEqual(m_factionWar, warAndAllies->wars, objectMapper);
+    m_factionWar = warAndAllies->wars;
+    const auto& alliesMembers = warAndAllies->members;
+	std::unordered_set<std::int64_t> updatedAllies;
+    for (const oatpp::Object<TornFactionMember>& member : *alliesMembers) {
+		auto it = m_alliesState.find(member->id);
+
+		if (it == m_alliesState.end())
+		{
+			m_alliesState[member->id] = member;
+			updatedAllies.insert(member->id);
+		}
+		else
+		{
+			const auto& old = it->second;
+			if (old->status->state != member->status->state ||
+				old->status->description != member->status->description ||
+				old->status->until != member->status->until ||
+				old->last_action->status != member->last_action->status)
+			{
+				it->second = member;
+				updatedAllies.insert(member->id);
+			}
+		}
+    }
+
+	if (!warHasUpdates && updatedAllies.empty())
+	{
+		return;
+	}
+
+	std::lock_guard<std::mutex> guard(m_peerByIdLock);
+    for (auto& pair : m_peerById) {
+        const auto userId = pair.second->getUserId();
+        auto rsp = WarStateResponseDto::createShared();
+
+		if (warHasUpdates) {
+			rsp->addWar(warAndAllies->wars);
+		}
+
+        // Attach the ally info for the specific user/peer
+        auto it = updatedAllies.find(userId);
+        if (it != updatedAllies.end()) {
+            rsp->addUser(m_alliesState[userId]);
+			rsp->user->status->parseLocation();
+        }
+
+        // Serialize once per peer with its specific user 
+        oatpp::String json = objectMapper->writeToString(rsp);
+		pair.second->sendMessage(json);
+    }
+}
+
+void Room::updateWar(const oatpp::Object<TornFactionWarsDto>& factionWarResponses)
 {
 	bool isNewData = !dtoFieldsEqual(m_factionWar, factionWarResponses, objectMapper);
 
