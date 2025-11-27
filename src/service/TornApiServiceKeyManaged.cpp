@@ -8,7 +8,7 @@ std::string TornApiServiceKeyManaged::getKey()
 	assert(!m_keys->empty()); // Should never happen
 
 	const std::string& key = m_keys[index]->torn_key;
-	index = index + 1 % m_keys->size(); //Wrap around
+	index = (index + 1) % m_keys->size(); //Wrap around
 	return key;
 }
 
