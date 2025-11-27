@@ -12,7 +12,7 @@ class TornFactionWarAndMembersResponseDto : public oatpp::DTO
 {
 	DTO_INIT(TornFactionWarAndMembersResponseDto, DTO)
 
-
+	DTO_FIELD(Object<TornFactionBasicDto>, basic);
 	DTO_FIELD(Object<TornFactionWarsDto>, wars);
 	DTO_FIELD(List<Object<TornFactionMember>>, members);
 
@@ -25,11 +25,6 @@ public:
 	std::optional<std::int64_t> getWarId() const
 	{
 		return wars ? wars->getWarId() : std::nullopt;
-	}
-
-	bool isValidResponse(std::int64_t factionId) const
-	{
-		return wars ? wars->isValidResponse(factionId) : false;
 	}
 
 	bool isWarActive() const
