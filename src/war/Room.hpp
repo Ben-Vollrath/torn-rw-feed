@@ -6,8 +6,10 @@
 
 
 #include "dto/MemberStatsDto.hpp"
+#include "dto/TargetsDto.hpp"
 #include "dto/clients/TornFactionMembersResponseDto.hpp"
 #include "oatpp/core/data/mapping/ObjectMapper.hpp"
+#include "service/TargetService.hpp"
 #include "service/TornApiServiceKeyManaged.hpp"
 
 
@@ -24,11 +26,18 @@ class Room
 	/* Maps userid to member data. Kept in order to only update on new ally Information */
 	std::unordered_map<std::int64_t, oatpp::Object<TornFactionMember>> m_alliesState;
 
+	/* Maps userId to user Targets */
+	std::unordered_map <std::int64_t, oatpp::Object<TargetsDto>> m_userTargets;
+	std::mutex m_userTargetsLock;
+
 	/* General information about the ongoing war */
 	oatpp::Object<TornFactionWarsDto> m_factionWar;
 
 
 	std::unordered_map<v_int64, std::shared_ptr<Peer>> m_peerById;
+
+
+	std::unordered_map<std::int64_t, std::unordered_map<std::int64_t, std::shared_ptr<Peer>>> m_peersByUserId;
 
 	std::mutex m_peerByIdLock;
 
@@ -38,10 +47,17 @@ class Room
 	std::string TAG = "ROOM";
 	OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
 
+	TargetService m_targetService;
+
 public:
 	explicit Room(std::int64_t factionId) : m_factionId(factionId)
 	{
 	}
+
+
+	void saveTargets();
+	void updateTarget(std::int64_t userId, const std::string& target);
+	oatpp::Vector<oatpp::Object<UpdateTargetDto>> loadTargetsForUser(std::int64_t userId);
 
 	bool isClosed() const;
 

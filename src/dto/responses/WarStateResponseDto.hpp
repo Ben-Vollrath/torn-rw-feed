@@ -7,6 +7,7 @@
 #include "dto/clients/TornFactionMembersResponseDto.hpp"
 #include "dto/clients/TornFactionWarResponseDto.hpp"
 #include "dto/MemberStatsDto.hpp"
+#include "dto/TargetsDto.hpp"
 
 
 #include OATPP_CODEGEN_BEGIN(DTO)
@@ -19,6 +20,7 @@ class WarStateResponseDto : public oatpp::DTO
 	DTO_FIELD(Vector<Object<TornFactionMember>>, members);
 	DTO_FIELD(Object<TornFactionWarsDto>, war);
 	DTO_FIELD(Object<TornFactionMember>, user);
+	DTO_FIELD(Vector<Object<UpdateTargetDto>>, targets);
 
 	static oatpp::Object<WarStateResponseDto> fromUser(const Object<TornFactionMember>& user)
 	{
@@ -75,6 +77,13 @@ class WarStateResponseDto : public oatpp::DTO
 		return dto;
 	}
 
+	static oatpp::Object<WarStateResponseDto> fromTargets(const Vector<Object<UpdateTargetDto>>& targets)
+	{
+		auto dto = createShared();
+		dto->addTargets(targets);
+		return dto;
+	}
+
 	void addUser(const Object<TornFactionMember>& user)
 	{
 		this->user = user;
@@ -102,6 +111,11 @@ class WarStateResponseDto : public oatpp::DTO
 		{
 			this->memberStats[std::to_string(stats->member_id)] = stats;
 		}
+	}
+
+	void addTargets(const Vector<Object<UpdateTargetDto>>& targets)
+	{
+		this->targets = targets;
 	}
 
 	void parseMemberLocation()

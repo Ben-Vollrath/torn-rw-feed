@@ -358,11 +358,11 @@ void WarSocketTest::onRun()
 		auto client = ApiTestClient::createShared(requestExecutor, objectMapper);
 
 
-		//testSocketOk(objectMapper);
-		//testSocketTooManyRequests(objectMapper);
-		//testSocketNoWar(objectMapper);
+		testSocketOk(objectMapper);
+		testSocketTooManyRequests(objectMapper);
+		testSocketNoWar(objectMapper);
 		testPostSpyWithRoom(client, objectMapper);
-		//testPostSpyWithoutRoom(client, objectMapper);
+		testPostSpyWithoutRoom(client, objectMapper);
 	}, std::chrono::minutes(10) /* test timeout */);
 
 	OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionPool>, connectionPool);

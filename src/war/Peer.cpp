@@ -53,5 +53,23 @@ oatpp::async::CoroutineStarter Peer::onClose(const std::shared_ptr<AsyncWebSocke
 oatpp::async::CoroutineStarter Peer::readMessage(const std::shared_ptr<AsyncWebSocket>& socket, v_uint8 opcode,
                                                  p_char8 data, oatpp::v_io_size size)
 {
-	return nullptr;
+	if (size == 0) { // message transfer finished
+
+		auto wholeMessage = m_messageBuffer.toString();
+		m_messageBuffer.setCurrentPosition(0);
+
+		auto room = m_room.lock();
+		if (room)
+		{
+
+			room->updateTarget(getUserId(), wholeMessage);
+		}
+
+	}
+	else if (size > 0) { // message frame received
+		m_messageBuffer.writeSimple(data, size);
+	}
+
+	return nullptr; // do nothing
+
 }

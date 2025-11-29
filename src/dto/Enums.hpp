@@ -42,5 +42,10 @@ ENUM(MemberStatsType, v_int32,
      VALUE(TORNSTATSSPIES, 1, "tornstatsspies")
 )
 
+ENUM(TargetUpdateType, v_int32,
+    VALUE(ADD, 0),
+    VALUE(REMOVE, 1)
+)
+
 
 #include OATPP_CODEGEN_END(DTO)

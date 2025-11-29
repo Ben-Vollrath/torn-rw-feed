@@ -3,6 +3,65 @@
 #include "dto/responses/WarStateResponseDto.hpp"
 #include "util/DtoUtils.hpp"
 
+void Room::saveTargets()
+{
+    std::lock_guard<std::mutex> guard(m_userTargetsLock);
+    for (auto& pair : m_userTargets)
+    {
+        auto dbDto = pair.second->getDbDto();
+        m_targetService.create(dbDto);
+    }
+}
+
+void Room::updateTarget(std::int64_t userId, const std::string& updateString)
+{
+	oatpp::Object<UpdateTargetDto> target;
+	try {
+		target = objectMapper->readFromString<oatpp::Object<UpdateTargetDto>>(updateString);
+		if (!target)
+		{
+			OATPP_LOGD(TAG, "Websocket sent non target update message");
+			return;
+		}
+	} catch (oatpp::parser::ParsingError e)
+	{
+		OATPP_LOGD(TAG, "Websocket sent non target update message");
+		return;
+	}
+
+
+	std::lock_guard<std::mutex> guard(m_userTargetsLock);
+	oatpp::Object<TargetsDto> targets = m_userTargets[userId];
+
+	if (target->updateType == TargetUpdateType::ADD)
+	{
+		targets->targets_set->insert(target->targetId);
+	}
+	else //TargetUpdateType::REMOVE
+	{
+		targets->targets_set->erase(target->targetId);
+	}
+
+	auto updates = oatpp::Vector<oatpp::Object<UpdateTargetDto>>::createShared();
+	updates->push_back(target);
+	auto dto = WarStateResponseDto::fromTargets(updates);
+	oatpp::String targetUpdate = objectMapper->writeToString(dto);
+	sendMessage(targetUpdate, userId);
+}
+
+oatpp::Vector<oatpp::Object<UpdateTargetDto>> Room::loadTargetsForUser(std::int64_t userId)
+{
+	auto it = m_userTargets.find(userId);
+	if (it == m_userTargets.end())
+	{
+		auto targets = m_targetService.getAllForUser(getEnemyFactionId().value(), userId);
+		m_userTargets[userId] = targets;
+		return UpdateTargetDto::fromTargetsDto(targets);
+	}
+
+	return UpdateTargetDto::fromTargetsDto(it->second);
+}
+
 bool Room::isClosed() const
 {
 	return m_closed.load(std::memory_order_acquire);
@@ -27,6 +86,7 @@ void Room::addPeer(const std::shared_ptr<Peer>& peer)
 {
 	std::lock_guard<std::mutex> guard(m_peerByIdLock);
 	m_peerById[peer->getPeerId()] = peer;
+	m_peersByUserId[peer->getUserId()][peer->getPeerId()] = peer;
 	sendCurrentState(peer);
 }
 
@@ -38,6 +98,16 @@ void Room::removePeerByPeerId(v_int32 peerId)
 	{
 		auto userId = it->second->getUserId();
 		m_peerById.erase(it);
+		// remove from user index
+		auto uit = m_peersByUserId.find(userId);
+		if (uit != m_peersByUserId.end())
+		{
+			uit->second.erase(peerId);
+			if (uit->second.empty())
+			{
+				m_peersByUserId.erase(uit);
+			}
+		}
 	}
 	if (m_peerById.empty())
 	{
@@ -55,6 +125,23 @@ void Room::sendMessage(const oatpp::String& message)
 	}
 }
 
+void Room::sendMessage(const oatpp::String& message, std::int64_t userId)
+{
+	{
+		std::lock_guard<std::mutex> guard(m_peerByIdLock);
+		auto it = m_peersByUserId.find(userId);
+		if (it == m_peersByUserId.end())
+		{
+			return;
+		}
+		for (auto pIt : it->second)
+		{
+			auto peer = pIt.second;
+			peer->sendMessage(message);
+		}
+	}
+}
+
 void Room::sendCurrentState(const std::shared_ptr<Peer>& peer)
 {
 	if (m_enemiesState.empty()) { return; }
@@ -63,6 +150,7 @@ void Room::sendCurrentState(const std::shared_ptr<Peer>& peer)
 	rsp->addMemberStats(m_memberStats);
 	rsp->addWar(m_factionWar);
 	rsp->addUser(m_alliesState[peer->getUserId()]);
+	rsp->addTargets(loadTargetsForUser(peer->getUserId()));
 	oatpp::String currentStateJson = objectMapper->writeToString(rsp);
 
 	peer->sendMessage(currentStateJson);
