@@ -22,6 +22,8 @@ class TornFactionMember : public oatpp::DTO
 	DTO_FIELD(Int64, id);
 	DTO_FIELD(String, name);
 	DTO_FIELD(Int8, level);
+	DTO_FIELD(Boolean, is_revivable);
+	DTO_FIELD(Boolean, has_early_discharge);
 	DTO_FIELD(Object<TornUserLastAction>, last_action);
 	DTO_FIELD(Object<TornUserStatusDto>, status);
 };
