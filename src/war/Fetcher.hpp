@@ -10,12 +10,6 @@
 
 class Fetcher : public oatpp::async::Coroutine<Fetcher>
 {
-	enum class Phase : std::uint8_t
-	{
-		WARWITHALLIES,
-		ENEMIES,
-	};
-
 	std::int64_t m_factionId;
 	TornApiServiceKeyManaged m_tornApiService;
 	std::weak_ptr<Room> m_room;
@@ -27,11 +21,11 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 	std::optional<std::int64_t> m_enemyFactionId;
 	std::optional<std::int64_t> m_warId;
 
-
 	const std::string TAG = "FETCHER";
 
-	std::vector<Phase> m_cycle{Phase::WARWITHALLIES, Phase::ENEMIES};
-	std::size_t m_phaseIndex = 0;
+	std::chrono::microseconds now = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(std::time(nullptr)));
+	std::chrono::microseconds m_nextExecWarWithAllies{ now };
+	std::chrono::microseconds m_nextExecEnemies{ now };
 
 public:
 	Fetcher(const std::int64_t factionId, const std::weak_ptr<Room>& room)
@@ -50,32 +44,21 @@ public:
 			OATPP_LOGD(TAG, "Act Room is closed, finishing fetcher.")
 			return finish();
 		}
-
-		for (std::size_t attempts = 0; attempts < m_cycle.size(); ++attempts)
+		if (m_nextExecEnemies <= m_nextExecWarWithAllies)
 		{
-			Phase phase = m_cycle[m_phaseIndex];
-
-			switch (phase)
-			{
-			case Phase::WARWITHALLIES:
-				advancePhase();
-				return m_tornApiService.getFactionWarAndMembers().callbackTo(&Fetcher::onFactionWarAndMembersResponse);
-
-			case Phase::ENEMIES:
-				if (m_enemyFactionId)
-				{
-					OATPP_LOGD(TAG, "Fetching Faction Members.")
-					advancePhase();
+			setNextExecTimer(m_nextExecEnemies);
+			if (m_enemyFactionId) {
+				OATPP_LOGD(TAG, "Fetching Faction Members.")
 					return m_tornApiService.getFactionMembers(m_enemyFactionId.value())
-					                       .callbackTo(&Fetcher::onEnemiesUpdate);
-				}
-
-				advancePhase();
-				break;
+					.callbackTo(&Fetcher::onEnemiesUpdate);
 			}
+
 		}
 
-		return scheduleNextTick();
+		setNextExecTimer(m_nextExecWarWithAllies);
+		OATPP_LOGD(TAG, "Fetching War and Allies")
+		return m_tornApiService.getFactionWarAndMembers().callbackTo(&Fetcher::onFactionWarAndMembersResponse);
+	
 	}
 
 	Action onFactionWarAndMembersResponse(const oatpp::Object<TornFactionWarAndMembersResponseDto>& factionWarResponse)
@@ -83,7 +66,7 @@ public:
 		if (factionWarResponse->basic->id != m_factionId) // Key is outdated (member moved to another faction)
 		{
 			m_tornApiService.removeLastKey();
-			return scheduleNextTick();
+			return scheduleNextIteration();
 		}
 
 		auto room = m_room.lock();
@@ -104,7 +87,6 @@ public:
 		m_enemyFactionId = factionWarResponse->getEnemyFactionId(m_factionId);
 		room->updateWarAndAllies(factionWarResponse);
 
-
 		if (!factionWarResponse->isWarActive())
 		{
 			auto room = m_room.lock();
@@ -112,10 +94,10 @@ public:
 			{
 				room->updateWarAndAllies(factionWarResponse);
 			}
-			return scheduleNextTick();
+			return scheduleNextIteration();
 		}
 
-		return scheduleNextTick();
+		return scheduleNextIteration();
 	}
 
 	Action onEnemiesUpdate(const oatpp::Object<TornFactionMembersResponse>& memberInfo)
@@ -140,7 +122,7 @@ public:
 			room->updateStats(stats);
 		}
 
-		return scheduleNextTick();
+		return scheduleNextIteration();
 	}
 
 	Action onScouts(const FFScouterResponseDto& scouts)
@@ -153,14 +135,14 @@ public:
 		{
 			room->updateStats(stats);
 		}
-		return scheduleNextTick();
+		return scheduleNextIteration();
 	}
 
-	Action scheduleNextTick()
+	Action scheduleNextIteration()
 	{
-		using namespace std::chrono;
-		auto now = duration_cast<microseconds>(seconds(std::time(nullptr)));
-		return oatpp::async::Action::createWaitRepeatAction(now.count() + m_interval.count());
+		return oatpp::async::Action::createWaitRepeatAction(
+			std::min(m_nextExecEnemies.count(), m_nextExecWarWithAllies.count())
+		);
 	}
 
 	Action handleError(Error* e) override
@@ -169,10 +151,9 @@ public:
 
 		return yieldTo(&Fetcher::act);
 	}
-
 private:
-	void advancePhase()
+	void setNextExecTimer(std::chrono::microseconds& timer)
 	{
-		m_phaseIndex = (m_phaseIndex + 1) % m_cycle.size();
+		timer = timer + m_interval;
 	}
 };

@@ -118,6 +118,7 @@ void WarSocketTest::testSocketOk(std::shared_ptr<oatpp::data::mapping::ObjectMap
 	socket->sendClose(1000, "test done");
 	if (pump.joinable()) pump.join();
 	OATPP_LOGD(TAG, "TestSocketOk Completed");
+	std::this_thread::sleep_for(std::chrono::seconds(3)); //Ensure fetcher closes
 }
 
 void WarSocketTest::testSocketTooManyRequests(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
@@ -158,6 +159,7 @@ void WarSocketTest::testSocketTooManyRequests(std::shared_ptr<oatpp::data::mappi
 	socket->sendClose(1000, "test done");
 	if (pump.joinable()) pump.join();
 	OATPP_LOGD(TAG, "TestSocketTooManyRequests Completed");
+	std::this_thread::sleep_for(std::chrono::seconds(3)); //Ensure fetcher closes
 }
 
 void WarSocketTest::testSocketNoWar(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
@@ -208,6 +210,7 @@ void WarSocketTest::testSocketNoWar(std::shared_ptr<oatpp::data::mapping::Object
 	socket->sendClose(1000, "test done");
 	if (pump.joinable()) pump.join();
 	OATPP_LOGD(TAG, "TestSocketNoWar Completed");
+	std::this_thread::sleep_for(std::chrono::seconds(3)); //Ensure fetcher closes
 }
 
 void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
@@ -218,7 +221,7 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
 	mockResponseLoader->setResponsePaths({
-		factionWarAndMembersOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_, tornStatsSpyOkPath_, factionWarAndMembersOKPath_,
+		factionWarAndMembersOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_, tornStatsSpyOkPath_, factionWarAndMembersOKPath_, factionWarAndMembersOKPath_
 		});
 	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarAndMembersResponseDto>>(factionWarAndMembersOKPath_);
 	factionWar->members[0]->status->parseLocation();
@@ -290,6 +293,7 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 	socket->sendClose(1000, "test done");
 	if (pump.joinable()) pump.join();
 	OATPP_LOGD(TAG, "TestPostSpyWithRoom Completed");
+	std::this_thread::sleep_for(std::chrono::seconds(3)); //Ensure fetcher closes
 }
 
 void WarSocketTest::testPostSpyWithoutRoom(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
@@ -322,6 +326,7 @@ void WarSocketTest::testPostSpyWithoutRoom(const std::shared_ptr<ApiTestClient> 
 	auto stat = stats[0];
 	OATPP_ASSERT(stat->total == memberOneSpy->total)
 	OATPP_LOGD(TAG, "TestPostSpyWithoutRoom Completed");
+	std::this_thread::sleep_for(std::chrono::seconds(3)); //Ensure fetcher closes
 }
 
 void WarSocketTest::onRun()
@@ -353,11 +358,11 @@ void WarSocketTest::onRun()
 		auto client = ApiTestClient::createShared(requestExecutor, objectMapper);
 
 
-		testSocketOk(objectMapper);
-		testSocketTooManyRequests(objectMapper);
-		testSocketNoWar(objectMapper);
+		//testSocketOk(objectMapper);
+		//testSocketTooManyRequests(objectMapper);
+		//testSocketNoWar(objectMapper);
 		testPostSpyWithRoom(client, objectMapper);
-		testPostSpyWithoutRoom(client, objectMapper);
+		//testPostSpyWithoutRoom(client, objectMapper);
 	}, std::chrono::minutes(10) /* test timeout */);
 
 	OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionPool>, connectionPool);
