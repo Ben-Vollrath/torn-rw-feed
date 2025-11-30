@@ -14,5 +14,6 @@ public:
 	using CrudService::getByIdNullable;
 	using CrudService::removeById;
 	oatpp::Vector<oatpp::Object<TornKeyRow>> getTornKeys(std::int64_t factionId);
+	void updateFaction(const std::string& tornKey, std::int64_t factionId);
 	void removeTornKey(const std::string& tornKey);
 };

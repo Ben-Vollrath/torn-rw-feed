@@ -56,7 +56,9 @@ public:
 		);
 	}
 
+	oatpp::Object<TornKeyRow> getLastKey();
 	void removeLastKey();
+	void removeLastKeyWithDb();
 
 private:
 	oatpp::Vector<oatpp::Object<TornKeyRow>> m_keys;
@@ -124,7 +126,7 @@ private:
 				case 401:
 				case 403:
 					// Key invalid -> drop and retry with next key
-					m_self->removeLastKey();
+					m_self->removeLastKeyWithDb();
 					return this->yieldTo(&Coroutine::act);
 				default:
 					throw e;

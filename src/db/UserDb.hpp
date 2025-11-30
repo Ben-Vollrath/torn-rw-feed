@@ -35,10 +35,17 @@ public:
 	      "RETURNING *;",
 	      PARAM(oatpp::Object<UserDto>, user))
 
+
 	QUERY(update,
 	      "UPDATE users SET torn_key=:user.torn_key, faction_id=:user.faction_id "
 	      "WHERE id=:user.id RETURNING *;",
 	      PARAM(oatpp::Object<UserDto>, user))
+
+	QUERY(updateFaction,
+		"UPDATE users SET faction_id=:faction_id "
+		"WHERE torn_key=:torn_key RETURNING *;",
+		PARAM(oatpp::String, torn_key),
+		PARAM(oatpp::Int64, faction_id))
 
 	QUERY(getById,
 	      "SELECT * FROM users WHERE id=:id;",
