@@ -9,6 +9,7 @@ class MockResponseLoader
 {
 	OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, apiObjectMapper);
 
+	std::mutex responseMutex;
 	std::vector<std::string> responsePaths;
 	std::int8_t index = 0;
 
@@ -21,6 +22,7 @@ public:
 
 	std::string getNextResponse()
 	{
+		std::lock_guard<std::mutex> guard(responseMutex);
 		if (index >= responsePaths.size())
 		{
 			throw std::runtime_error("Not enough responses configured.");
