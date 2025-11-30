@@ -128,7 +128,7 @@ void WarSocketTest::testSocketTooManyRequests(std::shared_ptr<oatpp::data::mappi
 	testingFixtures->reset();
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-	mockResponseLoader->setResponsePaths({errorTooManyRequests_, factionWarAndMembersOKPath_,});
+	mockResponseLoader->setResponsePaths({errorTooManyRequests_, factionWarAndMembersOKPath_, factionMembersOfflineOKPath_});
 
 	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarAndMembersResponseDto>>(factionWarAndMembersOKPath_);
 	factionWar->members[0]->status->parseLocation();
@@ -170,7 +170,7 @@ void WarSocketTest::testSocketNoWar(std::shared_ptr<oatpp::data::mapping::Object
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
 	mockResponseLoader->setResponsePaths({
-		factionWarAndMembersNoWarOKPath_, factionWarAndMembersNoWarChangedOKPath_ });
+		factionWarAndMembersNoWarOKPath_, factionWarAndMembersNoWarChangedOKPath_, factionWarAndMembersNoWarChangedOKPath_ });
 
 	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarAndMembersResponseDto>>(factionWarAndMembersNoWarOKPath_);
 	factionWar->members[0]->status->parseLocation();
@@ -211,6 +211,110 @@ void WarSocketTest::testSocketNoWar(std::shared_ptr<oatpp::data::mapping::Object
 	if (pump.joinable()) pump.join();
 	OATPP_LOGD(TAG, "TestSocketNoWar Completed");
 	std::this_thread::sleep_for(std::chrono::seconds(3)); //Ensure fetcher closes
+}
+
+void WarSocketTest::testSocketTargetsUpdate(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
+{
+	OATPP_LOGD(TAG, "testSocketTargetsUpdate Started");
+	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
+	testingFixtures->reset();
+
+	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
+	mockResponseLoader->setResponsePaths({
+		factionWarAndMembersOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_, factionWarAndMembersOKPath_});
+
+	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarAndMembersResponseDto>>(factionWarAndMembersOKPath_);
+	auto user = testingFixtures->createTestUser(1);
+	auto issueResult = testingFixtures->getUserApiKey(user->id);
+
+	OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
+	auto connector = oatpp::websocket::Connector::createShared(clientConnectionProvider);
+	auto connection = connector->connect("/wars/socket?token=" + issueResult.fullKey);
+
+	OATPP_LOGI(TAG, "Connected");
+
+	auto socket = oatpp::websocket::WebSocket::createShared(connection, true);
+
+	auto listener = std::make_shared<WSListener>();
+	socket->setListener(listener);
+
+	std::thread pump([&] { socket->listen(); });
+
+	oatpp::Object<WarStateResponseDto> msg;
+	//factionWarAndMembersOKPath_
+	bool got = listener->waitForNext(msg, std::chrono::seconds(500));
+	//factionMembersOfflineOKPath_
+	got = listener->waitForNext(msg, std::chrono::seconds(500));
+	//ffscouterScoutOkPath_
+	got = listener->waitForNext(msg, std::chrono::seconds(500));
+
+	auto dto = UpdateTargetDto::createShared();
+	dto->targetId = 4;
+	dto->updateType = TargetUpdateType::ADD;
+	auto text = objectMapper->writeToString(dto);
+	socket->sendOneFrameText(text);
+
+
+	got = listener->waitForNext(msg, std::chrono::seconds(5));
+	OATPP_ASSERT(got);
+	OATPP_ASSERT(msg->targets)
+	OATPP_ASSERT(msg->targets->size() == 1);
+	OATPP_ASSERT(dtoFieldsEqualLogger(msg->targets[0], dto, objectMapper));
+
+	socket->sendClose(1000, "test done");
+	if (pump.joinable()) pump.join();
+	
+	std::this_thread::sleep_for(std::chrono::seconds(3)); //Ensure fetcher closes
+
+	auto targetService = TargetService();
+
+	auto db = targetService.getAllForUser(factionWar->getEnemyFactionId(user->factionId).value(), user->id);
+	OATPP_ASSERT(db->targets_set->size() == 1)
+	OATPP_LOGD(TAG, "testSocketTargetsUpdate Completed");
+}
+
+void WarSocketTest::testSocketTargetsLoad(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
+{
+	OATPP_LOGD(TAG, "testSocketTargetsLoad Started");
+	OATPP_COMPONENT(std::shared_ptr<TestingFixtures>, testingFixtures);
+	testingFixtures->reset();
+
+	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
+	mockResponseLoader->setResponsePaths({
+		factionWarAndMembersOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_, factionWarAndMembersOKPath_ });
+
+	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarAndMembersResponseDto>>(factionWarAndMembersOKPath_);
+	auto user = testingFixtures->createTestUser(1);
+	auto issueResult = testingFixtures->getUserApiKey(user->id);
+	auto targetDbDto = TargetsDbDto::createFromFactionAndUser(factionWar->getEnemyFactionId(user->factionId).value(), user->id);
+	auto target = TargetsDto::fromDbDto(targetDbDto);
+	target->targets_set->insert(4);
+	auto targets = testingFixtures->createTargets(target->getDbDto());
+	auto targetUpdate = UpdateTargetDto::fromTargetsDto(target);
+
+	OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
+	auto connector = oatpp::websocket::Connector::createShared(clientConnectionProvider);
+	auto connection = connector->connect("/wars/socket?token=" + issueResult.fullKey);
+
+	OATPP_LOGI(TAG, "Connected");
+
+	auto socket = oatpp::websocket::WebSocket::createShared(connection, true);
+
+	auto listener = std::make_shared<WSListener>();
+	socket->setListener(listener);
+
+	std::thread pump([&] { socket->listen(); });
+
+	oatpp::Object<WarStateResponseDto> msg;
+	//factionWarAndMembersOKPath_
+	bool got = listener->waitForNext(msg, std::chrono::seconds(500));
+	OATPP_ASSERT(dtoFieldsEqualLogger(msg->targets, targetUpdate, objectMapper))
+
+	socket->sendClose(1000, "test done");
+	if (pump.joinable()) pump.join();
+
+	std::this_thread::sleep_for(std::chrono::seconds(3)); //Ensure fetcher closes
+	OATPP_LOGD(TAG, "testSocketTargetsLoad Completed");
 }
 
 void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper)
@@ -358,11 +462,13 @@ void WarSocketTest::onRun()
 		auto client = ApiTestClient::createShared(requestExecutor, objectMapper);
 
 
-		//testSocketOk(objectMapper);
-		//testSocketTooManyRequests(objectMapper);
-		//testSocketNoWar(objectMapper);
+		testSocketOk(objectMapper);
+		testSocketTooManyRequests(objectMapper);
+		testSocketTargetsUpdate(objectMapper);
+		testSocketTargetsLoad(objectMapper);
+		testSocketNoWar(objectMapper);
 		testPostSpyWithRoom(client, objectMapper);
-		//testPostSpyWithoutRoom(client, objectMapper);
+		testPostSpyWithoutRoom(client, objectMapper);
 	}, std::chrono::minutes(10) /* test timeout */);
 
 	OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::ConnectionPool>, connectionPool);

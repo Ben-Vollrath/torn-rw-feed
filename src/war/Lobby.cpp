@@ -24,7 +24,12 @@ std::shared_ptr<Room> Lobby::getOrCreateRoom(const std::int64_t factionId)
 	std::shared_ptr<Room>& room = m_rooms[factionId];
 	if (!room)
 	{
-		room = std::make_shared<Room>(factionId);
+		try {
+			room = std::make_shared<Room>(factionId);
+		} catch (const std::runtime_error& e)
+		{
+			OATPP_LOGD(TAG, "Error occured %s", e.what());
+		}
 		asyncExecutor->execute<Fetcher>(factionId, room);
 	}
 	return room;

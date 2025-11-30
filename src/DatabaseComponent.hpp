@@ -5,6 +5,7 @@
 #include "db/ApiKeyDb.hpp"
 #include "db/FactionDb.hpp"
 #include "db/UserDb.hpp"
+#include "db/TargetsDb.hpp"
 #include "AppConfig.hpp"
 #include "db/MemberStatsDb.hpp"
 
@@ -66,5 +67,12 @@ public:
 	{
 		OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
 		return std::make_shared<MemberStatsDb>(dbExecutor);
+	}());
+
+	OATPP_CREATE_COMPONENT(std::shared_ptr<TargetsDb>, targetsDb)
+		([]
+			{
+				OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
+				return std::make_shared<TargetsDb>(dbExecutor);
 	}());
 };
