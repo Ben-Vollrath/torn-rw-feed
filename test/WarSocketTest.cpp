@@ -170,7 +170,7 @@ void WarSocketTest::testSocketNoWar(std::shared_ptr<oatpp::data::mapping::Object
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
 	mockResponseLoader->setResponsePaths({
-		factionWarAndMembersNoWarOKPath_, factionWarAndMembersNoWarChangedOKPath_ });
+		factionWarAndMembersNoWarOKPath_, factionWarAndMembersNoWarChangedOKPath_, factionWarAndMembersNoWarChangedOKPath_ });
 
 	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarAndMembersResponseDto>>(factionWarAndMembersNoWarOKPath_);
 	factionWar->members[0]->status->parseLocation();
@@ -221,7 +221,7 @@ void WarSocketTest::testSocketTargetsUpdate(std::shared_ptr<oatpp::data::mapping
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
 	mockResponseLoader->setResponsePaths({
-		factionWarAndMembersOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_, });
+		factionWarAndMembersOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_, factionWarAndMembersOKPath_});
 
 	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarAndMembersResponseDto>>(factionWarAndMembersOKPath_);
 	auto user = testingFixtures->createTestUser(1);
@@ -281,7 +281,7 @@ void WarSocketTest::testSocketTargetsLoad(std::shared_ptr<oatpp::data::mapping::
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
 	mockResponseLoader->setResponsePaths({
-		factionWarAndMembersOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_, });
+		factionWarAndMembersOKPath_, factionMembersOfflineOKPath_, ffscouterScoutOkPath_, factionWarAndMembersOKPath_ });
 
 	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarAndMembersResponseDto>>(factionWarAndMembersOKPath_);
 	auto user = testingFixtures->createTestUser(1);
