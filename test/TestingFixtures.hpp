@@ -6,6 +6,7 @@
 #include <unordered_set>
 
 #include "service/MemberStatsService.hpp"
+#include "service/TargetService.hpp"
 
 class TestingFixtures
 {
@@ -13,6 +14,7 @@ class TestingFixtures
 	FactionService m_factionService;
 	ApiKeyService m_apiKeyService;
 	MemberStatsService m_memberStatsService;
+	TargetService m_targetService;
 
 	std::int64_t idx = 0;
 
@@ -83,5 +85,10 @@ public:
 		oatpp::web::protocol::http::Headers headers;
 		headers.put(oatpp::web::protocol::http::Header::AUTHORIZATION, oatpp::String(issueResult.fullKey));
 		return headers;
+	}
+
+	oatpp::Object<TargetsDbDto> createTargets(oatpp::Object<TargetsDbDto> targets)
+	{
+		return m_targetService.create(targets);
 	}
 };

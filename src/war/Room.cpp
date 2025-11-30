@@ -51,6 +51,11 @@ void Room::updateTarget(std::int64_t userId, const std::string& updateString)
 
 oatpp::Vector<oatpp::Object<UpdateTargetDto>> Room::loadTargetsForUser(std::int64_t userId)
 {
+	if (!getEnemyFactionId())
+	{
+		return oatpp::Vector<oatpp::Object<UpdateTargetDto>>::createShared();
+	}
+
 	auto it = m_userTargets.find(userId);
 	if (it == m_userTargets.end())
 	{
@@ -204,7 +209,10 @@ void Room::updateStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& stats
 
 void Room::updateWarAndAllies(const oatpp::Object<TornFactionWarAndMembersResponseDto>& warAndAllies)
 {
+	//TODO load user targets here.
+
     // Update in-memory state first
+	bool isNewWar = !m_factionWar || m_factionWar->getWarId() != warAndAllies->wars->getWarId();
 	bool warHasUpdates = !dtoFieldsEqual(m_factionWar, warAndAllies->wars, objectMapper);
     m_factionWar = warAndAllies->wars;
     const auto& alliesMembers = warAndAllies->members;
@@ -243,6 +251,11 @@ void Room::updateWarAndAllies(const oatpp::Object<TornFactionWarAndMembersRespon
 
 		if (warHasUpdates) {
 			rsp->addWar(warAndAllies->wars);
+		}
+
+		if (isNewWar)
+		{
+			rsp->addTargets(loadTargetsForUser(userId));
 		}
 
         // Attach the ally info for the specific user/peer

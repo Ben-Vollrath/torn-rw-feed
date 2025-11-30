@@ -54,6 +54,10 @@ public:
 	{
 	}
 
+	~Room()
+	{
+		saveTargets();
+	}
 
 	void saveTargets();
 	void updateTarget(std::int64_t userId, const std::string& target);
