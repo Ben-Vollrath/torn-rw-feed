@@ -16,6 +16,7 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 	std::chrono::microseconds m_interval;
 
 	MemberStatsService m_memberStatsService;
+	UserService m_userService;
 	FFScouterApiService m_ffScouterApiService;
 
 	std::optional<std::int64_t> m_enemyFactionId;
@@ -65,6 +66,7 @@ public:
 	{
 		if (factionWarResponse->basic->id != m_factionId) // Key is outdated (member moved to another faction)
 		{
+			m_userService.updateFaction(m_tornApiService.getLastKey()->torn_key, factionWarResponse->basic->id);
 			m_tornApiService.removeLastKey();
 			return scheduleNextIteration();
 		}

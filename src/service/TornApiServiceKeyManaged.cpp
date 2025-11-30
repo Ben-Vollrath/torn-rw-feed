@@ -12,6 +12,12 @@ std::string TornApiServiceKeyManaged::getKey()
 	return key;
 }
 
+oatpp::Object<TornKeyRow> TornApiServiceKeyManaged::getLastKey()
+{
+	int lastIndex = (index - 1 + m_keys->size()) % m_keys->size();
+	return m_keys[lastIndex];
+}
+
 void TornApiServiceKeyManaged::removeLastKey()
 {
 	int lastIndex = (index - 1 + m_keys->size()) % m_keys->size();

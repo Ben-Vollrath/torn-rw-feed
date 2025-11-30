@@ -56,6 +56,7 @@ public:
 		);
 	}
 
+	oatpp::Object<TornKeyRow> getLastKey();
 	void removeLastKey();
 
 private:
