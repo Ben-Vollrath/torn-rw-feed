@@ -70,16 +70,20 @@ public:
 			OATPP_ASSERT_HTTP(createdFaction, Status::CODE_500, "502");
 
 			m_factionId = factionBasics->basic->id;
-			return controller->m_tornApiService.getUserBasic(m_tornKey).
+			return controller->m_tornApiService.getKeyInfo(m_tornKey).
 			                   callbackTo(&authorizeUser::createUserAndRespond);
 		}
 
-		oatpp::async::Action createUserAndRespond(const oatpp::Object<TornUserBasicResponseDto>& userBasics)
+		oatpp::async::Action createUserAndRespond(const oatpp::Object<TornKeyResponseDto>& keyInfo)
 		{
+			if (keyInfo->info->access->type == TornKeyAccessType::CUSTOM)
+			{
+				return _return(controller->createResponse(Status::CODE_401, "Custom keys are not allowed"));
+			}
 			// Update User information
 			oatpp::Object<UserDto> newUser = UserDto::createShared();
 			newUser->tornKey = m_tornKey;
-			newUser->id = userBasics->profile->id;
+			newUser->id = keyInfo->info->user->id;
 			newUser->factionId = m_factionId;
 			auto createdUser = controller->m_userService.upsertById(newUser);
 			OATPP_ASSERT_HTTP(createdUser, Status::CODE_500, "500");

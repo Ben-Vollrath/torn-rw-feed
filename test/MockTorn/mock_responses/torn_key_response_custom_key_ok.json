@@ -1,0 +1,144 @@
+{
+  "info": {
+    "selections": {
+      "company": [
+        "timestamp",
+        "profile",
+        "companies",
+        "lookup"
+      ],
+      "faction": [
+        "timestamp",
+        "rankedwars",
+        "chain",
+        "territory",
+        "basic",
+        "lookup"
+      ],
+      "market": [
+        "bazaar",
+        "itemmarket",
+        "pointsmarket",
+        "timestamp",
+        "lookup",
+        "properties",
+        "rentals"
+      ],
+      "property": [
+        "property",
+        "timestamp",
+        "lookup"
+      ],
+      "torn": [
+        "bank",
+        "cards",
+        "chainreport",
+        "companies",
+        "competition",
+        "education",
+        "factiontree",
+        "gyms",
+        "honors",
+        "items",
+        "itemstats",
+        "logcategories",
+        "logtypes",
+        "medals",
+        "organisedcrimes",
+        "pawnshop",
+        "pokertables",
+        "properties",
+        "rackets",
+        "raids",
+        "dirtybombs",
+        "rankedwars",
+        "rankedwarreport",
+        "territorywarreport",
+        "raidreport",
+        "stats",
+        "stocks",
+        "territory",
+        "territorywars",
+        "timestamp",
+        "lookup",
+        "cityshops",
+        "itemdetails",
+        "territorynames",
+        "searchforcash",
+        "shoplifting",
+        "rockpaperscissors",
+        "crimes",
+        "subcrimes",
+        "calendar",
+        "hof",
+        "factionhof",
+        "bounties",
+        "attacklog",
+        "itemmods",
+        "itemammo",
+        "organizedcrimes",
+        "merits"
+      ],
+      "user": [
+        "basic",
+        "bazaar",
+        "discord",
+        "display",
+        "personalstats",
+        "profile",
+        "timestamp",
+        "lookup",
+        "publicstatus",
+        "properties",
+        "icons",
+        "medals",
+        "criminalrecord",
+        "hof",
+        "forumposts",
+        "forumthreads",
+        "bounties",
+        "property",
+        "job",
+        "competition",
+        "faction"
+      ],
+      "racing": [
+        "cars",
+        "carupgrades",
+        "tracks",
+        "races",
+        "race",
+        "records",
+        "timestamp",
+        "lookup"
+      ],
+      "forum": [
+        "categories",
+        "threads",
+        "thread",
+        "posts",
+        "timestamp",
+        "lookup"
+      ],
+      "key": [
+        "info",
+        "log"
+      ]
+    },
+    "access": {
+      "level": 1,
+      "type": "Custom",
+      "faction": false,
+      "company": false,
+      "log": {
+        "custom_permissions": false,
+        "available": []
+      }
+    },
+    "user": {
+      "id": 1,
+      "faction_id": 1,
+      "company_id": 3
+    }
+  }
+}

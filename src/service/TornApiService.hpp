@@ -9,6 +9,7 @@
 #include "dto/clients/TornFactionWarResponseDto.hpp"
 #include "dto/clients/TornUserBasicResponseDto.hpp"
 #include "dto/clients/TornFactionWarAndMembersResponseDto.hpp"
+#include "dto/clients/TornKeyResponseDto.hpp"
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp/web/client/ApiClient.hpp"
 
@@ -77,7 +78,7 @@ class TornApiService
 public:
 	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionResponseDto>&> getFactionBasic(
 		const std::string& key);
-	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornUserBasicResponseDto>&> getUserBasic(
+	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornKeyResponseDto>&> getKeyInfo(
 		const std::string& key);
 	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionMembersResponse>&> getFactionMembers(
 		const std::string& key, std::int64_t factionId);

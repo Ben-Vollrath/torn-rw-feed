@@ -17,9 +17,9 @@ void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client,
 	testingFixtures->reset();
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-	mockResponseLoader->setResponsePaths({ factionBasicOKPath_, userBasicOkPath_});
+	mockResponseLoader->setResponsePaths({ factionBasicOKPath_, keyInfoOKPath_});
 	auto factionInfo = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionResponseDto>>(factionBasicOKPath_);
-	auto userInfo = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornUserBasicResponseDto>>(userBasicOkPath_);
+	auto keyInfo = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornKeyResponseDto>>(keyInfoOKPath_);
 
 	/* Call server API */
 	/* Call root endpoint of MyController */
@@ -40,7 +40,7 @@ void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client,
 	OATPP_ASSERT(message->expiresAt - now >= (seconds_in_month - 5))
 
 	auto m_userService = UserService();
-	auto user = m_userService.getById(userInfo->profile->id);
+	auto user = m_userService.getById(keyInfo->info->user->id);
 	OATPP_ASSERT(user && user->factionId == factionInfo->basic->id && user->tornKey == "ok")
 }
 
@@ -51,9 +51,13 @@ void AuthControllerTest::testAuthError(const std::shared_ptr<ApiTestClient> clie
 	testingFixtures->reset();
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-	mockResponseLoader->setResponsePaths({errorInactiveKey_});
+	mockResponseLoader->setResponsePaths({errorInactiveKey_, factionBasicOKPath_, keyInfoCustomKeyPath_});
+	//Inactive key
 	auto response = client->auth("keyError");
+	OATPP_ASSERT(response->getStatusCode() == 401)
 
+	//Custom key
+	response = client->auth("keyError");
 	OATPP_ASSERT(response->getStatusCode() == 401)
 }
 

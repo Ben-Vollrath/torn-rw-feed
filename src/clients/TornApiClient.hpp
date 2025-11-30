@@ -15,5 +15,5 @@ class TornApiClient : public oatpp::web::client::ApiClient
 		API_CALL_ASYNC("GET", "/faction/wars", getFactionWars, QUERY(String, key), QUERY(String, comment))
 		API_CALL_ASYNC("GET", "/faction", getFactionSelection, QUERY(String, key), QUERY(String, selections), QUERY(String, comment))
 
-	API_CALL_ASYNC("GET", "/user/basic", getUserBasic, QUERY(String, key), QUERY(String, comment))
+	API_CALL_ASYNC("GET", "/key/info", getKeyInfo, QUERY(String, key), QUERY(String, comment))
 };
