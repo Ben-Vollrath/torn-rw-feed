@@ -26,7 +26,7 @@ std::chrono::microseconds TornApiServiceKeyManaged::getCooldown()
 	using namespace std::chrono;
 
 	constexpr auto keyRefillCooldown = 60s; // cooldown window for each key
-	constexpr int usesPerKey = 20;
+	constexpr int usesPerKey = 10;
 
 	if (m_keys->empty())
 	{
