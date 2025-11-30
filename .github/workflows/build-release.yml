@@ -108,6 +108,7 @@ jobs:
           mkdir -p release
           # Adjust path if your build output differs
           cp builds/ninja-multi/Release/torn_rw_feed release/
+          cp builds/ninja-multi/Release/crashpad_handler release/
           chmod +x release/torn_rw_feed
           echo "Runtime deps (ldd):"
           ldd release/torn_rw_feed || true
