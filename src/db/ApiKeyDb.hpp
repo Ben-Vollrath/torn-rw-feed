@@ -57,7 +57,8 @@ public:
 
 	QUERY(touchLastUsedAt,
 	      "UPDATE api_keys "
-	      "SET last_used_at = CAST((EXTRACT(EPOCH FROM now())) AS BIGINT) "
+	      "SET last_used_at = CAST(EXTRACT(EPOCH FROM now()) AS BIGINT), "
+	      "expires_at = CAST(EXTRACT(EPOCH FROM (now() + INTERVAL '30 days')) AS BIGINT) "
 	      "WHERE id = :id "
 	      "RETURNING id, user_id, prefix, encode(secret_hash, 'hex') AS secret_hash, alg, created_at, expires_at, revoked, last_used_at;",
 	      PARAM(oatpp::Int64, id))
