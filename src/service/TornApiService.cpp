@@ -77,11 +77,10 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionResponseD
 	return GetFactionCoroutine::startForResult(this, tornApiClient, objectMapper, key);
 }
 
-
-oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornUserBasicResponseDto>&> TornApiService::getUserBasic(
+oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornKeyResponseDto>&> TornApiService::getKeyInfo(
 	const std::string& key)
 {
-	class GetUserCoroutine : public ApiActionBase<GetUserCoroutine, const oatpp::Object<TornUserBasicResponseDto>&>
+	class GetKeyInfoCoroutine : public ApiActionBase<GetKeyInfoCoroutine, const oatpp::Object<TornKeyResponseDto>&>
 	{
 		using Base = ApiActionBase;
 
@@ -91,18 +90,18 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornUserBasicRespons
 	private:
 		oatpp::async::Action act() override
 		{
-			return this->m_client->getUserBasic(m_key, m_apiService->COMMENT).callbackTo(
-				&GetUserCoroutine::parseResponse);
+			return this->m_client->getKeyInfo(m_key, m_apiService->COMMENT).callbackTo(
+				&GetKeyInfoCoroutine::parseResponse);
 		}
 
 		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
 		{
 			oatpp::String body = rsp->readBodyToString();
-			return _return(m_apiService->parseSafely<TornUserBasicResponseDto>(body));
+			return _return(m_apiService->parseSafely<TornKeyResponseDto>(body));
 		}
 	};
 
-	return GetUserCoroutine::startForResult(this, tornApiClient, objectMapper, key);
+	return GetKeyInfoCoroutine::startForResult(this, tornApiClient, objectMapper, key);
 }
 
 

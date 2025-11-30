@@ -9,6 +9,7 @@ class MockResponseLoader
 {
 	OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, apiObjectMapper);
 
+	std::mutex responseMutex;
 	std::vector<std::string> responsePaths;
 	std::int8_t index = 0;
 
@@ -21,6 +22,7 @@ public:
 
 	std::string getNextResponse()
 	{
+		std::lock_guard<std::mutex> guard(responseMutex);
 		if (index >= responsePaths.size())
 		{
 			throw std::runtime_error("Not enough responses configured.");
@@ -60,7 +62,8 @@ inline auto factionWarAndMembersChangedOKPath_ = MOCK_RESPONSE_BASE "/torn_facti
 inline auto factionWarAndMembersNoWarOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_war_and_members_no_war_ok.json";
 inline auto factionWarAndMembersNoWarChangedOKPath_ = MOCK_RESPONSE_BASE "/torn_faction_war_and_members_no_war_member_changed_ok.json";
 
-inline auto userBasicOkPath_ = MOCK_RESPONSE_BASE "/torn_user_basic_ok.json";
+inline auto keyInfoOKPath_ = MOCK_RESPONSE_BASE "/torn_key_response_ok.json";
+inline auto keyInfoCustomKeyPath_ = MOCK_RESPONSE_BASE "/torn_key_response_custom_key_ok.json";
 inline auto errorInactiveKey_ = MOCK_RESPONSE_BASE "/torn_error_incorrect_api_key.json";
 inline auto errorTooManyRequests_ = MOCK_RESPONSE_BASE "/torn_error_too_many_requests.json";
 

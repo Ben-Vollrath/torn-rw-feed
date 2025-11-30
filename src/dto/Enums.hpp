@@ -47,5 +47,12 @@ ENUM(TargetUpdateType, v_int32,
     VALUE(REMOVE, 1)
 )
 
+ENUM(TornKeyAccessType, v_int32,
+    VALUE(CUSTOM, 0, "Custom"),
+    VALUE(PUBLIC, 1, "Public Only"),
+    VALUE(MINIMAL, 2, "Minimal Access"),
+    VALUE(LIMITED, 3, "Limited Access"),
+    VALUE(FULL, 4, "Full Access")
+)
 
 #include OATPP_CODEGEN_END(DTO)

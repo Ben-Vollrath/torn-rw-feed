@@ -22,13 +22,6 @@ public:
 		return callWithKeyManagementAsync<Result>(&TornApiService::getFactionBasic);
 	}
 
-	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornUserBasicResponseDto>&>
-		getUserBasic()
-	{
-		using Result = oatpp::Object<TornUserBasicResponseDto>;
-		return callWithKeyManagementAsync<Result>(&TornApiService::getUserBasic);
-	}
-
 	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionMembersResponse>&>
 		getFactionMembers(const std::int64_t factionId)
 	{

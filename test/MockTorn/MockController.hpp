@@ -21,11 +21,12 @@ public:
 		return std::make_shared<MockController>(objectMapper);
 	}
 
-	ENDPOINT_ASYNC("GET", "/user/basic", GetUserBasic)
-	{
-		ENDPOINT_ASYNC_INIT(GetUserBasic)
 
-		Action act() override
+	ENDPOINT_ASYNC("GET", "/key/info", GetKeyInfo)
+	{
+		ENDPOINT_ASYNC_INIT(GetKeyInfo)
+
+			Action act() override
 		{
 			OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
 			auto rsp = mockResponseLoader->getNextResponse();
