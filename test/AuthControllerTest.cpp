@@ -36,8 +36,8 @@ void AuthControllerTest::testAuthOk(const std::shared_ptr<ApiTestClient> client,
 	OATPP_ASSERT(message->apiKey)
 
 	auto now = std::time(nullptr);
-	constexpr auto seconds_in_day = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::hours(24)).count();
-	OATPP_ASSERT(message->expiresAt - now >= (seconds_in_day - 5))
+	constexpr auto seconds_in_month = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::hours(24*30)).count();
+	OATPP_ASSERT(message->expiresAt - now >= (seconds_in_month - 5))
 
 	auto m_userService = UserService();
 	auto user = m_userService.getById(userInfo->profile->id);

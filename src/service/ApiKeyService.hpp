@@ -31,7 +31,7 @@ public:
 
 	IssueResult issueKey(const oatpp::Int64& userId,
 	                     const std::optional<int64_t>& ttlSeconds = std::chrono::duration_cast<std::chrono::seconds>(
-		                     std::chrono::hours(24)).count(),
+		                     std::chrono::hours(24*30)).count(),
 	                     const oatpp::String& alg = "SHA256") const
 	{
 		auto prefixBytes = CryptoUtils::randomBytes(8);
