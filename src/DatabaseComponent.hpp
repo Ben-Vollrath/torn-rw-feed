@@ -74,5 +74,5 @@ public:
 			{
 				OATPP_COMPONENT(std::shared_ptr<oatpp::postgresql::Executor>, dbExecutor);
 				return std::make_shared<TargetsDb>(dbExecutor);
-			}());
+	}());
 };

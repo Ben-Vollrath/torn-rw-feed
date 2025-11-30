@@ -128,7 +128,7 @@ void WarSocketTest::testSocketTooManyRequests(std::shared_ptr<oatpp::data::mappi
 	testingFixtures->reset();
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-	mockResponseLoader->setResponsePaths({errorTooManyRequests_, factionWarAndMembersOKPath_,});
+	mockResponseLoader->setResponsePaths({errorTooManyRequests_, factionWarAndMembersOKPath_, factionMembersOfflineOKPath_});
 
 	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarAndMembersResponseDto>>(factionWarAndMembersOKPath_);
 	factionWar->members[0]->status->parseLocation();
