@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON) 
 set(CMAKE_CXX_EXTENSIONS ON)  
 
+
 find_package(oatpp CONFIG REQUIRED)
 find_package(oatpp-swagger CONFIG REQUIRED)
 find_package(oatpp-postgresql CONFIG REQUIRED)
@@ -13,6 +14,14 @@ find_package(oatpp-curl CONFIG REQUIRED)
 find_package(oatpp-websocket CONFIG REQUIRED)
 find_package(oatpp-openssl CONFIG REQUIRED)
 find_package(cryptopp CONFIG REQUIRED)
+find_package(sentry CONFIG REQUIRED)
+
+get_filename_component(_SENTRY_SHARE_DIR "${sentry_DIR}" DIRECTORY)
+get_filename_component(_VCPKG_TRIPLET_ROOT "${_SENTRY_SHARE_DIR}" DIRECTORY)
+
+set(SENTRY_CRASHPAD_HANDLER
+    "${_VCPKG_TRIPLET_ROOT}/tools/sentry-native/crashpad_handler"
+)
 
 add_executable(torn_rw_feed
   src/App.cpp
@@ -28,6 +37,14 @@ target_link_libraries(torn_rw_feed PRIVATE
   oatpp::oatpp-websocket
   oatpp::oatpp-openssl
   cryptopp::cryptopp
+  sentry::sentry
+)
+
+# Copy crashpad_handler next to torn_rw_feed after build
+add_custom_command(TARGET torn_rw_feed POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+          "${SENTRY_CRASHPAD_HANDLER}"
+          $<TARGET_FILE_DIR:torn_rw_feed>
 )
 
 add_definitions(-DOATPP_SWAGGER_RES_PATH="${CMAKE_SOURCE_DIR}/libs/oatpp-swagger/res")
