@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "ApiErrorHandler.hpp"
+#include <sentry.h>
 
 void run()
 {
@@ -57,6 +58,15 @@ void run()
  */
 int main(int argc, const char* argv[])
 {
+	sentry_options_t* options = sentry_options_new();
+	sentry_init(options);
+
+	sentry_capture_event(sentry_value_new_message_event(
+		/*   level */ SENTRY_LEVEL_INFO,
+		/*  logger */ "custom",
+		/* message */ "Started Service"
+	));
+
 	oatpp::base::Environment::init();
 
 	run();
@@ -68,6 +78,7 @@ int main(int argc, const char* argv[])
 	std::cout << "objectsCreated = " << oatpp::base::Environment::getObjectsCreated() << "\n\n";
 
 	oatpp::base::Environment::destroy();
+	sentry_close();
 
 	return 0;
 }

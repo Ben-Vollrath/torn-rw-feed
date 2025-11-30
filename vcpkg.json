@@ -3,10 +3,11 @@
     "cryptopp",
     "oatpp",
     "oatpp-curl",
+    "oatpp-openssl",
     "oatpp-postgresql",
     "oatpp-sqlite",
     "oatpp-swagger",
     "oatpp-websocket",
-    "oatpp-openssl"
+    "sentry-native"
   ]
 }
