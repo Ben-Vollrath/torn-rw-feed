@@ -22,6 +22,14 @@ void TornApiServiceKeyManaged::removeLastKey()
 {
 	int lastIndex = (index - 1 + m_keys->size()) % m_keys->size();
 	auto key = m_keys[lastIndex];
+	m_keys->erase(m_keys->begin() + lastIndex);
+	index = 0;
+}
+
+void TornApiServiceKeyManaged::removeLastKeyWithDb()
+{
+	int lastIndex = (index - 1 + m_keys->size()) % m_keys->size();
+	auto key = m_keys[lastIndex];
 	m_UserService.removeTornKey(key->torn_key);
 	m_keys->erase(m_keys->begin() + lastIndex);
 	index = 0;
