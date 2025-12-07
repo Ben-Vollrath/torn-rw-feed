@@ -93,8 +93,8 @@ void WarSocketTest::testSocketOk(std::shared_ptr<oatpp::data::mapping::ObjectMap
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(!msg->members);
-	OATPP_ASSERT(msg->memberStats[std::to_string(memberOneId)]->total == memberOneStats);
-	OATPP_ASSERT(!msg->memberStats[std::to_string(memberTwoId)]->total);
+	OATPP_ASSERT(msg->memberStats[std::to_string(memberOneId)]["ffscouter"]->total == memberOneStats);
+	OATPP_ASSERT(!msg->memberStats[std::to_string(memberTwoId)]["ffscouter"]->total);
 
 	//factionWarAndMembersChangedScoreOKPath_
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
@@ -380,8 +380,8 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(!msg->members);
-	OATPP_ASSERT(msg->memberStats[std::to_string(memberOneId)]->total == memberOneStats);
-	OATPP_ASSERT(!msg->memberStats[std::to_string(memberTwoId)]->total);
+	OATPP_ASSERT(msg->memberStats[std::to_string(memberOneId)]["ffscouter"]->total == memberOneStats);
+	OATPP_ASSERT(!msg->memberStats[std::to_string(memberTwoId)]["ffscouter"]->total);
 
 	auto rsp = client->warSpy("testKey", issueResult.fullKey);
 	OATPP_ASSERT(rsp->getStatusCode() == 200);
@@ -391,7 +391,7 @@ void WarSocketTest::testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> cli
 	//tornStatsSpyOkPath_
 	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
-	OATPP_ASSERT(msg->memberStats[std::to_string(memberOneId)]->total == memberOneSpy->total);
+	OATPP_ASSERT(msg->memberStats[std::to_string(memberOneId)]["tornstatsspies"]->total == memberOneSpy->total);
 	OATPP_ASSERT(!msg->memberStats[std::to_string(memberTwoId)]);
 
 	socket->sendClose(1000, "test done");

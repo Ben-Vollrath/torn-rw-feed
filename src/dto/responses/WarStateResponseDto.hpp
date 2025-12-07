@@ -16,7 +16,7 @@ class WarStateResponseDto : public oatpp::DTO
 {
 	DTO_INIT(WarStateResponseDto, DTO)
 
-	DTO_FIELD(Fields<Object<MemberStatsDto>>, memberStats);
+	DTO_FIELD(Fields<Fields<Object<MemberStatsDto>>>, memberStats);
 	DTO_FIELD(Vector<Object<TornFactionMember>>, members);
 	DTO_FIELD(Object<TornFactionWarsDto>, war);
 	DTO_FIELD(Object<TornFactionMember>, user);
@@ -62,14 +62,6 @@ class WarStateResponseDto : public oatpp::DTO
 	}
 
 	static oatpp::Object<WarStateResponseDto> fromMembersStats(
-		const std::unordered_map<std::int64_t, oatpp::Object<MemberStatsDto>>& memberStats)
-	{
-		auto dto = createShared();
-		dto->addMemberStats(memberStats);
-		return dto;
-	}
-
-	static oatpp::Object<WarStateResponseDto> fromMembersStats(
 		const oatpp::Vector<oatpp::Object<MemberStatsDto>>& memberStats)
 	{
 		auto dto = createShared();
@@ -95,21 +87,31 @@ class WarStateResponseDto : public oatpp::DTO
 	}
 
 
-	void addMemberStats(const std::unordered_map<std::int64_t, oatpp::Object<MemberStatsDto>>& memberStats)
+	void addMemberStats(const std::unordered_map <std::int64_t, std::unordered_map<oatpp::Enum<MemberStatsType>, oatpp::Object<MemberStatsDto>>>& memberStats)
 	{
-		this->memberStats = Fields<Object<MemberStatsDto>>::createShared();
-		for (const auto& statsPair : memberStats)
+		this->memberStats = Fields<Fields<Object<MemberStatsDto>>>::createShared();
+		for (const auto& statsTypePair : memberStats)
 		{
-			this->memberStats[std::to_string(statsPair.first)] = statsPair.second;
+			for (const auto& statsPair : statsTypePair.second) {
+				auto type = statsPair.first;
+				this->memberStats[std::to_string(statsTypePair.first)][type.getEntryByValue(*type).name.std_str()] = statsPair.second;
+			}
 		}
 	}
 
 	void addMemberStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& memberStats)
 	{
-		this->memberStats = Fields<Object<MemberStatsDto>>::createShared();
+		this->memberStats = Fields<Fields<Object<MemberStatsDto>>>::createShared();
 		for (const oatpp::Object<MemberStatsDto>& stats : *memberStats)
 		{
-			this->memberStats[std::to_string(stats->member_id)] = stats;
+			const auto memberId = std::to_string(stats->member_id);
+			auto typeKey = oatpp::Enum<MemberStatsType>::getEntryByValue(stats->type).name.std_str();
+			auto inner = this->memberStats.getValueByKey(memberId);
+			if (!inner) {
+				this->memberStats[memberId] = Fields<Object<MemberStatsDto>>::createShared();
+			}
+
+			this->memberStats[memberId][typeKey] = stats;
 		}
 	}
 

@@ -40,12 +40,11 @@ public:
 
 
 	QUERY(findByWarAndFaction,
-	      "SELECT DISTINCT ON(member_id) * "
+	      "SELECT * "
 	      "FROM member_stats "
 	      "WHERE war_id = :war_id "
 	      "AND faction_id = :faction_id "
-	      "ORDER BY member_id, "
-	      "CASE WHEN type = 'tornstatsspies' THEN 0 ELSE 1 END; ",
+	      "ORDER BY member_id;",
 	      PARAM(oatpp::Int64, war_id), PARAM(oatpp::Int64, faction_id))
 
 	QUERY(deleteAll,

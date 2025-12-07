@@ -18,7 +18,7 @@ class Room
 	/* Kept in order to inform new Peers about memberStats in [sendCurrentState].
 	 * All updates on [updateStats] are sent directly through messages and not checked for changes against [memberStats]
 	 */
-	std::unordered_map<std::int64_t, oatpp::Object<MemberStatsDto>> m_memberStats;
+	std::unordered_map < std::int64_t, std::unordered_map <oatpp::Enum<MemberStatsType> , oatpp::Object<MemberStatsDto>>> m_memberStats;
 
 	/* Maps userid to member data. Kept in order to only update on new enemy Information */
 	std::unordered_map<std::int64_t, oatpp::Object<TornFactionMember>> m_enemiesState;
