@@ -200,7 +200,7 @@ void Room::updateStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& stats
 {
 	for (const oatpp::Object<MemberStatsDto>& stat : *stats)
 	{
-		m_memberStats[stat->member_id] = stat;
+		m_memberStats[stat->member_id][stat->type] = stat;
 	}
 	auto out = WarStateResponseDto::fromMembersStats(stats);
 	oatpp::String updateJson = objectMapper->writeToString(out);
@@ -209,8 +209,6 @@ void Room::updateStats(const oatpp::Vector<oatpp::Object<MemberStatsDto>>& stats
 
 void Room::updateWarAndAllies(const oatpp::Object<TornFactionWarAndMembersResponseDto>& warAndAllies)
 {
-	//TODO load user targets here.
-
     // Update in-memory state first
 	bool isNewWar = !m_factionWar || m_factionWar->getWarId() != warAndAllies->wars->getWarId();
 	bool warHasUpdates = !dtoFieldsEqual(m_factionWar, warAndAllies->wars, objectMapper);
