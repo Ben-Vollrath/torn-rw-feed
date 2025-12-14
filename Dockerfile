@@ -1,6 +1,6 @@
 FROM ubuntu:24.04 AS runtime
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates libpq5 libssl3 libstdc++6 && \
+    ca-certificates libpq5 libssl3 libstdc++6 libcurl4t64 && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/local/bin
