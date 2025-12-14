@@ -7,6 +7,7 @@
 #include "service/FFScouterApiService.hpp"
 #include "service/MemberStatsService.hpp"
 #include "service/TornApiServiceKeyManaged.hpp"
+#include "oatpp/core/base/Environment.hpp"
 
 class Fetcher : public oatpp::async::Coroutine<Fetcher>
 {
@@ -24,7 +25,7 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 
 	const std::string TAG = "FETCHER";
 
-	std::chrono::microseconds now = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::seconds(std::time(nullptr)));
+	std::chrono::microseconds now = std::chrono::microseconds(oatpp::base::Environment::getMicroTickCount());
 	std::chrono::microseconds m_nextExecWarWithAllies{ now };
 	std::chrono::microseconds m_nextExecEnemies{ now };
 
@@ -154,6 +155,9 @@ public:
 private:
 	void setNextExecTimer(std::chrono::microseconds& timer)
 	{
-		timer = timer + m_interval;
+		timer = std::chrono::microseconds(std::max(
+			(timer + m_interval).count(),
+			oatpp::base::Environment::getMicroTickCount())
+		);
 	}
 };
