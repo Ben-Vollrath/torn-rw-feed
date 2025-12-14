@@ -49,7 +49,6 @@ public:
 		{
 			setNextExecTimer(m_nextExecEnemies);
 			if (m_enemyFactionId) {
-				OATPP_LOGD(TAG, "Fetching Faction Members.")
 					return m_tornApiService.getFactionMembers(m_enemyFactionId.value())
 					.callbackTo(&Fetcher::onEnemiesUpdate);
 			}
@@ -57,7 +56,6 @@ public:
 		}
 
 		setNextExecTimer(m_nextExecWarWithAllies);
-		OATPP_LOGD(TAG, "Fetching War and Allies")
 		return m_tornApiService.getFactionWarAndMembers().callbackTo(&Fetcher::onFactionWarAndMembersResponse);
 	
 	}

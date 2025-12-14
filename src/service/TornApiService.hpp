@@ -30,6 +30,8 @@ class TornApiService
 		std::shared_ptr<TornApiClient> m_client;
 		std::shared_ptr<oatpp::data::mapping::ObjectMapper> m_om;
 		std::string m_key;
+		std::string m_lastResponse;
+		v_int32 m_lastStatus = 0;
 
 	public:
 		ApiActionBase(TornApiService* apiService, const std::shared_ptr<TornApiClient>& client,
@@ -38,6 +40,35 @@ class TornApiService
 		{
 		}
 
+	protected:
+		void setLastResponse(const oatpp::String& body, v_int32 status = 0) {
+			m_lastStatus = status;
+			if (body) {
+				m_lastResponse.assign(body->data(), body->size());
+			}
+			else {
+				m_lastResponse.clear();
+			}
+		}
+
+		oatpp::async::Action handleError(oatpp::async::Error* e) override {
+			const char* cls = typeid(T).name();
+			const char* msg = (e && e->what()) ? e->what() : "unknown error";
+
+			if (!m_lastResponse.empty()) {
+				OATPP_LOGE("ApiService",
+					"Coroutine '%s' failed: %s (http=%d). Last response: %s",
+					cls, msg, m_lastStatus, m_lastResponse.c_str());
+			}
+			else {
+				OATPP_LOGE("ApiService",
+					"Coroutine '%s' failed: %s (http=%d). No response captured.",
+					cls, msg, m_lastStatus);
+			}
+
+			// propagate error
+			return oatpp::async::Action(e);
+		}
 	private:
 		oatpp::async::Action act() override = 0;
 	};

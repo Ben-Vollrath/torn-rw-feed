@@ -70,6 +70,7 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionResponseD
 		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
 		{
 			oatpp::String body = rsp->readBodyToString();
+			setLastResponse(body, rsp->getStatusCode());
 			return _return(m_apiService->parseSafely<TornFactionResponseDto>(body));
 		}
 	};
@@ -97,6 +98,7 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornKeyResponseDto>&
 		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
 		{
 			oatpp::String body = rsp->readBodyToString();
+			setLastResponse(body, rsp->getStatusCode());
 			return _return(m_apiService->parseSafely<TornKeyResponseDto>(body));
 		}
 	};
@@ -128,6 +130,7 @@ TornApiService::getFactionMembers(
 		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
 		{
 			oatpp::String body = rsp->readBodyToString();
+			setLastResponse(body, rsp->getStatusCode());
 			return _return(m_apiService->parseSafely<TornFactionMembersResponse>(body));
 		}
 	};
@@ -156,6 +159,7 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarRespon
 		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
 		{
 			oatpp::String body = rsp->readBodyToString();
+			setLastResponse(body, rsp->getStatusCode());
 			return _return(m_apiService->parseSafely<TornFactionWarResponseDto>(body));
 		}
 	};
@@ -223,6 +227,7 @@ oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornFactionWarAndMem
 		oatpp::async::Action parseResponse(const std::shared_ptr<oatpp::web::protocol::http::incoming::Response>& rsp)
 		{
 			oatpp::String body = rsp->readBodyToString();
+			setLastResponse(body, rsp->getStatusCode());
 			return _return(m_apiService->parseSafely<TornFactionWarAndMembersResponseDto>(body));
 		}
 	};
