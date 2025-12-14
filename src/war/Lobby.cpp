@@ -38,10 +38,12 @@ std::shared_ptr<Room> Lobby::getOrCreateRoom(const std::int64_t factionId)
 void Lobby::onAfterCreate_NonBlocking(const std::shared_ptr<AsyncWebSocket>& socket,
                                       const std::shared_ptr<const ParameterMap>& params)
 {
-	OATPP_LOGD(TAG, "onAfterCreate_NonBlocking called");
+	oatpp::String factionIdText = params->find("faction_id")->second;
+	oatpp::String userIdText = params->find("user_id")->second;
+	OATPP_LOGD(TAG, "onAfterCreate_NonBlocking called, userId: %s", userIdText->c_str());
 
-	std::int64_t factionId = std::stoll(params->find("faction_id")->second);
-	std::int64_t userId = std::stoll(params->find("user_id")->second);
+	std::int64_t factionId = std::stoll(factionIdText);
+	std::int64_t userId = std::stoll(userIdText);
 	auto room = getOrCreateRoom(factionId);
 
 	auto peer = std::make_shared<Peer>(socket, room, obtainNewPeerId(), userId);
