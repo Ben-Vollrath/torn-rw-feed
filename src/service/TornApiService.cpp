@@ -23,7 +23,7 @@ void TornApiService::handleErrorCodes(const oatpp::Object<TornErrorResponseDto>&
 		case 3: OATPP_ASSERT_HTTP(false, Status::CODE_400, "400");
 		case 4: OATPP_ASSERT_HTTP(false, Status::CODE_400, "400");
 		case 5: OATPP_ASSERT_HTTP(false, Status::CODE_429, "429");
-		case 6: OATPP_ASSERT_HTTP(false, Status::CODE_400, "400");
+		case 6: OATPP_ASSERT_HTTP(false, Status::CODE_400, "406");
 		case 7: OATPP_ASSERT_HTTP(false, Status::CODE_403, "403");
 		case 8: OATPP_ASSERT_HTTP(false, Status::CODE_429, "429");
 		case 9: OATPP_ASSERT_HTTP(false, Status::CODE_503, "503");

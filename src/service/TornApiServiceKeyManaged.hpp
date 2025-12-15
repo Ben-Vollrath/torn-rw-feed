@@ -124,6 +124,7 @@ private:
 					// Rate-limit, retry with same key & args
 					return this->yieldTo(&Coroutine::act);
 				case 401:
+				case 406:
 				case 403:
 					// Key invalid -> drop and retry with next key
 					m_self->removeLastKeyWithDb();
