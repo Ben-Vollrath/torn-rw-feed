@@ -56,7 +56,7 @@ public:
 	      PARAM(oatpp::Int64, id))
 
 	QUERY(getTornKeys,
-	      "SELECT torn_key as torn_key "
+	      "SELECT torn_key, id as user_id "
 	      "FROM users "
 	      "WHERE faction_id = :faction_id "
 	      "AND torn_key IS NOT NULL;",

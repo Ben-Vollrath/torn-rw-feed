@@ -120,9 +120,6 @@ private:
 				const int code = std::atoi(e ? e->what() : "0");
 				switch (code)
 				{
-				case 429:
-					// Rate-limit, retry with same key & args
-					return this->yieldTo(&Coroutine::act);
 				case 401:
 				case 406:
 				case 403:

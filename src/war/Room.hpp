@@ -106,6 +106,11 @@ public:
 	 */
 	void updateWarAndAllies(const oatpp::Object<TornFactionWarAndMembersResponseDto>& factionWarAndAlliesResponse);
 
+	/** Sends error 
+	 * 
+	 */
+	void sendError(const oatpp::Enum<ErrorMessage>& error, const oatpp::Int64& userId);
+
 	/** Return true if room has no stat information.
 	 */
 	bool needStats();
@@ -113,6 +118,7 @@ public:
 	/** Reset member state.
 	 */
 	void resetState();
+
 
 private:
 	/**

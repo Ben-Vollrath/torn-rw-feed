@@ -148,9 +148,23 @@ public:
 
 	Action handleError(Error* e) override
 	{
-		OATPP_LOGE(TAG, "Fetcher error: %s", e ? e->what() : "unknown");
+		try {
+			OATPP_LOGE(TAG, "Fetcher error: %s", e ? e->what() : "unknown");
+			const int code = std::atoi(e ? e->what() : "0");
+			if (code == 429)
+			{
+				auto room = m_room.lock();
+				if (room)
+				{
+					room->sendError(ErrorMessage::KeyLimit, m_tornApiService.getLastKey()->userId);
+				}
+			}
 
-		return yieldTo(&Fetcher::act);
+
+			return yieldTo(&Fetcher::act);
+		} catch (...){
+			return yieldTo(&Fetcher::act);
+		}
 	}
 private:
 	void setNextExecTimer(std::chrono::microseconds& timer)

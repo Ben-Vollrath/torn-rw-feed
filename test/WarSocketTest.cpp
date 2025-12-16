@@ -149,8 +149,13 @@ void WarSocketTest::testSocketTooManyRequests(std::shared_ptr<oatpp::data::mappi
 
 	oatpp::Object<WarStateResponseDto> msg;
 
-	//factionWarAndMembersOKPath_
+	//errorTooManyRequests_
 	bool got = listener->waitForNext(msg, std::chrono::seconds(500));
+	OATPP_ASSERT(got);
+	OATPP_ASSERT(msg->error == ErrorMessage::KeyLimit);
+
+	//factionWarAndMembersOKPath_
+	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(!msg->members);
 	OATPP_ASSERT(dtoFieldsEqualLogger(msg->user, factionWar->members[0], objectMapper))
