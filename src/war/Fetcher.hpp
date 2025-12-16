@@ -161,9 +161,9 @@ public:
 			}
 
 
-			return yieldTo(&Fetcher::act);
+			return scheduleNextIteration();
 		} catch (...){
-			return yieldTo(&Fetcher::act);
+			return scheduleNextIteration();
 		}
 	}
 private:
