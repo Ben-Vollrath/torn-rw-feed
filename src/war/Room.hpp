@@ -83,6 +83,12 @@ public:
 	 */
 	void removePeerByPeerId(v_int32 peerId);
 
+	/**
+	 * Remove peer from the room.
+	 * @param userId
+	 */
+	void removePeerByUserId(std::int64_t userId);
+
 
 	/** Update enemies information.
 	 * @param memberInfos
