@@ -21,6 +21,14 @@ class WarStateResponseDto : public oatpp::DTO
 	DTO_FIELD(Object<TornFactionWarsDto>, war);
 	DTO_FIELD(Object<TornFactionMember>, user);
 	DTO_FIELD(Vector<Object<UpdateTargetDto>>, targets);
+	DTO_FIELD(Enum<ErrorMessage>::AsString, error);
+
+	static oatpp::Object<WarStateResponseDto> fromError(const Enum<ErrorMessage>& error)
+	{
+		auto dto = createShared();
+		dto->error = error;
+		return dto;
+	}
 
 	static oatpp::Object<WarStateResponseDto> fromUser(const Object<TornFactionMember>& user)
 	{

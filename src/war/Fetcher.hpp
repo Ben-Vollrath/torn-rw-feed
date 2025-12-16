@@ -148,9 +148,35 @@ public:
 
 	Action handleError(Error* e) override
 	{
-		OATPP_LOGE(TAG, "Fetcher error: %s", e ? e->what() : "unknown");
+		using clock = std::chrono::microseconds;
 
-		return yieldTo(&Fetcher::act);
+		const auto now = clock{ oatpp::base::Environment::getMicroTickCount() };
+		const auto next = clock{
+		  std::min(m_nextExecEnemies.count(), m_nextExecWarWithAllies.count())
+		};
+
+		const auto waitTime = std::max(
+			clock::zero(),
+			next - now
+		);
+
+		try {
+			OATPP_LOGE(TAG, "Fetcher error: %s", e && e->what() ? e->what() : "unknown");
+			const int code = std::atoi(e && e->what() ? e->what() : "0");
+			if (code == 429)
+			{
+				auto room = m_room.lock();
+				if (room)
+				{
+					room->sendError(ErrorMessage::KeyLimit, m_tornApiService.getLastKey()->userId);
+				}
+			}
+
+			return waitFor(waitTime).next(yieldTo(&Fetcher::act));	
+		}
+		catch (...) {
+			waitFor(waitTime).next(yieldTo(&Fetcher::act));
+		}
 	}
 private:
 	void setNextExecTimer(std::chrono::microseconds& timer)

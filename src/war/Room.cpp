@@ -269,6 +269,16 @@ void Room::updateWarAndAllies(const oatpp::Object<TornFactionWarAndMembersRespon
     }
 }
 
+void Room::sendError(const oatpp::Enum<ErrorMessage>& error, const oatpp::Int64& userId)
+{
+	if (error == ErrorMessage::KeyLimit)
+	{
+		auto out = WarStateResponseDto::fromError(error);
+		oatpp::String updateJson = objectMapper->writeToString(out);
+		sendMessage(updateJson->c_str(), userId);
+	}
+}
+
 void Room::updateWar(const oatpp::Object<TornFactionWarsDto>& factionWarResponses)
 {
 	bool isNewData = !dtoFieldsEqual(m_factionWar, factionWarResponses, objectMapper);

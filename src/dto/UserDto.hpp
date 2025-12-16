@@ -19,6 +19,7 @@ class TornKeyRow : public oatpp::DTO
 {
 	DTO_INIT(TornKeyRow, DTO)
 	DTO_FIELD(oatpp::String, torn_key);
+	DTO_FIELD(oatpp::Int64, userId, "user_id");
 };
 
 #include OATPP_CODEGEN_END(DTO)
