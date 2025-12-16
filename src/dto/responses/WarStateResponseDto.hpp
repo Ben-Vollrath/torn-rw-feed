@@ -16,7 +16,7 @@ class WarStateResponseDto : public oatpp::DTO
 {
 	DTO_INIT(WarStateResponseDto, DTO)
 
-	DTO_FIELD(Fields<Fields<Object<MemberStatsDto>>>, memberStats);
+		DTO_FIELD(Fields<Fields<Object<MemberStatsDto>>>, memberStats);
 	DTO_FIELD(Vector<Object<TornFactionMember>>, members);
 	DTO_FIELD(Object<TornFactionWarsDto>, war);
 	DTO_FIELD(Object<TornFactionMember>, user);
@@ -95,14 +95,21 @@ class WarStateResponseDto : public oatpp::DTO
 	}
 
 
-	void addMemberStats(const std::unordered_map <std::int64_t, std::unordered_map<oatpp::Enum<MemberStatsType>, oatpp::Object<MemberStatsDto>>>& memberStats)
+	void addMemberStats(const std::unordered_map<std::int64_t,
+		std::unordered_map<oatpp::Enum<MemberStatsType>, oatpp::Object<MemberStatsDto>>>& memberStats)
 	{
 		this->memberStats = Fields<Fields<Object<MemberStatsDto>>>::createShared();
-		for (const auto& statsTypePair : memberStats)
-		{
+		for (const auto& statsTypePair : memberStats) {
+			const auto memberId = std::to_string(statsTypePair.first);
+			auto inner = this->memberStats.getValueByKey(memberId);
+			if (!inner) {
+				this->memberStats[memberId] = Fields<Object<MemberStatsDto>>::createShared();
+				inner = this->memberStats.getValueByKey(memberId);
+			}
 			for (const auto& statsPair : statsTypePair.second) {
-				auto type = statsPair.first;
-				this->memberStats[std::to_string(statsTypePair.first)][type.getEntryByValue(*type).name.std_str()] = statsPair.second;
+				const auto typeKey =
+					statsPair.first.getEntryByValue(*statsPair.first).name.std_str();
+				inner[typeKey] = statsPair.second;
 			}
 		}
 	}
