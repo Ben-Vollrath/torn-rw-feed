@@ -130,7 +130,7 @@ private:
 					m_self->removeLastKeyWithDb();
 					return this->yieldTo(&Coroutine::act);
 				default:
-					throw e;
+					return Action(e);
 				}
 			}
 		};
