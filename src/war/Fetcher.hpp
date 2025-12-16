@@ -148,9 +148,21 @@ public:
 
 	Action handleError(Error* e) override
 	{
+		using clock = std::chrono::microseconds;
+
+		const auto now = clock{ oatpp::base::Environment::getMicroTickCount() };
+		const auto next = clock{
+		  std::min(m_nextExecEnemies.count(), m_nextExecWarWithAllies.count())
+		};
+
+		const auto waitTime = std::max(
+			clock::zero(),
+			next - now
+		);
+
 		try {
-			OATPP_LOGE(TAG, "Fetcher error: %s", e ? e->what() : "unknown");
-			const int code = std::atoi(e ? e->what() : "0");
+			OATPP_LOGE(TAG, "Fetcher error: %s", e && e->what() ? e->what() : "unknown");
+			const int code = std::atoi(e && e->what() ? e->what() : "0");
 			if (code == 429)
 			{
 				auto room = m_room.lock();
@@ -160,10 +172,11 @@ public:
 				}
 			}
 
-
-			return scheduleNextIteration();
-		} catch (...){
-			return scheduleNextIteration();
+			return this->waitFor(waitTime).next(act());
+				
+		}
+		catch (...) {
+			return this->waitFor(waitTime).next(act());
 		}
 	}
 private:
