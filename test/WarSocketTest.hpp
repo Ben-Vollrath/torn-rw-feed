@@ -11,6 +11,7 @@ class WarSocketTest : public oatpp::test::UnitTest
 	void testSocketNoWar(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
 	void testSocketTargetsUpdate(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
 	void testSocketTargetsLoad(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
+	void testSocketUserSwitchedFaction(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
 	void testPostSpyWithRoom(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
 	void testPostSpyWithoutRoom(const std::shared_ptr<ApiTestClient> client, std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
 

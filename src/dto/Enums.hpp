@@ -55,4 +55,8 @@ ENUM(TornKeyAccessType, v_int32,
     VALUE(FULL, 4, "Full Access")
 )
 
+ENUM(ErrorMessage, v_int32,
+    VALUE(KeyLimit, 0, "KeyLimit")
+)
+
 #include OATPP_CODEGEN_END(DTO)

@@ -121,6 +121,21 @@ void Room::removePeerByPeerId(v_int32 peerId)
 	}
 }
 
+void Room::removePeerByUserId(std::int64_t userId)
+{
+	std::lock_guard<std::mutex> guard(m_peerByIdLock);
+	auto it = m_peersByUserId.find(userId);
+	if (it == m_peersByUserId.end())
+	{
+		return;
+	}
+	for (auto pIt : it->second)
+	{
+		auto peer = pIt.second;
+		removePeerByPeerId(peer->getPeerId());
+	}
+}
+
 void Room::sendMessage(const oatpp::String& message)
 {
 	std::lock_guard<std::mutex> guard(m_peerByIdLock);
@@ -267,6 +282,16 @@ void Room::updateWarAndAllies(const oatpp::Object<TornFactionWarAndMembersRespon
         oatpp::String json = objectMapper->writeToString(rsp);
 		pair.second->sendMessage(json);
     }
+}
+
+void Room::sendError(const oatpp::Enum<ErrorMessage>& error, const oatpp::Int64& userId)
+{
+	if (error == ErrorMessage::KeyLimit)
+	{
+		auto out = WarStateResponseDto::fromError(error);
+		oatpp::String updateJson = objectMapper->writeToString(out);
+		sendMessage(updateJson->c_str(), userId);
+	}
 }
 
 void Room::updateWar(const oatpp::Object<TornFactionWarsDto>& factionWarResponses)

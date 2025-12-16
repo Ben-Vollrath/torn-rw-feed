@@ -19,6 +19,7 @@ class Fetcher : public oatpp::async::Coroutine<Fetcher>
 	MemberStatsService m_memberStatsService;
 	UserService m_userService;
 	FFScouterApiService m_ffScouterApiService;
+	FactionService m_factionService;
 
 	std::optional<std::int64_t> m_enemyFactionId;
 	std::optional<std::int64_t> m_warId;
@@ -63,18 +64,23 @@ public:
 
 	Action onFactionWarAndMembersResponse(const oatpp::Object<TornFactionWarAndMembersResponseDto>& factionWarResponse)
 	{
-		if (factionWarResponse->basic->id != m_factionId) // Key is outdated (member moved to another faction)
-		{
-			m_userService.updateFaction(m_tornApiService.getLastKey()->torn_key, factionWarResponse->basic->id);
-			m_tornApiService.removeLastKey();
-			return scheduleNextIteration();
-		}
-
 		auto room = m_room.lock();
 		if (!room || room->isClosed())
 		{
 			OATPP_LOGD(TAG, "Act Room is closed, finishing fetcher.")
 				return finish();
+		}
+
+		if (factionWarResponse->basic->id != m_factionId) // Key is outdated (member moved to another faction)
+		{
+			auto faction = m_factionService.getByIdNullable(factionWarResponse->basic->id);
+			if (!faction)
+			{
+				m_factionService.create(FactionDto::fromFactionResponse(factionWarResponse->basic));
+			}
+			m_userService.updateFaction(m_tornApiService.getLastKey()->torn_key, factionWarResponse->basic->id);
+			room->removePeerByUserId(m_tornApiService.getLastKey()->userId);
+			return scheduleNextIteration();
 		}
 
 		bool isNewWar = factionWarResponse->getWarId() != m_warId;
@@ -148,9 +154,35 @@ public:
 
 	Action handleError(Error* e) override
 	{
-		OATPP_LOGE(TAG, "Fetcher error: %s", e ? e->what() : "unknown");
+		using clock = std::chrono::microseconds;
 
-		return yieldTo(&Fetcher::act);
+		const auto now = clock{ oatpp::base::Environment::getMicroTickCount() };
+		const auto next = clock{
+		  std::min(m_nextExecEnemies.count(), m_nextExecWarWithAllies.count())
+		};
+
+		const auto waitTime = std::max(
+			clock::zero(),
+			next - now
+		);
+
+		try {
+			OATPP_LOGE(TAG, "Fetcher error: %s", e && e->what() ? e->what() : "unknown");
+			const int code = std::atoi(e && e->what() ? e->what() : "0");
+			if (code == 429)
+			{
+				auto room = m_room.lock();
+				if (room)
+				{
+					room->sendError(ErrorMessage::KeyLimit, m_tornApiService.getLastKey()->userId);
+				}
+			}
+
+			return waitFor(waitTime).next(yieldTo(&Fetcher::act));	
+		}
+		catch (...) {
+			waitFor(waitTime).next(yieldTo(&Fetcher::act));
+		}
 	}
 private:
 	void setNextExecTimer(std::chrono::microseconds& timer)
