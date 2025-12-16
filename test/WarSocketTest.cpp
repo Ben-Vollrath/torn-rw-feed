@@ -128,11 +128,11 @@ void WarSocketTest::testSocketTooManyRequests(std::shared_ptr<oatpp::data::mappi
 	testingFixtures->reset();
 
 	OATPP_COMPONENT(std::shared_ptr<MockResponseLoader>, mockResponseLoader);
-	mockResponseLoader->setResponsePaths({errorTooManyRequests_, factionWarAndMembersOKPath_, factionMembersOfflineOKPath_});
+	mockResponseLoader->setResponsePaths({errorTooManyRequests_, errorTooManyRequests_, factionWarAndMembersOKPath_, factionMembersOfflineOKPath_});
 
 	auto factionWar = mockResponseLoader->loadDtoFromFile<oatpp::Object<TornFactionWarAndMembersResponseDto>>(factionWarAndMembersOKPath_);
 	factionWar->members[0]->status->parseLocation();
-	auto user = testingFixtures->createTestUser(1);
+	auto user = testingFixtures->createTestUser(1, factionWar->members[0]->id);
 	auto issueResult = testingFixtures->getUserApiKey(user->id);
 
 	OATPP_COMPONENT(std::shared_ptr<oatpp::network::ClientConnectionProvider>, clientConnectionProvider);
@@ -151,6 +151,11 @@ void WarSocketTest::testSocketTooManyRequests(std::shared_ptr<oatpp::data::mappi
 
 	//errorTooManyRequests_
 	bool got = listener->waitForNext(msg, std::chrono::seconds(500));
+	OATPP_ASSERT(got);
+	OATPP_ASSERT(msg->error == ErrorMessage::KeyLimit);
+
+	//errorTooManyRequests_
+	got = listener->waitForNext(msg, std::chrono::seconds(500));
 	OATPP_ASSERT(got);
 	OATPP_ASSERT(msg->error == ErrorMessage::KeyLimit);
 

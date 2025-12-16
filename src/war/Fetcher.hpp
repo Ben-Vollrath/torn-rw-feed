@@ -172,11 +172,10 @@ public:
 				}
 			}
 
-			return this->waitFor(waitTime).next(act());
-				
+			return waitFor(waitTime).next(yieldTo(&Fetcher::act));	
 		}
 		catch (...) {
-			return this->waitFor(waitTime).next(act());
+			waitFor(waitTime).next(yieldTo(&Fetcher::act));
 		}
 	}
 private:
