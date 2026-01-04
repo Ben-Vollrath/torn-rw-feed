@@ -1,68 +1,66 @@
-name: Bug report
-description: Report something that is broken or incorrect.
-title: "[Bug]: "
-labels: ["bug"]
+name: Feature request
+description: Suggest an improvement or a new feature.
+title: "[Feature]: "
+labels: ["enhancement"]
 assignees: []
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to report a bug!
+        Thanks for the suggestion! Please be as concrete as possible.
+        If this is a **question** or you need help using the project, consider starting a Discussion (if enabled).
 
   - type: checkboxes
     id: preflight
     attributes:
       label: Preflight checklist
       options:
-        - label: I searched existing issues and couldn’t find a duplicate.
+        - label: I searched existing issues and couldnâ€™t find a duplicate.
           required: true
-        - label: I’m using a supported/maintained version (or I can reproduce on latest).
+        - label: This is not a security report.
           required: true
-        - label: I can reproduce this issue consistently.
-          required: false
 
   - type: textarea
-    id: what-happened
+    id: problem
     attributes:
-      label: What happened?
-      description: Describe the bug clearly.
-      placeholder: A clear and concise description of what the bug is.
+      label: Problem statement
+      description: What problem are you trying to solve?
+      placeholder: Iâ€™m frustrated when...
     validations:
       required: true
 
   - type: textarea
-    id: expected
+    id: proposal
     attributes:
-      label: What did you expect to happen?
-      placeholder: Describe what you expected instead.
+      label: Proposed solution
+      description: What would you like to happen?
+      placeholder: It would be great if...
     validations:
       required: true
 
   - type: textarea
-    id: steps
+    id: alternatives
     attributes:
-      label: Steps to reproduce
-      description: Provide steps so we can reproduce it.
-      placeholder: |
-        1. Go to '...'
-        2. Run '...'
-        3. See error
-    validations:
-      required: true
-
-  - type: textarea
-    id: logs
-    attributes:
-      label: Logs / error output
-      description: Paste any relevant logs or stack traces. (Redact secrets!)
-      render: shell
+      label: Alternatives considered
+      description: Other approaches you considered and why theyâ€™re not ideal.
     validations:
       required: false
 
   - type: textarea
-    id: extra
+    id: scope
     attributes:
-      label: Additional context
-      description: Anything else that helps? Screenshots, links, regression info, etc.
+      label: Scope / details
+      description: Any details that clarify requirements, edge cases, API shape, UX, etc.
     validations:
       required: false
+
+  - type: dropdown
+    id: willingness
+    attributes:
+      label: Are you willing to contribute a PR?
+      options:
+        - "Yes"
+        - "Maybe"
+        - "No"
+    validations:
+      required: true
