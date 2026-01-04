@@ -8,15 +8,15 @@
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp/web/client/ApiClient.hpp"
 
+class TornStatsApiService {
+  OATPP_COMPONENT(std::shared_ptr<TornStatsApiClient>, tornStatsApiClient);
+  OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>,
+                  objectMapper);
 
-class TornStatsApiService
-{
-	OATPP_COMPONENT(std::shared_ptr<TornStatsApiClient>, tornStatsApiClient);
-	OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper);
+  using Status = oatpp::web::protocol::http::Status;
 
-	using Status = oatpp::web::protocol::http::Status;
-
-public:
-	oatpp::async::CoroutineStarterForResult<const oatpp::Object<TornStatsSpyResponseDto>&> getSpies(
-		std::string key, std::string factionId);
+ public:
+  oatpp::async::CoroutineStarterForResult<
+      const oatpp::Object<TornStatsSpyResponseDto>&>
+  getSpies(std::string key, std::string factionId);
 };
