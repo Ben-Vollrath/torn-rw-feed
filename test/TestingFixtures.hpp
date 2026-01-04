@@ -67,6 +67,11 @@ public:
 		return newUser;
 	}
 
+	void deleteTestUser(std::int64_t userId)
+	{
+		m_userService.removeById(userId);
+	}
+
 	ApiKeyService::IssueResult getUserApiKey(std::int64_t userId)
 	{
 		return m_apiKeyService.issueKey(userId);

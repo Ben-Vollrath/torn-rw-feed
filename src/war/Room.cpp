@@ -9,7 +9,7 @@ void Room::saveTargets()
     for (auto& pair : m_userTargets)
     {
         auto dbDto = pair.second->getDbDto();
-        m_targetService.create(dbDto);
+        m_targetService.createNoFetch(dbDto);
     }
 }
 
