@@ -7,6 +7,7 @@
 class WarSocketTest : public oatpp::test::UnitTest
 {
 	void testSocketOk(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
+	void testSocketSendCurrentState(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
 	void testSocketTooManyRequests(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
 	void testSocketNoWar(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
 	void testSocketTargetsUpdate(std::shared_ptr<oatpp::data::mapping::ObjectMapper> objectMapper);
