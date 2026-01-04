@@ -15,9 +15,15 @@ protected:
 	OATPP_COMPONENT(std::shared_ptr<DbT>, db_); // injected Db client
 
 	// Helper: fetch exactly one row or 
-	static oatpp::Object<DtoT> fetchOne(const std::shared_ptr<oatpp::orm::QueryResult>& qr)
+	static void checkSuccess(const std::shared_ptr<oatpp::orm::QueryResult>& qr)
 	{
 		OATPP_ASSERT_HTTP(qr->isSuccess(), Status::CODE_500, qr->getErrorMessage());
+	}
+
+	// Helper: fetch exactly one row or 
+	static oatpp::Object<DtoT> fetchOne(const std::shared_ptr<oatpp::orm::QueryResult>& qr)
+	{
+		checkSuccess(qr);
 		auto rows = qr->fetch<oatpp::Vector<oatpp::Object<DtoT>>>();
 		OATPP_ASSERT_HTTP(rows && rows->size() == 1, Status::CODE_500, "Unknown Error");
 		return rows[0];
@@ -26,7 +32,7 @@ protected:
 	// Helper: fetch zero or one row (returns nullptr if no rows)
 	static oatpp::Object<DtoT> fetchOneOrNone(const std::shared_ptr<oatpp::orm::QueryResult>& qr)
 	{
-		OATPP_ASSERT_HTTP(qr->isSuccess(), Status::CODE_500, qr->getErrorMessage());
+		checkSuccess(qr);
 		if (!qr->hasMoreToFetch())
 		{
 			return nullptr;
@@ -46,6 +52,12 @@ public:
 	{
 		auto qr = db_->create(dto);
 		return fetchOne(qr);
+	}
+
+	void createNoFetch(const oatpp::Object<DtoT>& dto) const
+	{
+		auto qr = db_->create(dto);
+		checkSuccess(qr);
 	}
 
 	oatpp::Object<DtoT> upsertById(const oatpp::Object<DtoT>& dto) const

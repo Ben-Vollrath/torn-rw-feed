@@ -21,12 +21,14 @@ public:
 	}
 
 	QUERY(create,
-	"INSERT INTO targets (enemy_faction_id, user_id, targets) VALUES "
-	"(:t.enemy_faction_id, :t.user_id, :t.targets) "
-	"ON CONFLICT (enemy_faction_id, user_id) DO UPDATE SET "
-	"targets = EXCLUDED.targets "
-	"RETURNING *;",
-	PARAM(oatpp::Object<TargetsDbDto>, t))
+		"INSERT INTO targets (enemy_faction_id, user_id, targets) "
+		"SELECT :t.enemy_faction_id, :t.user_id, :t.targets "
+		"WHERE EXISTS (SELECT 1 FROM users WHERE id = :t.user_id) "
+		"ON CONFLICT (enemy_faction_id, user_id) DO UPDATE SET "
+		"  targets = EXCLUDED.targets "
+		"RETURNING *;",
+		PARAM(oatpp::Object<TargetsDbDto>, t)
+	)
 
 
 	QUERY(getAllByEnemyFactionAndUser,
