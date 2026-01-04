@@ -15,16 +15,9 @@ A high-performance, real-time faction war monitoring API for the online game [To
 - [Key Features](#key-features)
 - [Architecture Overview](#architecture-overview)
 - [Technical Stack](#technical-stack)
-- [Project Structure](#project-structure)
-- [API Endpoints](#api-endpoints)
-- [WebSocket Protocol](#websocket-protocol)
-- [Authentication System](#authentication-system)
-- [External API Integrations](#external-api-integrations)
-- [Database Schema](#database-schema)
 - [Getting Started](#getting-started)
 - [Configuration](#configuration)
 - [Docker Deployment](#docker-deployment)
-- [Development](#development)
 - [Testing](#testing)
 - [CI/CD Pipeline](#cicd-pipeline)
 - [License](#license)
@@ -220,7 +213,7 @@ Test fixtures for external APIs are located in `test/MockTorn/mock_responses/`.
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
 | `ci-tests.yml` | Push, PR | Build and run tests |
-| `build-release.yml` | Tags, manual | Build and publish Docker image |
+| `build-release.yml` | Push Main | Build and publish Docker image |
 
 ### CI Features
 
