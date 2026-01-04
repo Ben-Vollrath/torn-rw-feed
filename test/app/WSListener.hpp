@@ -1,3 +1,4 @@
+#pragma once
 #include <condition_variable>
 #include <queue>
 #include <oatpp/core/macro/component.hpp>
