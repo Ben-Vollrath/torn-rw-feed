@@ -1,4 +1,5 @@
 #pragma once
+#pragma once
 
 #include "AppConfig.hpp"
 #include "dto/FactionDto.hpp"
@@ -15,6 +16,7 @@ class FactionDb : public oatpp::orm::DbClient {
       : DbClient(executor) {
     oatpp::orm::SchemaMigration m(executor, "factions");
     m.addFile(1, appConfig->sqlFilePath + "factions/init.sql");
+    m.addFile(2, appConfig->sqlFilePath + "factions/name_not_unique.sql");
     m.migrate();
   }
 
